@@ -61,7 +61,7 @@ public class Emprestimo {
 		this.usuario = usuario;
 	}
 
-	private int getId() {
+	public int getId() {
 		return id;
 	}
 

@@ -46,7 +46,7 @@ public abstract class MaterialBibliografico {
 		this.disponivel = disponivel;
 	}
 
-	protected int getId() {
+	public int getId() {
 		return id;
 	}
 	
