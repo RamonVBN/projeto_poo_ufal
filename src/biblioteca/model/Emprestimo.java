@@ -6,12 +6,6 @@ import java.util.Random;
 import biblioteca.model.material.MaterialBibliografico;
 import biblioteca.model.usuario.Usuario;
 
-enum StatusEmprestimo {
-	ATIVO,
-	DEVOLVIDO,
-	ATRASADO
-}
-
 public class Emprestimo {
 
 	// atributos
@@ -67,7 +61,7 @@ public class Emprestimo {
 		this.usuario = usuario;
 	}
 
-	private int getId() {
+	public int getId() {
 		return id;
 	}
 
