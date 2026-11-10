@@ -2,15 +2,15 @@ package biblioteca.repository;
 
 import java.util.List;
 
-public interface Repositorio<T> {
+public abstract class Repositorio<N> {
 
-	public void adicionar();
-	
-	public T buscarPorId();
-	
-	public List<T> listarTodos();
-	
-	public void atualizar(T objeto);
-	
-	public void remover(int id);
+	public abstract void adicionar(N objeto);
+
+    public abstract N buscarPorId(int id);
+
+    public abstract List<N> listarTodos();
+
+    public abstract void atualizar(N objeto);
+
+    public abstract void remover(int id);
 }
