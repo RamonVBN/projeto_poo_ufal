@@ -16,6 +16,13 @@ public class Jornal extends MaterialBibliografico{
 		this.setNumeroEdicao(numeroEdicao);
 		this.setDataPublicacao(dataPublicacao);
 	}
+
+	public Jornal(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, int id) {
+		super(titulo, anoPublicacao, id);
+		this.setEditora(editora);
+		this.setNumeroEdicao(numeroEdicao);
+		this.setDataPublicacao(dataPublicacao);
+	}
 	
 	// getters e setters
 
