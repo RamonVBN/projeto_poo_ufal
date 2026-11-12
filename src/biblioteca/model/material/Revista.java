@@ -9,9 +9,15 @@ public class Revista extends MaterialBibliografico{
 	private String dataPublicacao;
 	
 	// construtor
-	
 	public Revista(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao) {
 		super(titulo, anoPublicacao);
+		this.setEditora(editora);
+		this.setNumeroEdicao(numeroEdicao);
+		this.setDataPublicacao(dataPublicacao);
+	}
+
+	public Revista(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, int id) {
+		super(titulo, anoPublicacao, id);
 		this.setEditora(editora);
 		this.setNumeroEdicao(numeroEdicao);
 		this.setDataPublicacao(dataPublicacao);

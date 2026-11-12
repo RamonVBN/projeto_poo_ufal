@@ -19,6 +19,13 @@ public abstract class MaterialBibliografico {
 		this.setAnoPublicacao(anoPublicacao);
 		this.setDisponivel(true);
 	}
+
+	public MaterialBibliografico(String titulo, int anoPublicacao, int id) {
+		this.id = id;
+		this.setTitulo(titulo);
+		this.setAnoPublicacao(anoPublicacao);
+		this.setDisponivel(true);
+	}
 	
 	// getters e setters
 

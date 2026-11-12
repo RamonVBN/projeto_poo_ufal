@@ -1,5 +1,6 @@
 package biblioteca.repository;
 
+import biblioteca.exception.ItemDuplicadoException;
 import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.model.usuario.Usuario;
 import biblioteca.model.usuario.UsuarioComum;
@@ -27,7 +28,7 @@ class UsuarioRepositorioTest {
     }
 
     @Test
-    void deveCadastrarUsuario() {
+    void deveCadastrarUsuario() throws ItemDuplicadoException, RegistroNaoEncontradoException {
         repositorio.adicionar(usuario);
 
         Usuario encontrado = repositorio.buscarPorId(usuario.getID());
@@ -37,7 +38,7 @@ class UsuarioRepositorioTest {
     }
 
     @Test
-    void deveListarUsuariosCadastrados() {
+    void deveListarUsuariosCadastrados() throws ItemDuplicadoException {
         repositorio.adicionar(usuario);
 
         List<Usuario> usuarios = repositorio.listarTodos();
@@ -55,7 +56,7 @@ class UsuarioRepositorioTest {
     }
 
     @Test
-    void deveRemoverUsuarioCadastrado() {
+    void deveRemoverUsuarioCadastrado() throws ItemDuplicadoException, RegistroNaoEncontradoException {
         repositorio.adicionar(usuario);
 
         repositorio.remover(usuario.getID());
