@@ -6,20 +6,18 @@ public class Livro extends MaterialBibliografico{
 	
 	private String autor;
 	private String isbn;
-	private String editora;
 	
 	// construtor
 	
 	public Livro(String titulo, int anoPublicacao, String autor, String isbn, String editora) {
-		super(titulo, anoPublicacao);
+		super(titulo, anoPublicacao, editora);
 		this.setAutor(autor);
 		this.setIsbn(isbn);
-		this.setEditora(editora);
 	}
 	
 	// getters e setters
 
-	private String getAutor() {
+	public String getAutor() {
 		return autor;
 	}
 
@@ -27,20 +25,12 @@ public class Livro extends MaterialBibliografico{
 		this.autor = autor;
 	}
 
-	private String getIsbn() {
+	public String getIsbn() {
 		return isbn;
 	}
 
 	private void setIsbn(String isbn) {
 		this.isbn = isbn;
-	}
-
-	private String getEditora() {
-		return editora;
-	}
-
-	private void setEditora(String editora) {
-		this.editora = editora;
 	}
 
 	// metodos
