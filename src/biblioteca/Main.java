@@ -1,9 +1,16 @@
 package biblioteca;
 
+import javax.swing.SwingUtilities;
+
+import biblioteca.view.TelaLogin;
+
 public class Main {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		SwingUtilities.invokeLater(() -> {
+			TelaLogin telalogin = new TelaLogin();
+			telalogin.setVisible(true);
+		});
 
 	}
 
