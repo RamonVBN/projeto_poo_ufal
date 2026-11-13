@@ -1,8 +1,10 @@
 package biblioteca.service;
 
-import biblioteca.exception.RegistroNaoEncontradoException;
-import biblioteca.model.material.Livro;
+import biblioteca.auth.Sessao;
+import biblioteca.exception.*;
 import biblioteca.model.material.MaterialBibliografico;
+import biblioteca.model.usuario.Cargo;
+import biblioteca.model.usuario.Usuario;
 import biblioteca.repository.MaterialRepositorio;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,44 +18,52 @@ class CatalogoServiceTest {
 
     private CatalogoService service;
     private MaterialRepositorio repositorio;
-    private MaterialBibliografico material;
+    private AutorizacaoService autorizacaoService;
+    private Sessao sessao;
+    private MaterialBibliografico livroTeste;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws ItemDuplicadoException, OperacaoNaoPermitidaException, UsuarioNaoAutenticadoException, CredenciaisInvalidasException {
         repositorio = new MaterialRepositorio();
-        service = new CatalogoService(repositorio);
+        autorizacaoService = new AutorizacaoService();
+        sessao = new Sessao();
+        service = new CatalogoService(repositorio, autorizacaoService, sessao);
 
-        material = new Livro(
+        Usuario usuarioPermitido = new Usuario("Bibliotecario", "lib", "123456", Cargo.BIBLIOTECARIO);
+        sessao.iniciarSessao(usuarioPermitido);
+
+        livroTeste = service.cadastrarLivro(
                 "Clean Code",
                 2008,
                 "Robert C. Martin",
                 "9780132350884",
                 "Prentice Hall"
         );
+
     }
 
     @Test
-    void deveCadastrarMaterial() {
-        service.cadastrarMaterial(material);
+    void deveCadastrarMaterial() throws OperacaoNaoPermitidaException, RegistroNaoEncontradoException, UsuarioNaoAutenticadoException {
 
-        MaterialBibliografico encontrado = service.buscarMaterial(material.getId());
+        MaterialBibliografico encontrado = service.buscarMaterial(livroTeste.getId());
 
         assertNotNull(encontrado);
-        assertEquals(material.getId(), encontrado.getId());
+        assertEquals(livroTeste.getId(), encontrado.getId());
     }
 
     @Test
-    void deveListarMateriaisCadastrados() {
-        service.cadastrarMaterial(material);
+    void deveListarMateriaisCadastrados() throws OperacaoNaoPermitidaException, UsuarioNaoAutenticadoException {
 
         List<MaterialBibliografico> materiais = service.listarMateriais();
 
         assertEquals(1, materiais.size());
-        assertTrue(materiais.contains(material));
+        assertTrue(materiais.contains(livroTeste));
     }
 
     @Test
-    void deveRetornarListaVaziaQuandoNaoHouverMateriais() {
+    void deveRetornarListaVaziaQuandoNaoHouverMateriais() throws OperacaoNaoPermitidaException, RegistroNaoEncontradoException, UsuarioNaoAutenticadoException {
+
+        repositorio.remover(livroTeste.getId());
         List<MaterialBibliografico> materiais = service.listarMateriais();
 
         assertNotNull(materiais);
@@ -61,23 +71,26 @@ class CatalogoServiceTest {
     }
 
     @Test
-    void deveRemoverMaterialCadastrado() {
-        service.cadastrarMaterial(material);
+    void deveRemoverMaterialCadastrado() throws OperacaoNaoPermitidaException, RegistroNaoEncontradoException, UsuarioNaoAutenticadoException, MaterialIndisponivelException {
 
-        service.removerMaterial(material.getId());
+        service.removerMaterial(livroTeste.getId());
 
         assertTrue(service.listarMateriais().isEmpty());
     }
 
     @Test
-    void deveAtualizarMaterialCadastrado() {
-        service.cadastrarMaterial(material);
+    void deveAtualizarMaterialCadastrado() throws OperacaoNaoPermitidaException, RegistroNaoEncontradoException, UsuarioNaoAutenticadoException, TipoMaterialInvalidoException, CredenciaisInvalidasException {
 
-        service.atualizarMaterial(material);
+        service.atualizarLivro("Clean Code - Nova versão",
+                2008,
+                "Robert C. Martin",
+                "9780132350884",
+                "Prentice Hall",
+                livroTeste.getId());
 
-        MaterialBibliografico encontrado = service.buscarMaterial(material.getId());
+        MaterialBibliografico encontrado = service.buscarMaterial(livroTeste.getId());
 
         assertNotNull(encontrado);
-        assertEquals(material.getId(), encontrado.getId());
+        assertEquals(livroTeste.getId(), encontrado.getId());
     }
 }

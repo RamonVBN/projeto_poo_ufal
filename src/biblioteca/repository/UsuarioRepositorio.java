@@ -9,7 +9,7 @@ import biblioteca.model.usuario.Usuario;
 
 public class UsuarioRepositorio implements Repositorio<Usuario> {
 
-	final private ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
+	private final ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
 	
 	@Override
 	public void adicionar(Usuario usuario) throws ItemDuplicadoException {
@@ -24,15 +24,26 @@ public class UsuarioRepositorio implements Repositorio<Usuario> {
 	}
 	
 	@Override
-	public Usuario buscarPorId(int id) throws RegistroNaoEncontradoException {
+	public Usuario buscarPorId(int usuarioId) throws RegistroNaoEncontradoException {
 
 	    for (Usuario usuario : usuarios) {
-	        if (usuario.getID() == id) {
+	        if (usuario.getID() == usuarioId) {
 	            return usuario;
 	        }
 	    }
 
 	    throw new RegistroNaoEncontradoException();
+	}
+
+	public Usuario buscarPorLogin(String login) throws RegistroNaoEncontradoException {
+
+		for (Usuario usuario : usuarios) {
+			if (usuario.getLogin().equals(login)) {
+				return usuario;
+			}
+		}
+
+		throw new RegistroNaoEncontradoException();
 	}
 	
 	@Override
@@ -55,9 +66,9 @@ public class UsuarioRepositorio implements Repositorio<Usuario> {
 	}
 	
 	@Override
-	public void remover(int id) throws RegistroNaoEncontradoException {
+	public void remover(int usuarioId) throws RegistroNaoEncontradoException {
 
-	    Usuario usuario = buscarPorId(id);
+	    Usuario usuario = buscarPorId(usuarioId);
 	    usuarios.remove(usuario);
 	}
 	

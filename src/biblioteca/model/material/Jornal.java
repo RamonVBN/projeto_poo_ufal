@@ -26,27 +26,27 @@ public class Jornal extends MaterialBibliografico{
 	
 	// getters e setters
 
-	private String getEditora() {
+	public String getEditora() {
 		return editora;
 	}
 
-	private void setEditora(String editora) {
+	public void setEditora(String editora) {
 		this.editora = editora;
 	}
 
-	private int getNumeroEdicao() {
+	public int getNumeroEdicao() {
 		return numeroEdicao;
 	}
 
-	private void setNumeroEdicao(int numeroEdicao) {
+	public void setNumeroEdicao(int numeroEdicao) {
 		this.numeroEdicao = numeroEdicao;
 	}
 
-	private String getDataPublicacao() {
+	public String getDataPublicacao() {
 		return dataPublicacao;
 	}
 
-	private void setDataPublicacao(String dataPublicacao) {
+	public void setDataPublicacao(String dataPublicacao) {
 		this.dataPublicacao = dataPublicacao;
 	}
 	
@@ -55,11 +55,6 @@ public class Jornal extends MaterialBibliografico{
 	@Override
 	public String exibirDetalhes() {
 		return "Titulo do jornal: %s - Ano de publicação: %s - Numero de edição: %s - Editora: %s".formatted(this.getTitulo(), this.getAnoPublicacao(), this.getNumeroEdicao(), this.getEditora());
-	}
-
-	@Override
-	public boolean podeSerEmprestado() {
-		return this.isDisponivel();
 	}
 	
 }

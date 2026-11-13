@@ -1,0 +1,46 @@
+package biblioteca.service;
+
+import biblioteca.exception.OperacaoNaoPermitidaException;
+import biblioteca.model.usuario.Cargo;
+import biblioteca.model.usuario.Permissao;
+import biblioteca.model.usuario.Usuario;
+
+public class AutorizacaoService {
+
+    public boolean possuiPermissao(Usuario usuario, Permissao permissao) {
+        if (usuario == null) {
+            return false;
+        }
+
+        Cargo cargo = usuario.getCargo();
+
+        return switch (cargo) {
+            case ADMINISTRADOR -> true;
+
+            case BIBLIOTECARIO -> switch (permissao) {
+                case GERENCIAR_CATALOGO,
+                     REALIZAR_EMPRESTIMO,
+                     REALIZAR_DEVOLUCAO,
+                     CONSULTAR_CATALOGO,
+                     CONSULTAR_TODOS_EMPRESTIMOS,
+                     CONSULTAR_USUARIOS -> true;
+
+                default -> false;
+            };
+
+            case LEITOR -> switch (permissao) {
+                case CONSULTAR_CATALOGO,
+                     CONSULTAR_PROPRIOS_EMPRESTIMOS -> true;
+
+                default -> false;
+            };
+        };
+    }
+
+    public void exigirPermissao(Usuario usuario, Permissao permissao) throws OperacaoNaoPermitidaException {
+
+        if (!possuiPermissao(usuario, permissao)) {
+            throw new OperacaoNaoPermitidaException();
+        }
+    }
+}

@@ -22,7 +22,7 @@ A classe abstrata `Usuario` representa os dados comuns: identificador, nome, log
 
 | Perfil | Permissões sugeridas |
 |---|---|
-| `UsuarioComum` | Consultar catálogo, pesquisar materiais, visualizar seus empréstimos, solicitar empréstimo e devolver material |
+| `Leitor` | Consultar catálogo, pesquisar materiais, visualizar seus empréstimos, solicitar empréstimo e devolver material |
 | `Bibliotecario` | Consultar catálogo, cadastrar/editar/remover materiais, registrar empréstimos e devoluções, consultar empréstimos e usuários |
 | `Administrador` | Todas as operações; gerenciar usuários e perfis de acesso |
 
@@ -156,7 +156,7 @@ Você pode começar com menos arquivos e separar os pacotes gradualmente. Não �
 | Requisito | Onde demonstrar |
 |---|---|
 | Classes, objetos e construtores | Usuários, materiais e empréstimos |
-| Herança | `UsuarioComum`, `Bibliotecario` e `Administrador` herdam de `Usuario`; Livro, Revista e Jornal herdam de `MaterialBibliografico` |
+| Herança | `Leitor`, `Bibliotecario` e `Administrador` herdam de `Usuario`; Livro, Revista e Jornal herdam de `MaterialBibliografico` |
 | Polimorfismo | Sobrescrita de `exibirDetalhes()` e `podeSerEmprestado()` |
 | Encapsulamento | Atributos `private`; validação nos construtores e métodos; getters quando necessários |
 | Exceções | Material indisponível, limite de empréstimos, registro inexistente e operação não permitida |

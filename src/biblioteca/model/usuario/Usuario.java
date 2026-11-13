@@ -2,11 +2,13 @@ package biblioteca.model.usuario;
 
 import java.util.Random;
 
-public abstract class Usuario {
+public class Usuario {
 
 	// atributos
 	
 	private final int id;
+
+	private final Cargo cargo;
 	private String nome;
 	private String login;
 	private String senha;
@@ -15,43 +17,77 @@ public abstract class Usuario {
 	
 	public Usuario(String nome, String login, String senha) {
 		this.id = new Random().nextInt();
+		this.cargo = Cargo.LEITOR;
 		this.setNome(nome);
 		this.setLogin(login);
 		this.setSenha(senha);
 	}
 
+	public Usuario(String nome, String login, String senha, Cargo cargo) {
+		this.id = new Random().nextInt();
+		this.cargo = cargo;
+		this.setNome(nome);
+		this.setLogin(login);
+		this.setSenha(senha);
+	}
+
+	public Usuario(String nome, String login, Usuario usuarioParaCopiar) {
+		this.id = usuarioParaCopiar.getID();
+		this.cargo = usuarioParaCopiar.getCargo();
+		this.setSenha(usuarioParaCopiar.senha);
+		this.setNome(nome);
+		this.setLogin(login);
+	}
+
 	// getters e setters
 
-	private void setNome(String nome) {
+	public Cargo getCargo() {
+		return cargo;
+	}
+
+	public void setNome(String nome) {
 		this.nome = nome;
 	}
 
-	private void setLogin(String login) {
+	public void setLogin(String login) {
 		this.login = login;
 	}
 
-	private void setSenha(String senha) {
+	public void setSenha(String senha) {
 		this.senha = senha;
 	}
 	
 	public int getID() {
 		return this.id;
 	}
-	
-	protected String getNome() {
+
+	public String getNome() {
 		return nome;
 	}
 
-	protected String getLogin() {
+	public String getLogin() {
 		return login;
 	}
 
-	protected String getSenha() {
+	public String getSenha() {
 		return senha;
 	}
 	
 	// metodos
-	
-	public abstract String exibirDados();
-	
+
+	public String exibirDados() {
+		String nomeCargo;
+		switch (this.cargo) {
+            case LEITOR -> {
+				nomeCargo = "Leitor";
+			}
+            case BIBLIOTECARIO -> {
+				nomeCargo = "Bibliotecario";
+			}
+            default -> {
+				nomeCargo = "Administrador";
+			}
+		}
+		return "%s: %s - ID: %s - Login: %s".formatted(nomeCargo, this.getNome(), this.getID(), this.getLogin());
+	}
 }

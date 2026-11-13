@@ -1,5 +1,186 @@
 package biblioteca.service;
 
-public class UsuarioService {
+import biblioteca.auth.Sessao;
+import biblioteca.exception.*;
+import biblioteca.model.Emprestimo;
+import biblioteca.model.StatusEmprestimo;
+import biblioteca.model.usuario.Cargo;
+import biblioteca.model.usuario.Permissao;
+import biblioteca.model.usuario.Usuario;
+import biblioteca.repository.EmprestimoRepositorio;
+import biblioteca.repository.UsuarioRepositorio;
 
+import java.util.ArrayList;
+import java.util.List;
+
+public class UsuarioService extends Service  {
+
+    private final UsuarioRepositorio usuarioRepositorio;
+    private final EmprestimoRepositorio emprestimoRepositorio;
+
+    public UsuarioService(
+            UsuarioRepositorio usuarioRepositorio,
+            EmprestimoRepositorio emprestimoRepositorio,
+            AutorizacaoService autorizacaoService,
+            Sessao sessao
+    )
+    {
+        super(autorizacaoService, sessao);
+        this.usuarioRepositorio = usuarioRepositorio;
+        this.emprestimoRepositorio = emprestimoRepositorio;
+    }
+
+    private void validarNome(String nome) throws CredenciaisInvalidasException {
+
+        if (nome == null || nome.isBlank()) {
+            throw new CredenciaisInvalidasException();
+        }
+    }
+
+    private void validarLogin(String login) throws CredenciaisInvalidasException {
+        if (login == null || login.isBlank()) {
+            throw new CredenciaisInvalidasException();
+        }
+
+    }
+
+    private void validarSenha(String senha)
+            throws CredenciaisInvalidasException {
+
+        if (senha == null || senha.isBlank()) {
+            throw new CredenciaisInvalidasException();
+        }
+
+        if (senha.length() < 6 || senha.length() > 16) {
+            throw new CredenciaisInvalidasException();
+        }
+    }
+
+    public void logar(String login, String senha) throws CredenciaisInvalidasException, RegistroNaoEncontradoException {
+
+        validarLogin(login);
+        validarSenha(senha);
+        Usuario usuarioParaLogar = usuarioRepositorio.buscarPorLogin(login);
+
+        if (usuarioParaLogar == null) {
+            throw new CredenciaisInvalidasException();
+        }
+
+        if (usuarioParaLogar.getSenha().equals(senha)) {
+            this.sessao.iniciarSessao(usuarioParaLogar);
+            return;
+        }
+
+       throw new CredenciaisInvalidasException();
+    }
+
+    public  void deslogar() throws UsuarioNaoAutenticadoException {
+
+       this.verificarAutenticacao();
+       this.sessao.encerrarSessao();
+    }
+
+    public Usuario cadastrarUsuario
+            (
+                    String nome,
+                    String login,
+                    String senha
+            )
+            throws
+            CredenciaisInvalidasException,
+            ItemDuplicadoException {
+
+        validarNome(nome);
+        validarLogin(login);
+        validarSenha(senha);
+
+        Usuario novoUsuario = new Usuario(nome, login, senha);
+        usuarioRepositorio.adicionar(novoUsuario);
+
+        return novoUsuario;
+    }
+
+    public Usuario cadastrarUsuario
+            (
+                    String nome,
+                    String login,
+                    String senha,
+                    Cargo cargo
+            )
+            throws
+            CredenciaisInvalidasException,
+            ItemDuplicadoException, OperacaoNaoPermitidaException, UsuarioNaoAutenticadoException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CADASTRAR_USUARIO);
+
+        validarNome(nome);
+        validarLogin(login);
+        validarSenha(senha);
+        Usuario novoUsuario = new Usuario(nome, login, senha, cargo);
+        usuarioRepositorio.adicionar(novoUsuario);
+
+        return novoUsuario;
+    }
+    public Usuario buscarUsuario(int id) throws RegistroNaoEncontradoException, OperacaoNaoPermitidaException, UsuarioNaoAutenticadoException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_USUARIOS);
+
+        return usuarioRepositorio.buscarPorId(id);
+    }
+    public List<Usuario> listarUsuarios() throws OperacaoNaoPermitidaException, UsuarioNaoAutenticadoException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_USUARIOS);
+
+        return usuarioRepositorio.listarTodos();
+    }
+    public void atualizarUsuario
+            (
+                String nome,
+                String login,
+                int id
+            )
+            throws OperacaoNaoPermitidaException,
+            RegistroNaoEncontradoException,
+            UsuarioNaoAutenticadoException,
+            CredenciaisInvalidasException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.ATUALIZAR_USUARIOS);
+
+        validarNome(nome);
+        validarLogin(login);
+        Usuario usuarioParaAtualizar = usuarioRepositorio.buscarPorId(id);
+        Usuario usuarioAtualizado = new Usuario(nome, login, usuarioParaAtualizar);
+
+        usuarioRepositorio.atualizar(usuarioAtualizado);
+    }
+
+    public void removerUsuario(int usuarioId)
+            throws
+            RegistroNaoEncontradoException,
+            OperacaoNaoPermitidaException,
+            UsuarioNaoAutenticadoException,
+            UsuarioPossuiEmprestimosAtivosException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REMOVER_USUARIO);
+
+        List<Emprestimo> emprestimosDoUsuario = emprestimoRepositorio.listarTodos(usuarioId);
+        List<Emprestimo> emprestimosAtivos = new ArrayList<>();
+
+        for (Emprestimo emprestimo : emprestimosDoUsuario) {
+            if (emprestimo.getStatus() == StatusEmprestimo.ATIVO) {
+                emprestimosAtivos.add(emprestimo);
+            }
+        }
+
+        if (!emprestimosAtivos.isEmpty()) {
+            throw new UsuarioPossuiEmprestimosAtivosException();
+        }
+
+        usuarioRepositorio.remover(usuarioId);
+    }
 }

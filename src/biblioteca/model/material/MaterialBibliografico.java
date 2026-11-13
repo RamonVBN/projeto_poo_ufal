@@ -29,23 +29,23 @@ public abstract class MaterialBibliografico {
 	
 	// getters e setters
 
-	protected String getTitulo() {
+	public String getTitulo() {
 		return titulo;
 	}
 
-	private void setTitulo(String titulo) {
+	public void setTitulo(String titulo) {
 		this.titulo = titulo;
 	}
 
-	protected int getAnoPublicacao() {
+	public int getAnoPublicacao() {
 		return anoPublicacao;
 	}
 
-	private void setAnoPublicacao(int anoPublicacao) {
+	public void setAnoPublicacao(int anoPublicacao) {
 		this.anoPublicacao = anoPublicacao;
 	}
 
-	protected boolean isDisponivel() {
+	public boolean estaDisponivel() {
 		return disponivel;
 	}
 
@@ -60,11 +60,12 @@ public abstract class MaterialBibliografico {
 	// metodos
 	
 	public abstract String exibirDetalhes();
-	
-	public abstract boolean podeSerEmprestado();
-	
-	public void alterarDisponibilidade() {
-		this.setDisponivel(!this.isDisponivel());
+
+	public void marcarComoDisponivel() {
+		this.setDisponivel(true);
 	}
-	
+
+	public void marcarComoIndisponivel() {
+		this.setDisponivel(false);
+	}
 }

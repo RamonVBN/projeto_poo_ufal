@@ -2,31 +2,28 @@ package biblioteca.models;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import biblioteca.model.usuario.*;
 import org.junit.jupiter.api.Test;
-
-import biblioteca.model.usuario.Administrador;
-import biblioteca.model.usuario.Bibliotecario;
-import biblioteca.model.usuario.UsuarioComum;
 
 class UsuarioTest {
 
     @Test
     void usuarioComumDeveExibirSeusDados() {
-        UsuarioComum usuario = new UsuarioComum(
+        Usuario usuario = new Usuario(
             "Ana", "ana123", "senha"
         );
 
         String dados = usuario.exibirDados();
 
-        assertTrue(dados.contains("Usuario: Ana"));
+        assertTrue(dados.contains("Leitor: Ana"));
         assertTrue(dados.contains("Login: ana123"));
         assertTrue(dados.contains(String.valueOf(usuario.getID())));
     }
 
     @Test
     void bibliotecarioDeveExibirSeusDados() {
-        Bibliotecario bibliotecario = new Bibliotecario(
-            "Carlos", "carlos", "senha"
+        Usuario bibliotecario = new Usuario(
+            "Carlos", "carlos", "senha", Cargo.BIBLIOTECARIO
         );
 
         String dados = bibliotecario.exibirDados();
@@ -37,8 +34,8 @@ class UsuarioTest {
 
     @Test
     void administradorDeveExibirSeusDados() {
-        Administrador administrador = new Administrador(
-            "Marina", "marina", "senha"
+        Usuario administrador = new Usuario(
+            "Marina", "marina", "senha", Cargo.ADMINISTRADOR
         );
 
         String dados = administrador.exibirDados();

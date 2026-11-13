@@ -26,27 +26,27 @@ public class Livro extends MaterialBibliografico{
 	
 	// getters e setters
 
-	private String getAutor() {
+	public String getAutor() {
 		return autor;
 	}
 
-	private void setAutor(String autor) {
+	public void setAutor(String autor) {
 		this.autor = autor;
 	}
 
-	private String getIsbn() {
+	public String getIsbn() {
 		return isbn;
 	}
 
-	private void setIsbn(String isbn) {
+	public void setIsbn(String isbn) {
 		this.isbn = isbn;
 	}
 
-	private String getEditora() {
+	public String getEditora() {
 		return editora;
 	}
 
-	private void setEditora(String editora) {
+	public void setEditora(String editora) {
 		this.editora = editora;
 	}
 
@@ -56,12 +56,4 @@ public class Livro extends MaterialBibliografico{
 	public String exibirDetalhes() {
 		return "Titulo do livro: %s - Autor: %s - Ano de publicação: %s - ISBN: %s - Editora: %s".formatted(this.getTitulo(), this.getAutor(), this.getAnoPublicacao(), this.getIsbn(), this.getEditora());
 	}
-
-	@Override
-	public boolean podeSerEmprestado() {
-		return this.isDisponivel();
-	}
-	
-	
-
 }
