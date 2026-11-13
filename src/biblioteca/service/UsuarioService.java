@@ -1,5 +1,6 @@
 package biblioteca.service;
 
+import biblioteca.auth.SenhaHashUtil;
 import biblioteca.auth.Sessao;
 import biblioteca.exception.*;
 import biblioteca.model.Emprestimo;
@@ -10,6 +11,8 @@ import biblioteca.model.usuario.Usuario;
 import biblioteca.repository.EmprestimoRepositorio;
 import biblioteca.repository.UsuarioRepositorio;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,17 +59,18 @@ public class UsuarioService extends Service  {
         }
     }
 
-    public void logar(String login, String senha) throws CredenciaisInvalidasException, RegistroNaoEncontradoException {
+    public void logar(String login, String senha)
+            throws
+            CredenciaisInvalidasException,
+            RegistroNaoEncontradoException,
+            NoSuchAlgorithmException,
+            InvalidKeySpecException {
 
         validarLogin(login);
         validarSenha(senha);
         Usuario usuarioParaLogar = usuarioRepositorio.buscarPorLogin(login);
 
-        if (usuarioParaLogar == null) {
-            throw new CredenciaisInvalidasException();
-        }
-
-        if (usuarioParaLogar.getSenha().equals(senha)) {
+        if (usuarioParaLogar.getSenha().equals(SenhaHashUtil.hash(senha))) {
             this.sessao.iniciarSessao(usuarioParaLogar);
             return;
         }
@@ -88,13 +92,15 @@ public class UsuarioService extends Service  {
             )
             throws
             CredenciaisInvalidasException,
-            ItemDuplicadoException {
+            ItemDuplicadoException,
+            NoSuchAlgorithmException,
+            InvalidKeySpecException {
 
         validarNome(nome);
         validarLogin(login);
         validarSenha(senha);
 
-        Usuario novoUsuario = new Usuario(nome, login, senha);
+        Usuario novoUsuario = new Usuario(nome, login, SenhaHashUtil.hash(senha));
         usuarioRepositorio.adicionar(novoUsuario);
 
         return novoUsuario;

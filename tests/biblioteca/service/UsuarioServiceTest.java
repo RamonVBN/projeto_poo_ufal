@@ -10,6 +10,8 @@ import biblioteca.repository.UsuarioRepositorio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,8 +38,7 @@ class UsuarioServiceTest {
     void deveCadastrarUsuario() throws
             RegistroNaoEncontradoException,
             ItemDuplicadoException,
-            CredenciaisInvalidasException
-    {
+            CredenciaisInvalidasException, NoSuchAlgorithmException, InvalidKeySpecException {
         Usuario usuarioCadastrado = service.cadastrarUsuario("João Silva", "joao", "123456");
         Usuario encontrado = usuarioRepositorio.buscarPorId(usuarioCadastrado.getID());
 
@@ -66,7 +67,7 @@ class UsuarioServiceTest {
     @Test
     void deveListarUsuariosCadastrados() throws OperacaoNaoPermitidaException,
             ItemDuplicadoException,
-            CredenciaisInvalidasException, UsuarioNaoAutenticadoException {
+            CredenciaisInvalidasException, UsuarioNaoAutenticadoException, NoSuchAlgorithmException, InvalidKeySpecException {
         Usuario usuarioPermitido = new Usuario("Bibliotecario", "lib", "123456", Cargo.BIBLIOTECARIO);
         usuarioRepositorio.adicionar(usuarioPermitido);
         sessao.iniciarSessao(usuarioPermitido);
@@ -82,7 +83,7 @@ class UsuarioServiceTest {
     void deveBuscarUsuarioPorId() throws OperacaoNaoPermitidaException,
             ItemDuplicadoException,
             CredenciaisInvalidasException,
-            RegistroNaoEncontradoException, UsuarioNaoAutenticadoException {
+            RegistroNaoEncontradoException, UsuarioNaoAutenticadoException, NoSuchAlgorithmException, InvalidKeySpecException {
         Usuario usuarioPermitido = new Usuario("Bibliotecario", "lib", "123456", Cargo.BIBLIOTECARIO);
         usuarioRepositorio.adicionar(usuarioPermitido);
         sessao.iniciarSessao(usuarioPermitido);
@@ -97,7 +98,7 @@ class UsuarioServiceTest {
     void deveRemoverUsuarioCadastrado() throws OperacaoNaoPermitidaException,
             RegistroNaoEncontradoException,
             ItemDuplicadoException,
-            CredenciaisInvalidasException, UsuarioNaoAutenticadoException, UsuarioPossuiEmprestimosAtivosException {
+            CredenciaisInvalidasException, UsuarioNaoAutenticadoException, UsuarioPossuiEmprestimosAtivosException, NoSuchAlgorithmException, InvalidKeySpecException {
         Usuario usuarioPermitido = new Usuario("ADMINISTRADOR", "admin", "123456", Cargo.ADMINISTRADOR);
         usuarioRepositorio.adicionar(usuarioPermitido);
         sessao.iniciarSessao(usuarioPermitido);
@@ -112,7 +113,7 @@ class UsuarioServiceTest {
     void deveAtualizarUsuarioCadastrado() throws OperacaoNaoPermitidaException,
             RegistroNaoEncontradoException,
             ItemDuplicadoException,
-            CredenciaisInvalidasException, UsuarioNaoAutenticadoException {
+            CredenciaisInvalidasException, UsuarioNaoAutenticadoException, NoSuchAlgorithmException, InvalidKeySpecException {
         Usuario usuarioPermitido = new Usuario("ADMINISTRADOR", "admin", "123456", Cargo.ADMINISTRADOR);
         usuarioRepositorio.adicionar(usuarioPermitido);
         sessao.iniciarSessao(usuarioPermitido);
