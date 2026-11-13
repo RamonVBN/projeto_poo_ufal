@@ -1,8 +1,10 @@
+
 package biblioteca.service;
 
 import biblioteca.auth.Sessao;
 import biblioteca.exception.*;
 import biblioteca.model.Emprestimo;
+import biblioteca.model.StatusEmprestimo;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
 import biblioteca.model.usuario.Cargo;
@@ -67,19 +69,18 @@ class EmprestimoServiceTest {
         sessao.iniciarSessao(usuarioPermitido);
     }
 
+    // REGISTRO DE EMPRÉSTIMOS
+
     @Test
-    void deveRegistrarEmprestimo()
-            throws ItemDuplicadoException,
-            LimiteEmprestimosException,
-            OperacaoNaoPermitidaException,
-            MaterialIndisponivelException,
-            DataInvalidaException,
-            UsuarioNaoAutenticadoException,
-            RegistroNaoEncontradoException {
+    void deveRegistrarEmprestimo() throws Exception {
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
 
-        service.registrarEmprestimo(LocalDate.now().plusDays(7), usuarioPermitido.getID(), material.getId());
-
-        List<Emprestimo> emprestimos = emprestimoRepositorio.listarTodos();
+        List<Emprestimo> emprestimos =
+                emprestimoRepositorio.listarTodos();
 
         assertEquals(1, emprestimos.size());
         assertTrue(emprestimos.getFirst().estaAtivo());
@@ -87,31 +88,27 @@ class EmprestimoServiceTest {
 
     @Test
     void deveMarcarMaterialComoIndisponivelAposEmprestimo()
-            throws RegistroNaoEncontradoException,
-            ItemDuplicadoException,
-            LimiteEmprestimosException,
-            OperacaoNaoPermitidaException,
-            MaterialIndisponivelException,
-            DataInvalidaException,
-            UsuarioNaoAutenticadoException {
-        service.registrarEmprestimo(LocalDate.now().plusDays(7), usuarioPermitido.getID(), material.getId());
+            throws Exception {
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
 
-        MaterialBibliografico encontrado = materialRepositorio.buscarPorId(material.getId());
+        MaterialBibliografico encontrado =
+                materialRepositorio.buscarPorId(material.getId());
 
         assertFalse(encontrado.estaDisponivel());
     }
 
     @Test
     void deveImpedirEmprestimoDeMaterialIndisponivel()
-            throws
-            ItemDuplicadoException,
-            LimiteEmprestimosException,
-            OperacaoNaoPermitidaException,
-            MaterialIndisponivelException,
-            DataInvalidaException,
-            UsuarioNaoAutenticadoException,
-            RegistroNaoEncontradoException {
-        service.registrarEmprestimo(LocalDate.now().plusDays(7), usuarioPermitido.getID(), material.getId());
+            throws Exception {
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
 
         assertThrows(
                 MaterialIndisponivelException.class,
@@ -124,75 +121,44 @@ class EmprestimoServiceTest {
     }
 
     @Test
-    void deveRegistrarDevolucao()
-            throws
-            MaterialDevolvidoException,
-            OperacaoNaoPermitidaException,
-            RegistroNaoEncontradoException,
-            UsuarioNaoAutenticadoException,
-            ItemDuplicadoException,
-            LimiteEmprestimosException,
-            MaterialIndisponivelException,
-            DataInvalidaException {
-        service.registrarEmprestimo(LocalDate.now().plusDays(7), usuarioPermitido.getID(), material.getId());
-
-        Emprestimo emprestimo = emprestimoRepositorio.listarTodos().getFirst();
-
-        service.registrarDevolucao(emprestimo.getId());
-
-        assertFalse(emprestimo.estaAtivo());
+    void deveImpedirEmprestimoComDataInvalida() {
+        assertThrows(
+                DataInvalidaException.class,
+                () -> service.registrarEmprestimo(
+                        LocalDate.now(),
+                        usuarioPermitido.getID(),
+                        material.getId()
+                )
+        );
     }
 
     @Test
-    void deveMarcarMaterialComoDisponivelAposDevolucao()
-            throws
-            MaterialDevolvidoException,
-            OperacaoNaoPermitidaException,
-            RegistroNaoEncontradoException,
-            UsuarioNaoAutenticadoException,
-            ItemDuplicadoException,
-            LimiteEmprestimosException,
-            MaterialIndisponivelException,
-            DataInvalidaException {
-        service.registrarEmprestimo(LocalDate.now().plusDays(7), usuarioPermitido.getID(), material.getId());
-
-        Emprestimo emprestimo =
-                emprestimoRepositorio.listarTodos().getFirst();
-
-        service.registrarDevolucao(emprestimo.getId());
-
-        MaterialBibliografico encontrado = materialRepositorio.buscarPorId(material.getId());
-
-        assertTrue(encontrado.estaDisponivel());
+    void deveImpedirEmprestimoComUsuarioInexistente() {
+        assertThrows(
+                RegistroNaoEncontradoException.class,
+                () -> service.registrarEmprestimo(
+                        LocalDate.now().plusDays(7),
+                        -1,
+                        material.getId()
+                )
+        );
     }
 
     @Test
-    void deveListarEmprestimosDeUmUsuario()
-            throws
-            ItemDuplicadoException,
-            LimiteEmprestimosException,
-            OperacaoNaoPermitidaException,
-            MaterialIndisponivelException,
-            DataInvalidaException,
-            UsuarioNaoAutenticadoException,
-            RegistroNaoEncontradoException {
-        service.registrarEmprestimo(LocalDate.now().plusDays(7), usuarioPermitido.getID(), material.getId());
-
-        List<Emprestimo> emprestimos = service.listarEmprestimosPorUsuario(usuarioPermitido.getID());
-
-        assertEquals(1, emprestimos.size());
+    void deveImpedirEmprestimoComMaterialInexistente() {
+        assertThrows(
+                RegistroNaoEncontradoException.class,
+                () -> service.registrarEmprestimo(
+                        LocalDate.now().plusDays(7),
+                        usuarioPermitido.getID(),
+                        -1
+                )
+        );
     }
 
     @Test
     void deveImpedirMaisDeTresEmprestimosAtivos()
-            throws
-            ItemDuplicadoException,
-            LimiteEmprestimosException,
-            OperacaoNaoPermitidaException,
-            MaterialIndisponivelException,
-            DataInvalidaException,
-            UsuarioNaoAutenticadoException,
-            RegistroNaoEncontradoException {
+            throws Exception {
         MaterialBibliografico livro2 = new Livro(
                 "Clean Architecture",
                 2017,
@@ -221,9 +187,23 @@ class EmprestimoServiceTest {
         materialRepositorio.adicionar(livro3);
         materialRepositorio.adicionar(livro4);
 
-        service.registrarEmprestimo(LocalDate.now().plusDays(7), usuarioPermitido.getID(), material.getId());
-        service.registrarEmprestimo(LocalDate.now().plusDays(7), usuarioPermitido.getID(), livro2.getId());
-        service.registrarEmprestimo(LocalDate.now().plusDays(7), usuarioPermitido.getID(), livro3.getId());
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                livro2.getId()
+        );
+
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                livro3.getId()
+        );
 
         assertThrows(
                 LimiteEmprestimosException.class,
@@ -231,6 +211,222 @@ class EmprestimoServiceTest {
                         LocalDate.now().plusDays(7),
                         usuarioPermitido.getID(),
                         livro4.getId()
+                )
+        );
+    }
+
+    @Test
+    void devePermitirNovoEmprestimoAposDevolucao()
+            throws Exception {
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        Emprestimo emprestimo =
+                emprestimoRepositorio.listarTodos().getFirst();
+
+        service.registrarDevolucao(emprestimo.getId());
+
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        assertEquals(2, emprestimoRepositorio.listarTodos().size());
+    }
+
+    // DEVOLUÇÃO DE EMPRÉSTIMOS
+
+    @Test
+    void deveRegistrarDevolucao() throws Exception {
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        Emprestimo emprestimo =
+                emprestimoRepositorio.listarTodos().getFirst();
+
+        service.registrarDevolucao(emprestimo.getId());
+
+        assertFalse(emprestimo.estaAtivo());
+        assertEquals(StatusEmprestimo.DEVOLVIDO, emprestimo.getStatus());
+    }
+
+    @Test
+    void deveMarcarMaterialComoDisponivelAposDevolucao()
+            throws Exception {
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        Emprestimo emprestimo =
+                emprestimoRepositorio.listarTodos().getFirst();
+
+        service.registrarDevolucao(emprestimo.getId());
+
+        MaterialBibliografico encontrado =
+                materialRepositorio.buscarPorId(material.getId());
+
+        assertTrue(encontrado.estaDisponivel());
+    }
+
+    @Test
+    void deveImpedirDevolucaoDuplicada() throws Exception {
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        Emprestimo emprestimo =
+                emprestimoRepositorio.listarTodos().getFirst();
+
+        service.registrarDevolucao(emprestimo.getId());
+
+        assertThrows(
+                MaterialDevolvidoException.class,
+                () -> service.registrarDevolucao(emprestimo.getId())
+        );
+    }
+
+    // CONSULTA DE EMPRÉSTIMOS
+
+    @Test
+    void deveBuscarEmprestimoPorId() throws Exception {
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        Emprestimo esperado =
+                emprestimoRepositorio.listarTodos().getFirst();
+
+        Emprestimo encontrado =
+                service.buscarEmprestimo(esperado.getId());
+
+        assertEquals(esperado.getId(), encontrado.getId());
+    }
+
+    @Test
+    void deveImpedirBuscaDeEmprestimoInexistente() {
+        assertThrows(
+                RegistroNaoEncontradoException.class,
+                () -> service.buscarEmprestimo(-1)
+        );
+    }
+
+    @Test
+    void deveListarTodosOsEmprestimos() throws Exception {
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        List<Emprestimo> emprestimos =
+                service.listarEmprestimos();
+
+        assertEquals(1, emprestimos.size());
+    }
+
+    @Test
+    void deveListarEmprestimosDeUmUsuario()
+            throws Exception {
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        List<Emprestimo> emprestimos =
+                service.listarEmprestimosPorUsuario(
+                        usuarioPermitido.getID()
+                );
+
+        assertEquals(1, emprestimos.size());
+    }
+
+    @Test
+    void deveListarMeusEmprestimos() throws Exception {
+        Usuario leitor = new Usuario(
+                "Maria Silva",
+                "maria",
+                "123456",
+                Cargo.LEITOR
+        );
+
+        usuarioRepositorio.adicionar(leitor);
+
+        MaterialBibliografico livro = new Livro(
+                "Java Efetivo",
+                2018,
+                "Joshua Bloch",
+                "9780134685991",
+                "Alta Books"
+        );
+
+        materialRepositorio.adicionar(livro);
+
+        service.registrarEmprestimo(
+                LocalDate.now().plusDays(7),
+                leitor.getID(),
+                livro.getId()
+        );
+
+        sessao.iniciarSessao(leitor);
+
+        List<Emprestimo> emprestimos =
+                service.listarMeusEmprestimos();
+
+        assertEquals(1, emprestimos.size());
+        assertEquals(
+                leitor.getID(),
+                emprestimos.getFirst().getUsuario().getID()
+        );
+    }
+
+    // AUTENTICAÇÃO E AUTORIZAÇÃO
+
+    @Test
+    void deveImpedirEmprestimoSemAutenticacao() {
+        sessao.encerrarSessao();
+
+        assertThrows(
+                UsuarioNaoAutenticadoException.class,
+                () -> service.registrarEmprestimo(
+                        LocalDate.now().plusDays(7),
+                        usuarioPermitido.getID(),
+                        material.getId()
+                )
+        );
+    }
+
+    @Test
+    void deveImpedirEmprestimoSemPermissao()
+            throws Exception {
+        Usuario leitor = new Usuario(
+                "Maria Silva",
+                "maria",
+                "123456",
+                Cargo.LEITOR
+        );
+
+        sessao.iniciarSessao(leitor);
+
+        assertThrows(
+                OperacaoNaoPermitidaException.class,
+                () -> service.registrarEmprestimo(
+                        LocalDate.now().plusDays(7),
+                        usuarioPermitido.getID(),
+                        material.getId()
                 )
         );
     }

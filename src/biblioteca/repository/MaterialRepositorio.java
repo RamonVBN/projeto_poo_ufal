@@ -43,7 +43,7 @@ public class MaterialRepositorio implements Repositorio<MaterialBibliografico> {
             return List.of();
         }
         for (MaterialBibliografico material : materiais) {
-            if (material.getTitulo().toLowerCase().contains(titulo)) {
+            if (material.getTitulo().toLowerCase().contains(titulo.toLowerCase())) {
                 resultado.add(material);
             }
         }

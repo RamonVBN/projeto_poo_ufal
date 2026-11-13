@@ -44,7 +44,6 @@ public class UsuarioService extends Service  {
         if (login == null || login.isBlank()) {
             throw new CredenciaisInvalidasException();
         }
-
     }
 
     private void validarSenha(String senha)
@@ -115,7 +114,11 @@ public class UsuarioService extends Service  {
             )
             throws
             CredenciaisInvalidasException,
-            ItemDuplicadoException, OperacaoNaoPermitidaException, UsuarioNaoAutenticadoException {
+            ItemDuplicadoException,
+            OperacaoNaoPermitidaException,
+            UsuarioNaoAutenticadoException,
+            NoSuchAlgorithmException,
+            InvalidKeySpecException {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CADASTRAR_USUARIO);
@@ -123,7 +126,7 @@ public class UsuarioService extends Service  {
         validarNome(nome);
         validarLogin(login);
         validarSenha(senha);
-        Usuario novoUsuario = new Usuario(nome, login, senha, cargo);
+        Usuario novoUsuario = new Usuario(nome, login, SenhaHashUtil.hash(senha), cargo);
         usuarioRepositorio.adicionar(novoUsuario);
 
         return novoUsuario;

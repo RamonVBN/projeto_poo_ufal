@@ -18,6 +18,10 @@ public class UsuarioRepositorio implements Repositorio<Usuario> {
 	        if (u.getID() == usuario.getID()) {
 	            throw new ItemDuplicadoException("usuário");
 	        }
+
+			if (u.getLogin().equals(usuario.getLogin())) {
+				throw new ItemDuplicadoException("usuário");
+			}
 	    }
 
 	    usuarios.add(usuario);

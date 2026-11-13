@@ -1,34 +1,41 @@
+
 package biblioteca.auth;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class SenhaHashUtil {
 
-    public static String hash(String senha) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private static final String SALT_FIXO = "BibliotecaUFAL2026";
+    private static final int ITERACOES = 600_000;
+    private static final int TAMANHO_HASH = 256;
 
-        byte[] salt = new byte[16];
-        new SecureRandom().nextBytes(salt);
+    public static String hash(String senha)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
+
+        byte[] salt = SALT_FIXO.getBytes(StandardCharsets.UTF_8);
 
         PBEKeySpec spec = new PBEKeySpec(
                 senha.toCharArray(),
                 salt,
-                600_000,
-                256
+                ITERACOES,
+                TAMANHO_HASH
         );
 
-        SecretKeyFactory factory =
-                SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        try {
+            SecretKeyFactory factory =
+                    SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 
-        byte[] hash = factory.generateSecret(spec).getEncoded();
+            byte[] hash = factory.generateSecret(spec).getEncoded();
 
-        spec.clearPassword();
+            return Base64.getEncoder().encodeToString(hash);
 
-        return Base64.getEncoder().encodeToString(salt)
-                + ":"
-                + Base64.getEncoder().encodeToString(hash);
+        } finally {
+            spec.clearPassword();
+        }
     }
 }
