@@ -1,11 +1,13 @@
 package biblioteca.view;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -21,9 +23,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import biblioteca.model.material.Jornal;
+import biblioteca.model.material.Livro;
+import biblioteca.model.material.MaterialBibliografico;
+import biblioteca.model.material.Revista;
 import biblioteca.model.usuario.Administrador;
 import biblioteca.model.usuario.Bibliotecario;
 import biblioteca.model.usuario.Usuario;
+import biblioteca.service.CatalogoService;
+import biblioteca.service.EmprestimoService;
+import biblioteca.service.UsuarioService;
 
 public class MenuPrincipal extends JFrame{
 
@@ -31,15 +40,30 @@ public class MenuPrincipal extends JFrame{
 	
 	private JTextField campoPesquisa;
     private JPanel painelMateriais;
-    private Usuario usuarioLogado;
+    
+    private CardLayout cardLayout;
+    private JPanel painelCentral;
+    
+    final private Usuario usuarioLogado;
+    final private UsuarioService usuarios;
+    final private CatalogoService catalogo;
+    final private EmprestimoService emprestimos;
+    
+    private Runnable voltarLogin;
+    
     
     // construtor
     
-    public MenuPrincipal(Usuario usuario) {
+    public MenuPrincipal(Usuario usuario, UsuarioService usuarios, CatalogoService catalogo, EmprestimoService emprestimos, Runnable voltarLogin) {
     	this.usuarioLogado = usuario;
+    	this.usuarios = usuarios;
+    	this.catalogo = catalogo;
+    	this.emprestimos = emprestimos;
+    	this.voltarLogin = voltarLogin;
     	configurarJanela();
         criarMenu();
         criarConteudo();
+        atualizarMateriais();
         carregarMateriaisExemplo();
 	}
     
@@ -63,11 +87,11 @@ public class MenuPrincipal extends JFrame{
         JMenuItem itemSair = new JMenuItem("Sair");
 
         itemInicio.addActionListener(e -> {
-            // TODO: Atualizar a tela principal.
+            cardLayout.show(painelCentral, "CATALOGO");
         });
 
         itemMeusDados.addActionListener(e -> {
-            // TODO: Abrir tela de dados do usuário.
+            cardLayout.show(painelCentral, "MEUS_DADOS");
         });
 
         itemSair.addActionListener(e -> {
@@ -79,7 +103,8 @@ public class MenuPrincipal extends JFrame{
             );
 
             if (opcao == JOptionPane.YES_OPTION) {
-                System.exit(0);
+                dispose();
+                voltarLogin.run();
             }
         });
 
@@ -93,116 +118,111 @@ public class MenuPrincipal extends JFrame{
         // BIBLIOTECARIO
         if (usuarioLogado instanceof Bibliotecario) {
 
-            JMenu menuMateriais = new JMenu("Materiais");
-
             JMenuItem itemGerenciar = new JMenuItem("Gerenciar materiais");
+            
+            menuPrincipal.add(itemGerenciar);
 
             itemGerenciar.addActionListener(e -> {
                 // TODO: Abrir tela de cadastro de materiais.
             });
 
-            menuMateriais.add(itemGerenciar);
-
-            barraMenu.add(menuMateriais);
         }
 
         // SOMENTE ADMINISTRADOR
         if (usuarioLogado instanceof Administrador) {
 
-            JMenu menuUsuarios = new JMenu("Usuários");
-
-            JMenuItem itemGerenciarUsuarios =
-                    new JMenuItem("Gerenciar usuários");
+            JMenuItem itemGerenciarUsuarios = new JMenuItem("Gerenciar usuários");
 
             itemGerenciarUsuarios.addActionListener(e -> {
                 // TODO: Abrir tela de gerenciamento de usuários.
             });
 
-            menuUsuarios.add(itemGerenciarUsuarios);
+            menuPrincipal.add(itemGerenciarUsuarios);
 
-            barraMenu.add(menuUsuarios);
         }
 
         setJMenuBar(barraMenu);
     }
 
     private void criarConteudo() {
-    	
         JPanel painelPrincipal = new JPanel(new BorderLayout(10, 10));
+
         painelPrincipal.setBackground(new Color(220, 220, 220));
         painelPrincipal.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        // Área de pesquisa
-        JPanel painelPesquisa = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
-        painelPesquisa.setBackground(new Color(220, 220, 220));
+        cardLayout = new CardLayout();
+        painelCentral = new JPanel(cardLayout);
 
-        campoPesquisa = new JTextField(25);
-        campoPesquisa.setPreferredSize(new Dimension(250, 35));
+        // Adiciona o catálogo como tela inicial
+        painelCentral.add(criarPainelCatalogo(), "CATALOGO");
 
-        JButton botaoBuscar = new JButton("Buscar obra");
+        // Adiciona a tela de dados
+        painelCentral.add(new MeusDados(usuarioLogado),"MEUS_DADOS");
 
-        botaoBuscar.addActionListener(e -> {
-            // TODO: Pesquisar materiais pelo título.
-        });
-
-        painelPesquisa.add(campoPesquisa);
-        painelPesquisa.add(botaoBuscar);
-
-        painelPrincipal.add(painelPesquisa, BorderLayout.NORTH);
-
-        // Lista de materiais
-        painelMateriais = new JPanel();
-        painelMateriais.setLayout(
-                new BoxLayout(painelMateriais, BoxLayout.Y_AXIS)
-        );
-        painelMateriais.setBackground(new Color(220, 220, 220));
-
-        JScrollPane scroll = new JScrollPane(painelMateriais);
-        scroll.setBorder(null);
-        scroll.getVerticalScrollBar().setUnitIncrement(15);
-
-        painelPrincipal.add(scroll, BorderLayout.CENTER);
-
-        add(painelPrincipal);
+        add(painelCentral, BorderLayout.CENTER);
     }
     
+
+	private JPanel criarPainelCatalogo() {
+	    JPanel painelCatalogo = new JPanel(new BorderLayout(10, 10));
+	    painelCatalogo.setBackground(new Color(220, 220, 220));
+	
+	    // Pesquisa
+	    JPanel painelPesquisa = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+	
+	    painelPesquisa.setBackground(new Color(220, 220, 220));
+	
+	    campoPesquisa = new JTextField(25);
+	    campoPesquisa.setPreferredSize(new Dimension(250, 35));
+	
+	    JButton botaoBuscar = new JButton("Buscar obra");
+	
+	    botaoBuscar.addActionListener(e -> {
+	        // TODO: Pesquisar materiais pelo título.
+	    });
+	
+	    painelPesquisa.add(campoPesquisa);
+	    painelPesquisa.add(botaoBuscar);
+	
+	    painelCatalogo.add(painelPesquisa, BorderLayout.NORTH);
+	
+	    // Lista de materiais
+	    painelMateriais = new JPanel();
+	
+	    painelMateriais.setLayout(new BoxLayout(painelMateriais, BoxLayout.Y_AXIS));
+	
+	    painelMateriais.setBackground(new Color(220, 220, 220));
+	
+	    JScrollPane scroll = new JScrollPane(painelMateriais);
+	    scroll.setBorder(null);
+	    scroll.getVerticalScrollBar().setUnitIncrement(15);
+	
+	    painelCatalogo.add(scroll, BorderLayout.CENTER);
+	
+	    return painelCatalogo;
+	}
+
+    
     private void carregarMateriaisExemplo() {
-        adicionarMaterial(
-                "Clean Code",
-                "Robert C. Martin",
-                "2008",
-                "9780132350884",
-                "Prentice Hall",
-                true
-        );
+        adicionarMaterial(new Livro("Clean Code", 2008, "Robert C. Martin", "9780132350884", "Prentice Hall"));
 
-        adicionarMaterial(
-                "Revista Ciência Hoje",
-                "Vários autores",
-                "2024",
-                "Edição 395",
-                "SBPC",
-                false
-        );
+        adicionarMaterial(new Revista("Revista Ciência Hoje", 2024, "SBPC", 395, "21/07/2024"));
 
-        adicionarMaterial(
-                "Jornal da Cidade",
-                "Redação",
-                "2025",
-                "Edição 120",
-                "Editora Local",
-                true
-        );
+        adicionarMaterial(new Jornal("Jornal da Cidade", 2025, "Editora Local", 120, "23/01/2025"));
+    }
+    
+    private void carregarMateriais(ArrayList<MaterialBibliografico> materiais) {
+    	this.painelMateriais.removeAll();
+    	
+    	for (MaterialBibliografico materialBibliografico : materiais) {
+			this.adicionarMaterial(materialBibliografico);
+		}
+    	
+    	this.painelMateriais.revalidate();
+    	this.painelMateriais.repaint();
     }
 
-    private void adicionarMaterial(
-            String titulo,
-            String autor,
-            String ano,
-            String identificacao,
-            String editora,
-            boolean disponivel
-    ) {
+    private void adicionarMaterial(MaterialBibliografico material) {
         JPanel card = new JPanel(new BorderLayout(15, 5));
 
         card.setBackground(Color.WHITE);
@@ -223,45 +243,39 @@ public class MenuPrincipal extends JFrame{
         // INFORMACOES
         JPanel informacoes = new JPanel();
 
-        informacoes.setLayout(
-                new BoxLayout(informacoes, BoxLayout.Y_AXIS)
-        );
+        informacoes.setLayout(new BoxLayout(informacoes, BoxLayout.Y_AXIS));
 
         informacoes.setBackground(Color.WHITE);
+        
+    	informacoes.add(new JLabel("Título: " + material.getTitulo()));
+        informacoes.add(Box.createVerticalStrut(5));
 
-        informacoes.add(new JLabel("Título: " + titulo));
+        if (material instanceof Livro) {
+        	this.criarInformacoes(informacoes, (Livro) material);
+        } else if (material instanceof Jornal) {
+        	this.criarInformacoes(informacoes, (Jornal) material);
+        } else {
+        	this.criarInformacoes(informacoes, (Revista) material);
+        }
+        
         informacoes.add(Box.createVerticalStrut(5));
-        informacoes.add(new JLabel("Autor: " + autor));
-        informacoes.add(Box.createVerticalStrut(5));
-        informacoes.add(new JLabel("Ano de publicação: " + ano));
-        informacoes.add(Box.createVerticalStrut(5));
-        informacoes.add(new JLabel("ISBN / Edição: " + identificacao));
-        informacoes.add(Box.createVerticalStrut(5));
-        informacoes.add(new JLabel("Editora: " + editora));
-
+        informacoes.add(new JLabel("Editora: " + material.getEditora()));
+        
         card.add(informacoes, BorderLayout.CENTER);
 
         // DISPONIBILIDADE E EMPRESTIMO
         JPanel painelAcao = new JPanel();
 
-        painelAcao.setLayout(
-                new BoxLayout(painelAcao, BoxLayout.Y_AXIS)
-        );
+        painelAcao.setLayout(new BoxLayout(painelAcao, BoxLayout.Y_AXIS));
 
         painelAcao.setBackground(Color.WHITE);
 
-        JLabel status = new JLabel(
-                disponivel ? "Disponível" : "Indisponível"
-        );
+        JLabel status = new JLabel(material.isDisponivel() ? "Disponível" : "Indisponível");
 
         status.setOpaque(true);
         status.setForeground(Color.BLACK);
 
-        status.setBackground(
-                disponivel
-                        ? new Color(100, 210, 120)
-                        : new Color(240, 70, 70)
-        );
+        status.setBackground(material.isDisponivel() ? new Color(100, 210, 120) : new Color(240, 70, 70));
 
         status.setBorder(new EmptyBorder(8, 10, 8, 10));
         status.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -269,7 +283,7 @@ public class MenuPrincipal extends JFrame{
         painelAcao.add(status);
 
         // O BOTAO SO APARECE SE O MATERIAL ESTIVER DISPONIVEL
-        if (disponivel) {
+        if (material.isDisponivel()) {
 
             JButton botaoEmprestar = new JButton("Emprestar");
 
@@ -279,7 +293,7 @@ public class MenuPrincipal extends JFrame{
 
                 int opcao = JOptionPane.showConfirmDialog(
                         this,
-                        "Deseja pegar o material \"" + titulo +
+                        "Deseja pegar o material \"" + material.getTitulo() +
                                 "\" emprestado?",
                         "Confirmar empréstimo",
                         JOptionPane.YES_NO_OPTION,
@@ -313,5 +327,30 @@ public class MenuPrincipal extends JFrame{
 
         painelMateriais.revalidate();
         painelMateriais.repaint();
+    }
+    
+    private void criarInformacoes(JPanel informacoes, Livro material) {
+        informacoes.add(new JLabel("Autor: " + material.getAutor()));
+        informacoes.add(Box.createVerticalStrut(5));
+        informacoes.add(new JLabel("Ano de publicação: " + material.getAnoPublicacao()));
+        informacoes.add(Box.createVerticalStrut(5));
+        informacoes.add(new JLabel("ISBN / Edição: " + material.getIsbn()));
+    }
+    
+    private void criarInformacoes(JPanel informacoes, Jornal material) {
+        informacoes.add(new JLabel("Ano de publicação: " + material.getAnoPublicacao()));
+        informacoes.add(Box.createVerticalStrut(5));
+        informacoes.add(new JLabel("ISBN / Edição: " + material.getNumeroEdicao()));
+    }
+    
+    private void criarInformacoes(JPanel informacoes, Revista material) {
+        informacoes.add(new JLabel("Ano de publicação: " + material.getAnoPublicacao()));
+        informacoes.add(Box.createVerticalStrut(5));
+        informacoes.add(new JLabel("ISBN / Edição: " + material.getNumeroEdicao()));
+    }
+    
+    private void atualizarMateriais() {
+        ArrayList<MaterialBibliografico> materiais = this.catalogo.listarMateriais();
+        carregarMateriais(materiais);
     }
 }

@@ -38,11 +38,11 @@ public abstract class Usuario {
 		return this.id;
 	}
 	
-	protected String getNome() {
+	public String getNome() {
 		return nome;
 	}
 
-	protected String getLogin() {
+	public String getLogin() {
 		return login;
 	}
 

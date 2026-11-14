@@ -20,6 +20,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import biblioteca.model.usuario.Usuario;
+import biblioteca.model.usuario.UsuarioComum;
+import biblioteca.service.CatalogoService;
+import biblioteca.service.EmprestimoService;
+import biblioteca.service.UsuarioService;
 
 public class TelaLogin extends JFrame{
 
@@ -31,11 +35,18 @@ public class TelaLogin extends JFrame{
 	private JButton blogin;
 	private JButton bsair;
 	
+	final private UsuarioService usuarios;
+	final private CatalogoService catalogo;
+	final private EmprestimoService emprestimos;
+	
 	// construtor
 	
-	public TelaLogin() {
+	public TelaLogin(UsuarioService usuarios, CatalogoService catalogo, EmprestimoService emprestimos) {
 		configurarJanela();
 		inicializarComponentes();
+		this.usuarios = usuarios;
+		this.catalogo = catalogo;
+		this.emprestimos = emprestimos;
 	}
 	
 	private void configurarJanela() {
@@ -49,9 +60,7 @@ public class TelaLogin extends JFrame{
 	private void inicializarComponentes() {
         JPanel painelPrincipal = new JPanel(new GridBagLayout());
         painelPrincipal.setBackground(Color.WHITE);
-        painelPrincipal.setBorder(
-                BorderFactory.createEmptyBorder(25, 25, 25, 25)
-        );
+        painelPrincipal.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 5, 10, 5);
@@ -121,16 +130,15 @@ public class TelaLogin extends JFrame{
         estilizarBotao(blogin);
 
         blogin.addActionListener(e -> {
-        	// TODO: Validar login e senha pelo UsuarioService.
-
-            // TODO: Recuperar o objeto Usuario autenticado.
-            Usuario usuarioAutenticado = null;
+        	String loginDigitado = this.login.getText();
+        	String senhaDigitada = new String(this.senha.getPassword());
+        	Usuario usuarioAutenticado = usuarios.fazerLogin(loginDigitado, senhaDigitada);  // se lançar excessão, faz o catch, se retornar null, assim já funciona
 
             if (usuarioAutenticado != null) {
-                MenuPrincipal tela = new MenuPrincipal(usuarioAutenticado);
+                MenuPrincipal tela = new MenuPrincipal(usuarioAutenticado, this.usuarios, this.catalogo, this.emprestimos, () -> this.setVisible(true));
 
+                this.setVisible(false);
                 tela.setVisible(true);
-                dispose();
             } else {
                 JOptionPane.showMessageDialog(
                         this,
@@ -153,12 +161,5 @@ public class TelaLogin extends JFrame{
         botao.setBackground(new Color(220, 220, 220));
         botao.setBorderPainted(false);
         botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    }
-	
-	public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            TelaLogin tela = new TelaLogin();
-            tela.setVisible(true);
-        });
     }
 }
