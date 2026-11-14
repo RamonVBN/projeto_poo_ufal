@@ -4,6 +4,8 @@ import biblioteca.auth.Sessao;
 import biblioteca.exception.*;
 import biblioteca.model.Emprestimo;
 import biblioteca.model.StatusEmprestimo;
+import biblioteca.model.material.Jornal;
+import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
 import biblioteca.model.usuario.Permissao;
 import biblioteca.model.usuario.Usuario;
@@ -41,27 +43,21 @@ public class EmprestimoService extends Service {
 
     public void registrarEmprestimo
             (
-                    LocalDate dataPrevistaDevolucao,
                     int usuarioId,
                     int materialId
             )
-            throws OperacaoNaoPermitidaException,
-            ItemDuplicadoException,
-            UsuarioNaoAutenticadoException,
+            throws UsuarioNaoAutenticadoException,
+            OperacaoNaoPermitidaException,
+            RegistroNaoEncontradoException,
             MaterialIndisponivelException,
             LimiteEmprestimosException,
-            RegistroNaoEncontradoException,
-            DataInvalidaException {
+            ItemDuplicadoException {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REALIZAR_EMPRESTIMO);
 
         MaterialBibliografico material = materialRepositorio.buscarPorId(materialId);
         Usuario usuario = usuarioRepositorio.buscarPorId(usuarioId);
-
-        if (!dataPrevistaDevolucao.isAfter(LocalDate.now())) {
-            throw new DataInvalidaException();
-        }
 
         if (!material.estaDisponivel()) {
             throw new MaterialIndisponivelException();
@@ -80,12 +76,27 @@ public class EmprestimoService extends Service {
             throw new LimiteEmprestimosException();
         }
 
+        LocalDate dataPrevistaDevolucao = LocalDate.now();
+
+        if (material instanceof Livro) {
+            dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(14);
+        } else if (material instanceof Jornal) {
+            dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(3);
+        } else {
+            dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(2);
+        }
+
         Emprestimo novoEmprestimo = new Emprestimo(dataPrevistaDevolucao, material, usuario);
         emprestimoRepositorio.adicionar(novoEmprestimo);
         material.marcarComoIndisponivel();
     }
 
-    public void registrarDevolucao(int emprestimoId) throws OperacaoNaoPermitidaException, RegistroNaoEncontradoException, MaterialDevolvidoException, UsuarioNaoAutenticadoException {
+    public void registrarDevolucao(int emprestimoId)
+            throws
+            OperacaoNaoPermitidaException,
+            RegistroNaoEncontradoException,
+            MaterialDevolvidoException,
+            UsuarioNaoAutenticadoException {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REALIZAR_DEVOLUCAO);

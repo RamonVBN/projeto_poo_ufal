@@ -59,8 +59,12 @@ class UsuarioServiceTest {
 
     @Test
     void deveCadastrarUsuario() throws Exception {
+
+        this.autenticar(Cargo.ADMINISTRADOR);
+
         Usuario usuarioCadastrado = service.cadastrarUsuario(
-                "João Silva", "joao", "123456"
+                "João Silva", "joao", "123456",
+                Cargo.LEITOR
         );
 
         Usuario encontrado = usuarioRepositorio.buscarPorId(
@@ -92,72 +96,84 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void deveImpedirCadastroComNomeInvalido() {
+    void deveImpedirCadastroComNomeInvalido() throws Exception {
+
+        this.autenticar(Cargo.ADMINISTRADOR);
+
         assertThrowsExactly(
                 CredenciaisInvalidasException.class,
-                () -> service.cadastrarUsuario(null, "joao", "123456")
+                () -> service.cadastrarUsuario(null, "joao", "123456", Cargo.LEITOR)
         );
 
         assertThrowsExactly(
                 CredenciaisInvalidasException.class,
-                () -> service.cadastrarUsuario("", "joao", "123456")
+                () -> service.cadastrarUsuario("", "joao", "123456", Cargo.LEITOR)
         );
 
         assertThrowsExactly(
                 CredenciaisInvalidasException.class,
-                () -> service.cadastrarUsuario("   ", "joao", "123456")
-        );
-    }
-
-    @Test
-    void deveImpedirCadastroComLoginInvalido() {
-        assertThrowsExactly(
-                CredenciaisInvalidasException.class,
-                () -> service.cadastrarUsuario("João", null, "123456")
-        );
-
-        assertThrowsExactly(
-                CredenciaisInvalidasException.class,
-                () -> service.cadastrarUsuario("João", "", "123456")
-        );
-
-        assertThrowsExactly(
-                CredenciaisInvalidasException.class,
-                () -> service.cadastrarUsuario("João", "   ", "123456")
+                () -> service.cadastrarUsuario("   ", "joao", "123456",Cargo.LEITOR)
         );
     }
 
     @Test
-    void deveImpedirCadastroComSenhaInvalida() {
+    void deveImpedirCadastroComLoginInvalido() throws Exception {
+
+        this.autenticar(Cargo.ADMINISTRADOR);
+
         assertThrowsExactly(
                 CredenciaisInvalidasException.class,
-                () -> service.cadastrarUsuario("João", "joao", null)
+                () -> service.cadastrarUsuario("João", null, "123456", Cargo.LEITOR)
         );
 
         assertThrowsExactly(
                 CredenciaisInvalidasException.class,
-                () -> service.cadastrarUsuario("João", "joao", "")
+                () -> service.cadastrarUsuario("João", "", "123456", Cargo.LEITOR)
         );
 
         assertThrowsExactly(
                 CredenciaisInvalidasException.class,
-                () -> service.cadastrarUsuario("João", "joao", "12345")
+                () -> service.cadastrarUsuario("João", "   ", "123456", Cargo.LEITOR)
+        );
+    }
+
+    @Test
+    void deveImpedirCadastroComSenhaInvalida() throws Exception {
+
+        this.autenticar(Cargo.ADMINISTRADOR);
+
+        assertThrowsExactly(
+                CredenciaisInvalidasException.class,
+                () -> service.cadastrarUsuario("João", "joao", null, Cargo.LEITOR)
         );
 
         assertThrowsExactly(
                 CredenciaisInvalidasException.class,
-                () -> service.cadastrarUsuario("João", "joao", "12345678901234567")
+                () -> service.cadastrarUsuario("João", "joao", "", Cargo.LEITOR)
+        );
+
+        assertThrowsExactly(
+                CredenciaisInvalidasException.class,
+                () -> service.cadastrarUsuario("João", "joao", "12345", Cargo.LEITOR)
+        );
+
+        assertThrowsExactly(
+                CredenciaisInvalidasException.class,
+                () -> service.cadastrarUsuario("João", "joao", "12345678901234567", Cargo.LEITOR)
         );
     }
 
     @Test
     void deveImpedirCadastroDeUsuarioDuplicado() throws Exception {
-        service.cadastrarUsuario("João Silva", "joao", "123456");
+
+        this.autenticar(Cargo.ADMINISTRADOR);
+
+        service.cadastrarUsuario("João Silva", "joao", "123456", Cargo.LEITOR);
 
         assertThrowsExactly(
                 ItemDuplicadoException.class,
                 () -> service.cadastrarUsuario(
-                        "Outro João", "joao", "654321"
+                        "Outro João", "joao", "654321", Cargo.LEITOR
                 )
         );
     }
@@ -194,8 +210,11 @@ class UsuarioServiceTest {
 
     @Test
     void deveRealizarLogin() throws Exception {
+
+        this.autenticar(Cargo.ADMINISTRADOR);
+
         Usuario usuario = service.cadastrarUsuario(
-                "João Silva", "joao", "123456"
+                "João Silva", "joao", "123456", Cargo.LEITOR
         );
 
         service.logar("joao", "123456");
@@ -206,7 +225,10 @@ class UsuarioServiceTest {
 
     @Test
     void deveImpedirLoginComSenhaIncorreta() throws Exception {
-        service.cadastrarUsuario("João Silva", "joao", "123456");
+
+        this.autenticar(Cargo.ADMINISTRADOR);
+        service.cadastrarUsuario("João Silva", "joao", "123456", Cargo.LEITOR);
+        sessao.encerrarSessao();
 
         assertThrowsExactly(
                 CredenciaisInvalidasException.class,
@@ -264,10 +286,11 @@ class UsuarioServiceTest {
 
     @Test
     void deveListarUsuariosCadastrados() throws Exception {
-        autenticar(Cargo.BIBLIOTECARIO);
+
+        autenticar(Cargo.ADMINISTRADOR);
 
         Usuario usuarioTeste = service.cadastrarUsuario(
-                "João Silva", "joao", "123456"
+                "João Silva", "joao", "123456", Cargo.LEITOR
         );
 
         List<Usuario> usuarios = service.listarUsuarios();
@@ -278,10 +301,11 @@ class UsuarioServiceTest {
 
     @Test
     void deveBuscarUsuarioPorId() throws Exception {
-        autenticar(Cargo.BIBLIOTECARIO);
+
+        autenticar(Cargo.ADMINISTRADOR);
 
         Usuario usuarioTeste = service.cadastrarUsuario(
-                "João Silva", "joao", "123456"
+                "João Silva", "joao", "123456", Cargo.LEITOR
         );
 
         Usuario usuarioBuscado = service.buscarUsuario(
@@ -339,7 +363,7 @@ class UsuarioServiceTest {
         autenticar(Cargo.ADMINISTRADOR);
 
         Usuario usuarioTeste = service.cadastrarUsuario(
-                "João Silva", "joao", "123456"
+                "João Silva", "joao", "123456", Cargo.LEITOR
         );
 
         service.atualizarUsuario(
@@ -385,7 +409,7 @@ class UsuarioServiceTest {
         autenticar(Cargo.ADMINISTRADOR);
 
         Usuario usuario = service.cadastrarUsuario(
-                "João Silva", "joao", "123456"
+                "João Silva", "joao", "123456", Cargo.LEITOR
         );
 
         assertThrowsExactly(
@@ -401,7 +425,7 @@ class UsuarioServiceTest {
         autenticar(Cargo.ADMINISTRADOR);
 
         Usuario usuario = service.cadastrarUsuario(
-                "João Silva", "joao", "123456"
+                "João Silva", "joao", "123456", Cargo.LEITOR
         );
 
         assertThrowsExactly(
@@ -433,7 +457,7 @@ class UsuarioServiceTest {
         autenticar(Cargo.ADMINISTRADOR);
 
         Usuario usuarioTeste = service.cadastrarUsuario(
-                "João Silva", "joao", "123456"
+                "João Silva", "joao", "123456", Cargo.LEITOR
         );
 
         service.removerUsuario(usuarioTeste.getID());
@@ -469,7 +493,7 @@ class UsuarioServiceTest {
         autenticar(Cargo.ADMINISTRADOR);
 
         Usuario usuarioTeste = service.cadastrarUsuario(
-                "João Silva", "joao", "123456"
+                "João Silva", "joao", "123456", Cargo.LEITOR
         );
 
         Emprestimo emprestimo = new Emprestimo();
@@ -492,7 +516,7 @@ class UsuarioServiceTest {
         autenticar(Cargo.ADMINISTRADOR);
 
         Usuario usuarioTeste = service.cadastrarUsuario(
-                "João Silva", "joao", "123456"
+                "João Silva", "joao", "123456", Cargo.LEITOR
         );
 
         Emprestimo emprestimo = new Emprestimo();

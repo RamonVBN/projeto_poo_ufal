@@ -1,6 +1,7 @@
 package biblioteca.service;
 
 import biblioteca.auth.Sessao;
+import biblioteca.exception.CredenciaisInvalidasException;
 import biblioteca.exception.UsuarioNaoAutenticadoException;
 
 public class Service {
@@ -14,6 +15,12 @@ public class Service {
             ) {
         this.autorizacaoService =  autorizacaoService;
         this.sessao = sessao;
+    }
+
+    protected void validarStrings(String s) throws CredenciaisInvalidasException {
+        if (s == null || s.isBlank()) {
+            throw new CredenciaisInvalidasException();
+        }
     }
 
     protected  void verificarAutenticacao() throws UsuarioNaoAutenticadoException {

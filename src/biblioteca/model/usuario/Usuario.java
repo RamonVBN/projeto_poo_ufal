@@ -18,25 +18,25 @@ public class Usuario {
 	public Usuario(String nome, String login, String senha) {
 		this.id = new Random().nextInt();
 		this.cargo = Cargo.LEITOR;
-		this.setNome(nome);
-		this.setLogin(login);
+		this.setNome(nome.trim());
+		this.setLogin(login.trim());
 		this.setSenha(senha);
 	}
 
 	public Usuario(String nome, String login, String senha, Cargo cargo) {
 		this.id = new Random().nextInt();
 		this.cargo = cargo;
-		this.setNome(nome);
-		this.setLogin(login);
+		this.setNome(nome.trim());
+		this.setLogin(login.trim());
 		this.setSenha(senha);
 	}
 
 	public Usuario(String nome, String login, Usuario usuarioParaCopiar) {
 		this.id = usuarioParaCopiar.getID();
 		this.cargo = usuarioParaCopiar.getCargo();
-		this.setSenha(usuarioParaCopiar.senha);
-		this.setNome(nome);
-		this.setLogin(login);
+		this.setSenha(usuarioParaCopiar.getSenha());
+		this.setNome(nome.trim());
+		this.setLogin(login.trim());
 	}
 
 	// getters e setters

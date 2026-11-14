@@ -15,14 +15,14 @@ public abstract class MaterialBibliografico {
 	
 	public MaterialBibliografico(String titulo, int anoPublicacao) {
 		this.id = new Random().nextInt();
-		this.setTitulo(titulo);
+		this.setTitulo(titulo.trim());
 		this.setAnoPublicacao(anoPublicacao);
 		this.setDisponivel(true);
 	}
 
 	public MaterialBibliografico(String titulo, int anoPublicacao, int id) {
 		this.id = id;
-		this.setTitulo(titulo);
+		this.setTitulo(titulo.trim());
 		this.setAnoPublicacao(anoPublicacao);
 		this.setDisponivel(true);
 	}

@@ -54,9 +54,7 @@ class CatalogoServiceTest {
 
     @Test
     void deveCadastrarMaterial()
-            throws OperacaoNaoPermitidaException,
-            RegistroNaoEncontradoException,
-            UsuarioNaoAutenticadoException {
+            throws Exception {
 
         MaterialBibliografico encontrado =
                 service.buscarMaterial(livroTeste.getId());

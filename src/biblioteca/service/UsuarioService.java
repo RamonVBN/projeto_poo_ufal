@@ -33,25 +33,10 @@ public class UsuarioService extends Service  {
         this.emprestimoRepositorio = emprestimoRepositorio;
     }
 
-    private void validarNome(String nome) throws CredenciaisInvalidasException {
-
-        if (nome == null || nome.isBlank()) {
-            throw new CredenciaisInvalidasException();
-        }
-    }
-
-    private void validarLogin(String login) throws CredenciaisInvalidasException {
-        if (login == null || login.isBlank()) {
-            throw new CredenciaisInvalidasException();
-        }
-    }
-
     private void validarSenha(String senha)
             throws CredenciaisInvalidasException {
 
-        if (senha == null || senha.isBlank()) {
-            throw new CredenciaisInvalidasException();
-        }
+        this.validarStrings(senha);
 
         if (senha.length() < 6 || senha.length() > 16) {
             throw new CredenciaisInvalidasException();
@@ -65,8 +50,8 @@ public class UsuarioService extends Service  {
             NoSuchAlgorithmException,
             InvalidKeySpecException {
 
-        validarLogin(login);
-        validarSenha(senha);
+        this.validarStrings(login);
+        this.validarSenha(senha);
         Usuario usuarioParaLogar = usuarioRepositorio.buscarPorLogin(login);
 
         if (usuarioParaLogar.getSenha().equals(SenhaHashUtil.hash(senha))) {
@@ -87,28 +72,6 @@ public class UsuarioService extends Service  {
             (
                     String nome,
                     String login,
-                    String senha
-            )
-            throws
-            CredenciaisInvalidasException,
-            ItemDuplicadoException,
-            NoSuchAlgorithmException,
-            InvalidKeySpecException {
-
-        validarNome(nome);
-        validarLogin(login);
-        validarSenha(senha);
-
-        Usuario novoUsuario = new Usuario(nome, login, SenhaHashUtil.hash(senha));
-        usuarioRepositorio.adicionar(novoUsuario);
-
-        return novoUsuario;
-    }
-
-    public Usuario cadastrarUsuario
-            (
-                    String nome,
-                    String login,
                     String senha,
                     Cargo cargo
             )
@@ -123,9 +86,9 @@ public class UsuarioService extends Service  {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CADASTRAR_USUARIO);
 
-        validarNome(nome);
-        validarLogin(login);
-        validarSenha(senha);
+        this.validarStrings(nome);
+        this.validarStrings(login);
+        this.validarSenha(senha);
         Usuario novoUsuario = new Usuario(nome, login, SenhaHashUtil.hash(senha), cargo);
         usuarioRepositorio.adicionar(novoUsuario);
 
@@ -159,8 +122,8 @@ public class UsuarioService extends Service  {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.ATUALIZAR_USUARIOS);
 
-        validarNome(nome);
-        validarLogin(login);
+        this.validarStrings(nome);
+        this.validarStrings(login);
         Usuario usuarioParaAtualizar = usuarioRepositorio.buscarPorId(id);
         Usuario usuarioAtualizado = new Usuario(nome, login, usuarioParaAtualizar);
 

@@ -12,16 +12,16 @@ public class Livro extends MaterialBibliografico{
 	
 	public Livro(String titulo, int anoPublicacao, String autor, String isbn, String editora) {
 		super(titulo, anoPublicacao);
-		this.setAutor(autor);
-		this.setIsbn(isbn);
-		this.setEditora(editora);
+		this.setAutor(autor.trim());
+		this.setIsbn(isbn.trim());
+		this.setEditora(editora.trim());
 	}
 
 	public Livro(String titulo, int anoPublicacao, String autor, String isbn, String editora, int id) {
 		super(titulo, anoPublicacao, id);
-		this.setAutor(autor);
-		this.setIsbn(isbn);
-		this.setEditora(editora);
+		this.setAutor(autor.trim());
+		this.setIsbn(isbn.trim());
+		this.setEditora(editora.trim());
 	}
 	
 	// getters e setters

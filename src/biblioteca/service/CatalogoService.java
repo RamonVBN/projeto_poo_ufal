@@ -25,38 +25,24 @@ public class CatalogoService extends Service {
         this.repositorio = repositorio;
     }
 
-    private void validarTitulo(String titulo) throws CredenciaisInvalidasException {
-        if (titulo == null || titulo.isBlank()) {
-            throw new CredenciaisInvalidasException();
-        }
-    }
-
     private void validarAnoPublicacao(int anoPublicacao) throws CredenciaisInvalidasException {
         if (anoPublicacao <= 0 || anoPublicacao > LocalDate.now().getYear()) {
             throw new CredenciaisInvalidasException();
         }
     }
 
-    private void validarEditora(String editora) throws CredenciaisInvalidasException {
-        if (editora == null || editora.isBlank()) {
-            throw new CredenciaisInvalidasException();
-        }
-    }
-
-    private void validarLivro(String titulo, int anoPublicacao,
-                              String autor, String isbn, String editora) throws CredenciaisInvalidasException {
-
-        validarTitulo(titulo);
-        validarAnoPublicacao(anoPublicacao);
-        validarEditora(editora);
-
-        if (autor == null || autor.isBlank()) {
-            throw new CredenciaisInvalidasException();
-        }
-
-        if (isbn == null || isbn.isBlank()) {
-            throw new CredenciaisInvalidasException();
-        }
+    private void validarLivro(
+            String titulo,
+            int anoPublicacao,
+            String autor,
+            String isbn,
+            String editora
+    ) throws CredenciaisInvalidasException {
+        this.validarStrings(titulo);
+        this.validarStrings(editora);
+        this.validarStrings(autor);
+        this.validarStrings(isbn);
+        this.validarAnoPublicacao(anoPublicacao);
     }
 
     private void validarJornalRevista
@@ -66,15 +52,12 @@ public class CatalogoService extends Service {
                 String dataPublicacao
             ) throws CredenciaisInvalidasException {
 
-        validarTitulo(titulo);
-        validarAnoPublicacao(anoPublicacao);
-        validarEditora(editora);
+        this.validarStrings(titulo);
+        this.validarStrings(editora);
+        this.validarStrings(dataPublicacao);
+        this.validarAnoPublicacao(anoPublicacao);
 
         if (numeroEdicao <= 0) {
-            throw new CredenciaisInvalidasException();
-        }
-
-        if (dataPublicacao == null || dataPublicacao.isBlank()) {
             throw new CredenciaisInvalidasException();
         }
     }
@@ -92,13 +75,13 @@ public class CatalogoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
 
-        validarLivro(titulo, anoPublicacao, autor, isbn, editora);
+        this.validarLivro(titulo, anoPublicacao, autor, isbn, editora);
         Livro novoLivro = new Livro(titulo, anoPublicacao, autor, isbn, editora);
         repositorio.adicionar(novoLivro);
 
         return novoLivro;
-
     }
+
     public Jornal cadastrarJornalRevista
             (
                 String titulo,
@@ -112,7 +95,7 @@ public class CatalogoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
 
-        validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
+        this.validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
         Jornal novoJornal = new Jornal(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
         repositorio.adicionar(novoJornal);
         return novoJornal;
@@ -165,14 +148,13 @@ public class CatalogoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
 
-        MaterialBibliografico material =
-                repositorio.buscarPorId(livroId);
+        MaterialBibliografico material = repositorio.buscarPorId(livroId);
 
         if (!(material instanceof Livro livro)) {
-            throw new TipoMaterialInvalidoException();
+            throw new TipoMaterialInvalidoException(material);
         }
 
-        validarLivro(titulo, anoPublicacao, autor, isbn, editora);
+        this.validarLivro(titulo, anoPublicacao, autor, isbn, editora);
         Livro livroAtualizado = new Livro(titulo, anoPublicacao, autor, isbn, editora, livroId);
         repositorio.atualizar(livroAtualizado);
     }
@@ -191,14 +173,13 @@ public class CatalogoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
 
-        MaterialBibliografico material =
-                repositorio.buscarPorId(jornalRevistaId);
+        MaterialBibliografico material = repositorio.buscarPorId(jornalRevistaId);
 
         if (!(material instanceof Jornal jornalRevista)) {
-            throw new TipoMaterialInvalidoException();
+            throw new TipoMaterialInvalidoException(material);
         }
 
-        validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
+        this.validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
         Jornal jornalRevistaAtualizado = new Jornal(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, jornalRevistaId);
         repositorio.atualizar(jornalRevistaAtualizado);
 

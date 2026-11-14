@@ -74,7 +74,6 @@ class EmprestimoServiceTest {
     @Test
     void deveRegistrarEmprestimo() throws Exception {
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
@@ -90,7 +89,6 @@ class EmprestimoServiceTest {
     void deveMarcarMaterialComoIndisponivelAposEmprestimo()
             throws Exception {
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
@@ -105,7 +103,6 @@ class EmprestimoServiceTest {
     void deveImpedirEmprestimoDeMaterialIndisponivel()
             throws Exception {
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
@@ -113,19 +110,6 @@ class EmprestimoServiceTest {
         assertThrows(
                 MaterialIndisponivelException.class,
                 () -> service.registrarEmprestimo(
-                        LocalDate.now().plusDays(7),
-                        usuarioPermitido.getID(),
-                        material.getId()
-                )
-        );
-    }
-
-    @Test
-    void deveImpedirEmprestimoComDataInvalida() {
-        assertThrows(
-                DataInvalidaException.class,
-                () -> service.registrarEmprestimo(
-                        LocalDate.now(),
                         usuarioPermitido.getID(),
                         material.getId()
                 )
@@ -137,7 +121,6 @@ class EmprestimoServiceTest {
         assertThrows(
                 RegistroNaoEncontradoException.class,
                 () -> service.registrarEmprestimo(
-                        LocalDate.now().plusDays(7),
                         -1,
                         material.getId()
                 )
@@ -149,7 +132,6 @@ class EmprestimoServiceTest {
         assertThrows(
                 RegistroNaoEncontradoException.class,
                 () -> service.registrarEmprestimo(
-                        LocalDate.now().plusDays(7),
                         usuarioPermitido.getID(),
                         -1
                 )
@@ -188,19 +170,16 @@ class EmprestimoServiceTest {
         materialRepositorio.adicionar(livro4);
 
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
 
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 livro2.getId()
         );
 
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 livro3.getId()
         );
@@ -208,7 +187,6 @@ class EmprestimoServiceTest {
         assertThrows(
                 LimiteEmprestimosException.class,
                 () -> service.registrarEmprestimo(
-                        LocalDate.now().plusDays(7),
                         usuarioPermitido.getID(),
                         livro4.getId()
                 )
@@ -219,7 +197,6 @@ class EmprestimoServiceTest {
     void devePermitirNovoEmprestimoAposDevolucao()
             throws Exception {
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
@@ -230,7 +207,6 @@ class EmprestimoServiceTest {
         service.registrarDevolucao(emprestimo.getId());
 
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
@@ -243,7 +219,6 @@ class EmprestimoServiceTest {
     @Test
     void deveRegistrarDevolucao() throws Exception {
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
@@ -261,7 +236,6 @@ class EmprestimoServiceTest {
     void deveMarcarMaterialComoDisponivelAposDevolucao()
             throws Exception {
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
@@ -280,7 +254,6 @@ class EmprestimoServiceTest {
     @Test
     void deveImpedirDevolucaoDuplicada() throws Exception {
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
@@ -301,7 +274,6 @@ class EmprestimoServiceTest {
     @Test
     void deveBuscarEmprestimoPorId() throws Exception {
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
@@ -326,7 +298,6 @@ class EmprestimoServiceTest {
     @Test
     void deveListarTodosOsEmprestimos() throws Exception {
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
@@ -341,7 +312,6 @@ class EmprestimoServiceTest {
     void deveListarEmprestimosDeUmUsuario()
             throws Exception {
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 usuarioPermitido.getID(),
                 material.getId()
         );
@@ -376,7 +346,6 @@ class EmprestimoServiceTest {
         materialRepositorio.adicionar(livro);
 
         service.registrarEmprestimo(
-                LocalDate.now().plusDays(7),
                 leitor.getID(),
                 livro.getId()
         );
@@ -402,7 +371,6 @@ class EmprestimoServiceTest {
         assertThrows(
                 UsuarioNaoAutenticadoException.class,
                 () -> service.registrarEmprestimo(
-                        LocalDate.now().plusDays(7),
                         usuarioPermitido.getID(),
                         material.getId()
                 )
@@ -424,7 +392,6 @@ class EmprestimoServiceTest {
         assertThrows(
                 OperacaoNaoPermitidaException.class,
                 () -> service.registrarEmprestimo(
-                        LocalDate.now().plusDays(7),
                         usuarioPermitido.getID(),
                         material.getId()
                 )
