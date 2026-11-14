@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -110,26 +111,23 @@ public class MenuPrincipal extends JFrame{
 
         menuPrincipal.add(itemInicio);
         menuPrincipal.add(itemMeusDados);
-        menuPrincipal.addSeparator();
-        menuPrincipal.add(itemSair);
 
         barraMenu.add(menuPrincipal);
 
         // BIBLIOTECARIO
-        if (usuarioLogado instanceof Bibliotecario) {
+        if (usuarioLogado.getCargo() == Cargo.BIBLIOTECARIO || usuarioLogado.getCargo() == Cargo.ADMINISTRADOR) {
 
             JMenuItem itemGerenciar = new JMenuItem("Gerenciar materiais");
-            
-            menuPrincipal.add(itemGerenciar);
 
             itemGerenciar.addActionListener(e -> {
-                // TODO: Abrir tela de cadastro de materiais.
+                cardLayout.show(itemGerenciar, "BIBLIOTECARIO");
             });
-
+            
+            menuPrincipal.add(itemGerenciar);
         }
 
         // SOMENTE ADMINISTRADOR
-        if (usuarioLogado instanceof Administrador) {
+        if (usuarioLogado.getCargo() == Cargo.ADMINISTRADOR) {
 
             JMenuItem itemGerenciarUsuarios = new JMenuItem("Gerenciar usuários");
 
@@ -140,6 +138,9 @@ public class MenuPrincipal extends JFrame{
             menuPrincipal.add(itemGerenciarUsuarios);
 
         }
+
+        menuPrincipal.addSeparator();
+        menuPrincipal.add(itemSair);
 
         setJMenuBar(barraMenu);
     }
@@ -157,7 +158,10 @@ public class MenuPrincipal extends JFrame{
         painelCentral.add(criarPainelCatalogo(), "CATALOGO");
 
         // Adiciona a tela de dados
-        painelCentral.add(new MeusDados(usuarioLogado),"MEUS_DADOS");
+        painelCentral.add(new MeusDados(this.usuarioLogado, this.usuarios, this.emprestimos),"MEUS_DADOS");
+        
+        // Adiciona a tela do bibliotecario
+        painelCentral.add(new MenuBibliotecario(), "BIBLIOTECARIO");
 
         add(painelCentral, BorderLayout.CENTER);
     }
@@ -178,7 +182,9 @@ public class MenuPrincipal extends JFrame{
 	    JButton botaoBuscar = new JButton("Buscar obra");
 	
 	    botaoBuscar.addActionListener(e -> {
-	        // TODO: Pesquisar materiais pelo título.
+	        String tituloBusca = this.campoPesquisa.getText();
+	        List<MaterialBibliografico> resultadoBusca = this.catalogo.listarMateriais(tituloBusca);
+	        this.carregarMateriais(resultadoBusca);
 	    });
 	
 	    painelPesquisa.add(campoPesquisa);
@@ -211,7 +217,7 @@ public class MenuPrincipal extends JFrame{
         adicionarMaterial(new Jornal("Jornal da Cidade", 2025, "Editora Local", 120, "23/01/2025"));
     }
     
-    private void carregarMateriais(ArrayList<MaterialBibliografico> materiais) {
+    private void carregarMateriais(List<MaterialBibliografico> materiais) {
     	this.painelMateriais.removeAll();
     	
     	for (MaterialBibliografico materialBibliografico : materiais) {
