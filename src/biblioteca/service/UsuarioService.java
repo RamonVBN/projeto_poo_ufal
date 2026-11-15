@@ -108,6 +108,23 @@ public class UsuarioService extends Service  {
 
         return usuarioRepositorio.listarTodos();
     }
+
+    public List<Usuario> listarUsuariosPorLogin(String login) throws OperacaoNaoPermitidaException, UsuarioNaoAutenticadoException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_USUARIOS);
+
+        return usuarioRepositorio.listarPorLogin(login);
+    }
+
+    public List<Usuario> listarUsuariosPorNome(String nome) throws OperacaoNaoPermitidaException, UsuarioNaoAutenticadoException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_USUARIOS);
+
+        return usuarioRepositorio.listarPorNome(nome);
+    }
+
     public void atualizarUsuario
             (
                 String nome,

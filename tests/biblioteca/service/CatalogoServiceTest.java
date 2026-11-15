@@ -226,7 +226,7 @@ class CatalogoServiceTest {
             UsuarioNaoAutenticadoException {
 
         List<MaterialBibliografico> materiais =
-                service.listarMateriais("Clean Code");
+                service.listarMateriaisPorTitulo("Clean Code");
 
         assertEquals(1, materiais.size());
         assertTrue(materiais.contains(livroTeste));
@@ -238,7 +238,7 @@ class CatalogoServiceTest {
             UsuarioNaoAutenticadoException {
 
         List<MaterialBibliografico> materiais =
-                service.listarMateriais("Java");
+                service.listarMateriaisPorTitulo("Java");
 
         assertNotNull(materiais);
         assertTrue(materiais.isEmpty());

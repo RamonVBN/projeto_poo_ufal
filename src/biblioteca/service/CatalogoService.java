@@ -113,22 +113,20 @@ public class CatalogoService extends Service {
         return repositorio.buscarPorId(materialId);
     }
 
-
-    public List<MaterialBibliografico> listarMateriais(String titulo) throws OperacaoNaoPermitidaException, UsuarioNaoAutenticadoException {
-
-        this.verificarAutenticacao();
-        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_CATALOGO);
-
-        return repositorio.listarPorTitulo(titulo);
-    }
-
-
     public List<MaterialBibliografico> listarMateriais() throws OperacaoNaoPermitidaException, UsuarioNaoAutenticadoException {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_CATALOGO);
 
         return repositorio.listarTodos();
+    }
+
+    public List<MaterialBibliografico> listarMateriaisPorTitulo(String titulo) throws OperacaoNaoPermitidaException, UsuarioNaoAutenticadoException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_CATALOGO);
+
+        return repositorio.listarPorTitulo(titulo);
     }
 
     public void atualizarLivro(
