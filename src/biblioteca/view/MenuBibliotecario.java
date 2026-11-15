@@ -34,15 +34,13 @@ public class MenuBibliotecario extends JPanel{
 	
 	// atributos
 	
-	private Usuario usuarioLogado;
 	private CatalogoService catalogo;
 	
 	private JPanel painelListaMateriais;
 
 	// construtor
 	
-	public MenuBibliotecario(Usuario usuarioLogado, CatalogoService catalogo) {
-        this.usuarioLogado = usuarioLogado;
+	public MenuBibliotecario(CatalogoService catalogo) {
 		this.catalogo = catalogo;
 		configurarPainel();
         criarComponentes();

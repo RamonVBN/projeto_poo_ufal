@@ -45,7 +45,7 @@ public class MenuPrincipal extends JFrame{
     private CardLayout cardLayout;
     private JPanel painelCentral;
     
-    final private Usuario usuarioLogado;
+    final private Sessao sessao;
     final private UsuarioService usuarios;
     final private CatalogoService catalogo;
     final private EmprestimoService emprestimos;
@@ -55,8 +55,8 @@ public class MenuPrincipal extends JFrame{
     
     // construtor
     
-    public MenuPrincipal(Usuario usuario, UsuarioService usuarios, CatalogoService catalogo, EmprestimoService emprestimos, Runnable voltarLogin) {
-    	this.usuarioLogado = usuario;
+    public MenuPrincipal(Sessao usuario, UsuarioService usuarios, CatalogoService catalogo, EmprestimoService emprestimos, Runnable voltarLogin) {
+    	this.sessao = usuario;
     	this.usuarios = usuarios;
     	this.catalogo = catalogo;
     	this.emprestimos = emprestimos;
@@ -104,6 +104,7 @@ public class MenuPrincipal extends JFrame{
             );
 
             if (opcao == JOptionPane.YES_OPTION) {
+            	this.usuarios.deslogar();
                 dispose();
                 voltarLogin.run();
             }
@@ -115,7 +116,7 @@ public class MenuPrincipal extends JFrame{
         barraMenu.add(menuPrincipal);
 
         // BIBLIOTECARIO
-        if (usuarioLogado.getCargo() == Cargo.BIBLIOTECARIO || usuarioLogado.getCargo() == Cargo.ADMINISTRADOR) {
+        if (this.sessao.getUsuarioLogado().getCargo() == Cargo.BIBLIOTECARIO || this.sessao.getUsuarioLogado().getCargo() == Cargo.ADMINISTRADOR) {
 
             JMenuItem itemGerenciar = new JMenuItem("Gerenciar materiais");
 
@@ -127,12 +128,12 @@ public class MenuPrincipal extends JFrame{
         }
 
         // SOMENTE ADMINISTRADOR
-        if (usuarioLogado.getCargo() == Cargo.ADMINISTRADOR) {
+        if (this.sessao.getUsuarioLogado().getCargo() == Cargo.ADMINISTRADOR) {
 
             JMenuItem itemGerenciarUsuarios = new JMenuItem("Gerenciar usuários");
 
             itemGerenciarUsuarios.addActionListener(e -> {
-                // TODO: Abrir tela de gerenciamento de usuários.
+                cardLayout.show(itemGerenciarUsuarios, "ADMINISTRADOR");
             });
 
             menuPrincipal.add(itemGerenciarUsuarios);
@@ -158,10 +159,13 @@ public class MenuPrincipal extends JFrame{
         painelCentral.add(criarPainelCatalogo(), "CATALOGO");
 
         // Adiciona a tela de dados
-        painelCentral.add(new MeusDados(this.usuarioLogado, this.usuarios, this.emprestimos),"MEUS_DADOS");
+        painelCentral.add(new MeusDados(this.sessao, this.usuarios, this.emprestimos),"MEUS_DADOS");
         
         // Adiciona a tela do bibliotecario
-        painelCentral.add(new MenuBibliotecario(), "BIBLIOTECARIO");
+        painelCentral.add(new MenuBibliotecario(this.catalogo), "BIBLIOTECARIO");
+        
+        // Adiciona a tela do administrador
+        painelCentral.add(new MenuAdministrador(this.usuarios), "ADMINISTRADOR");
 
         add(painelCentral, BorderLayout.CENTER);
     }

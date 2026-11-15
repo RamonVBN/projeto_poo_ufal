@@ -19,6 +19,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -27,15 +28,15 @@ public class MeusDados extends JPanel {
 	
 	// atributos
 	
-    private Usuario usuarioLogado;
+    private Sessao sessao;
     private EmprestimoService emprestimos;
-    private UsuarioService us;
+    private UsuarioService usuarioService;
     
     // construtor
     
-    public MeusDados(Usuario usuarioLogado, UsuarioService us , EmprestimoService emprestimos) {
-        this.usuarioLogado = usuarioLogado;
-        this.us = us;
+    public MeusDados(Sessao sessao, UsuarioService usuarioService, EmprestimoService emprestimos) {
+        this.sessao = sessao;
+        this.usuarioService = usuarioService;
         this.emprestimos = emprestimos;
 
         configurarPainel();
@@ -65,7 +66,7 @@ public class MeusDados extends JPanel {
         JPanel campoLogin = new JPanel(new BorderLayout(0, 5));
         campoLogin.setBackground(new Color(220, 220, 220));
 
-        JLabel labelLogin = new JLabel("Login atual: "+this.usuarioLogado.getLogin());
+        JLabel labelLogin = new JLabel("Login atual: "+this.sessao.getUsuarioLogado().getLogin());
         JTextField inputLogin = new JTextField();
         inputLogin.setBorder(new EmptyBorder(5, 5, 5, 5));
         inputLogin.setText("Alterar login");
@@ -88,7 +89,7 @@ public class MeusDados extends JPanel {
         JPanel campoNome = new JPanel(new BorderLayout(0, 5));
         campoNome.setBackground(new Color(220, 220, 220));
 
-        JLabel labelNome = new JLabel("Nome atual: "+this.usuarioLogado.getNome());
+        JLabel labelNome = new JLabel("Nome atual: "+this.sessao.getUsuarioLogado().getNome());
         JTextField inputNome = new JTextField();
         inputNome.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -109,9 +110,9 @@ public class MeusDados extends JPanel {
 
         botaoAtualizar.addActionListener(e -> {
             String novoLogin = inputLogin.getText();
-            String novaSenha = new String(inputSenha.getText());
+            String novaSenha = new String(inputSenha.getText()); // ainda não aceita alteração de senha no service
             String novoNome = inputNome.getText();
-
+            this.usuarioService.atualizarUsuario(novoNome, novoLogin, this.sessao.getUsuarioLogado().getID());
             // TODO atualizar dados no service
         });
         
@@ -132,7 +133,7 @@ public class MeusDados extends JPanel {
 
         painelEmprestimos.add(tituloEmprestimos);
         
-        for (Emprestimo emprestimo : this.emprestimos.listarEmprestimosPorUsuario(this.usuarioLogado.getID())) {
+        for (Emprestimo emprestimo : this.emprestimos.listarEmprestimosPorUsuario(this.sessao.getUsuarioLogado().getID())) {
             painelEmprestimos.add(criarMaterial(emprestimo));
             painelEmprestimos.add(Box.createVerticalStrut(15));
         }
@@ -165,9 +166,11 @@ public class MeusDados extends JPanel {
 	    botaoDevolver.setFocusPainted(false);
 	
 	    botaoDevolver.addActionListener(e -> {
-	        // TODO: Solicitar confirmação da devolução.
-	        // TODO: Registrar a devolução pelo EmprestimoService.
-	        // TODO: Atualizar a lista de empréstimos.
+	    	int opcao = JOptionPane.showConfirmDialog(this, "Deseja devolver este material?", "Confirmar devolução", JOptionPane.YES_NO_OPTION);
+	    	if (opcao == JOptionPane.YES_OPTION) {
+	    		this.emprestimos.registrarDevolucao(emprestimo.getId()); // TODO: isso será substituido por try futuramente
+	    		this.criarComponentes();
+	    	}
 	    });
 	
 	    itemEmprestimo.add(informacao, BorderLayout.CENTER);

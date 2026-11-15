@@ -38,15 +38,17 @@ public class TelaLogin extends JFrame{
 	final private UsuarioService usuarios;
 	final private CatalogoService catalogo;
 	final private EmprestimoService emprestimos;
+	final private Sessao sessao;
 	
 	// construtor
 	
-	public TelaLogin(UsuarioService usuarios, CatalogoService catalogo, EmprestimoService emprestimos) {
+	public TelaLogin(UsuarioService usuarios, CatalogoService catalogo, EmprestimoService emprestimos, Sessao sessao) {
 		configurarJanela();
 		inicializarComponentes();
 		this.usuarios = usuarios;
 		this.catalogo = catalogo;
 		this.emprestimos = emprestimos;
+		this.sessao = sessao;
 	}
 	
 	private void configurarJanela() {
@@ -132,10 +134,10 @@ public class TelaLogin extends JFrame{
         blogin.addActionListener(e -> {
         	String loginDigitado = this.login.getText();
         	String senhaDigitada = new String(this.senha.getPassword());
-        	Usuario usuarioAutenticado = usuarios.fazerLogin(loginDigitado, senhaDigitada);  // se lançar excessão, faz o catch, se retornar null, assim já funciona
+        	UsuarioService.logar(loginDigitado, senhaDigitada);
 
-            if (usuarioAutenticado != null) {
-                MenuPrincipal tela = new MenuPrincipal(usuarioAutenticado, this.usuarios, this.catalogo, this.emprestimos, () -> this.setVisible(true));
+            if (this.sessao.estaAutenticado()) {
+                MenuPrincipal tela = new MenuPrincipal(this.sessao, this.usuarios, this.catalogo, this.emprestimos, () -> this.setVisible(true));
 
                 this.setVisible(false);
                 tela.setVisible(true);

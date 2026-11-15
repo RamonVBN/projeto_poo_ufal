@@ -15,6 +15,10 @@ public class Main {
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
 			
+			// session
+			
+			final Sessao sessao = new Sessao();
+			
 			// repository
 			
 			final UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
@@ -24,15 +28,17 @@ public class Main {
 			final EmprestimoRepositorio emprestimoRepositorio = new EmprestimoRepositorio();
 			
 			// services
+			
+			final AutorizacaoService autorizacaoService = new AutorizacaoService();
             
-			final UsuarioService usuarioService = new UsuarioService(usuarioRepositorio);
+			final UsuarioService usuarioService = new UsuarioService(usuarioRepositorio, emprestimoRepositorio, autorizacaoService, sessao);
 
-            final CatalogoService catalogoService = new CatalogoService(materialRepositorio);
+            final CatalogoService catalogoService = new CatalogoService(materialRepositorio, autorizacaoService, sessao);
 
-            final EmprestimoService emprestimoService = new EmprestimoService(emprestimoRepositorio, materialRepositorio, usuarioRepositorio);
+            final EmprestimoService emprestimoService = new EmprestimoService(emprestimoRepositorio, materialRepositorio, usuarioRepositorio, autorizacaoService, sessao);
             
             // Tela inicial
-			TelaLogin telalogin = new TelaLogin(usuarioService, catalogoService, emprestimoService);
+			TelaLogin telalogin = new TelaLogin(usuarioService, catalogoService, emprestimoService, sessao);
 			telalogin.setVisible(true);
 		});
 
