@@ -168,7 +168,11 @@ public class CatalogoService extends Service {
                     String dataPublicacao,
                     int jornalRevistaId
             )
-            throws OperacaoNaoPermitidaException, RegistroNaoEncontradoException, UsuarioNaoAutenticadoException, TipoMaterialInvalidoException, CredenciaisInvalidasException {
+            throws OperacaoNaoPermitidaException,
+            RegistroNaoEncontradoException,
+            UsuarioNaoAutenticadoException,
+            TipoMaterialInvalidoException,
+            CredenciaisInvalidasException {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);

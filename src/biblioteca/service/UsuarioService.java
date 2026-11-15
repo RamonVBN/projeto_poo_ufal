@@ -112,7 +112,7 @@ public class UsuarioService extends Service  {
             (
                 String nome,
                 String login,
-                int id
+                int usuarioId
             )
             throws OperacaoNaoPermitidaException,
             RegistroNaoEncontradoException,
@@ -124,7 +124,7 @@ public class UsuarioService extends Service  {
 
         this.validarStrings(nome);
         this.validarStrings(login);
-        Usuario usuarioParaAtualizar = usuarioRepositorio.buscarPorId(id);
+        Usuario usuarioParaAtualizar = usuarioRepositorio.buscarPorId(usuarioId);
         Usuario usuarioAtualizado = new Usuario(nome, login, usuarioParaAtualizar);
 
         usuarioRepositorio.atualizar(usuarioAtualizado);

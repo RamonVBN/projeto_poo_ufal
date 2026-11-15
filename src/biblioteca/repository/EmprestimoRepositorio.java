@@ -41,15 +41,15 @@ public class EmprestimoRepositorio implements Repositorio<Emprestimo> {
     }
 
     public List<Emprestimo> listarTodos(int usuarioId) {
-        List<Emprestimo> resultado = new ArrayList<>();
+        List<Emprestimo> emprestimosFiltrados = new ArrayList<>();
 
         for (Emprestimo emprestimo : emprestimos) {
             if (emprestimo.getUsuario().getID() == (usuarioId)) {
-                resultado.add(emprestimo);
+                emprestimosFiltrados.add(emprestimo);
             }
         }
 
-        return resultado;
+        return emprestimosFiltrados;
     }
 
     @Override

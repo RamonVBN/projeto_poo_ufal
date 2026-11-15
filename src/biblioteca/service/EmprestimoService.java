@@ -91,6 +91,7 @@ public class EmprestimoService extends Service {
         material.marcarComoIndisponivel();
     }
 
+    // registrarDevolucao: até o momento, apenas muda o status do empréstimo.
     public void registrarDevolucao(int emprestimoId)
             throws
             OperacaoNaoPermitidaException,

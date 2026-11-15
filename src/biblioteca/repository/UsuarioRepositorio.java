@@ -5,6 +5,7 @@ import java.util.List;
 
 import biblioteca.exception.ItemDuplicadoException;
 import biblioteca.exception.RegistroNaoEncontradoException;
+import biblioteca.model.Emprestimo;
 import biblioteca.model.usuario.Usuario;
 
 public class UsuarioRepositorio implements Repositorio<Usuario> {
@@ -53,6 +54,32 @@ public class UsuarioRepositorio implements Repositorio<Usuario> {
 	@Override
 	public List<Usuario> listarTodos() {
 	    return new ArrayList<>(usuarios);
+	}
+
+	public List<Usuario> listarPorNome(String nome) {
+
+		List<Usuario> usuariosFiltrados = new ArrayList<>();
+
+		for (Usuario usuario : usuarios) {
+			if (usuario.getNome().contains(nome)) {
+				usuariosFiltrados.add(usuario);
+			}
+		}
+
+		return usuariosFiltrados;
+	}
+
+	public List<Usuario> listarPorLogin(String login)  {
+
+		List<Usuario> usuariosFiltrados = new ArrayList<>();
+
+		for (Usuario usuario : usuarios) {
+			if (usuario.getLogin().contains(login)) {
+				usuariosFiltrados.add(usuario);
+			}
+		}
+
+		return usuariosFiltrados;
 	}
 	
 	@Override
