@@ -88,10 +88,4 @@ public class SolicitacaoEmprestimoRepositorio implements Repositorio<Solicitacao
 
         throw new RegistroNaoEncontradoException();
     }
-
-    @Override
-    public void remover(int solicitacaoEmprestimoId) throws RegistroNaoEncontradoException {
-        SolicitacaoEmprestimo emprestimo = buscarPorId(solicitacaoEmprestimoId);
-        solitacoesEmprestimos.remove(emprestimo);
-    }
 }

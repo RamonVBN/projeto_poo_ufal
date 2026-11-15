@@ -22,6 +22,14 @@ public class SolicitacaoEmprestimo {
         this.status = StatusSolicitacao.PENDENTE;
     }
 
+    public SolicitacaoEmprestimo(Usuario solicitante, MaterialBibliografico materialSolicitado, StatusSolicitacao status, int solicitacaoId) {
+        this.id = solicitacaoId;
+        this.solicitante = solicitante;
+        this.materialSolicitado = materialSolicitado;
+        this.dataSolicitacao = LocalDate.now();
+        this.status = status;
+    }
+
     public int getId() {
         return id;
     }

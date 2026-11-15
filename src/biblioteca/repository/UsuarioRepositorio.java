@@ -8,7 +8,7 @@ import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.model.Emprestimo;
 import biblioteca.model.usuario.Usuario;
 
-public class UsuarioRepositorio implements Repositorio<Usuario> {
+public class UsuarioRepositorio implements Repositorio<Usuario>, RepositorioRemovivel<Usuario> {
 
 	private final ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
 	

@@ -138,7 +138,13 @@ public class SolicitacaoEmprestimoService extends Service {
         this.validarSolicitacaoPendente(solicitacao);
 
         this.emprestimoService.registrarEmprestimo(solicitacao.getSolicitante().getID(), solicitacao.getMaterialSolicitado().getId());
-        solicitacao.setStatus(StatusSolicitacao.APROVADA);
+        SolicitacaoEmprestimo solitacaoAtualizada = new SolicitacaoEmprestimo(
+                solicitacao.getSolicitante(),
+                solicitacao.getMaterialSolicitado(),
+                StatusSolicitacao.APROVADA,
+                solicitacao.getId()
+        );
+        solicitacaoEmprestimoRepositorio.atualizar(solitacaoAtualizada);
     }
     public void rejeitarSolicitacao(int solicitacaoId)
             throws UsuarioNaoAutenticadoException,
@@ -150,6 +156,12 @@ public class SolicitacaoEmprestimoService extends Service {
 
         SolicitacaoEmprestimo solicitacao = solicitacaoEmprestimoRepositorio.buscarPorId(solicitacaoId);
         this.validarSolicitacaoPendente(solicitacao);
-        solicitacao.setStatus(StatusSolicitacao.REJEITADA);
+        SolicitacaoEmprestimo solicitacaoAtualizada = new SolicitacaoEmprestimo(
+                solicitacao.getSolicitante(),
+                solicitacao.getMaterialSolicitado(),
+                StatusSolicitacao.REJEITADA,
+                solicitacao.getId()
+        );
+        solicitacaoEmprestimoRepositorio.atualizar(solicitacaoAtualizada);
     }
 }
