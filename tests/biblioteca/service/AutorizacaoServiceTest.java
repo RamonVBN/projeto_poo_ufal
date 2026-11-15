@@ -68,8 +68,8 @@ class AutorizacaoServiceTest {
     void bibliotecarioDeveTerPermissoesDeGerenciamento() {
         Set<Permissao> permissoesEsperadas = EnumSet.of(
                 Permissao.GERENCIAR_CATALOGO,
-                Permissao.REALIZAR_EMPRESTIMO,
-                Permissao.REALIZAR_DEVOLUCAO,
+                Permissao.REGISTRAR_EMPRESTIMO,
+                Permissao.REGISTRAR_DEVOLUCAO,
                 Permissao.CONSULTAR_CATALOGO,
                 Permissao.CONSULTAR_TODOS_EMPRESTIMOS,
                 Permissao.CONSULTAR_USUARIOS
@@ -134,8 +134,8 @@ class AutorizacaoServiceTest {
                 Permissao.REMOVER_USUARIO,
                 Permissao.ATUALIZAR_USUARIOS,
                 Permissao.GERENCIAR_CATALOGO,
-                Permissao.REALIZAR_EMPRESTIMO,
-                Permissao.REALIZAR_DEVOLUCAO,
+                Permissao.REGISTRAR_EMPRESTIMO,
+                Permissao.REGISTRAR_DEVOLUCAO,
                 Permissao.CONSULTAR_TODOS_EMPRESTIMOS,
                 Permissao.CONSULTAR_USUARIOS
         );
