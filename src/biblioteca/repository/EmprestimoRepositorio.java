@@ -40,7 +40,7 @@ public class EmprestimoRepositorio implements Repositorio<Emprestimo> {
         return new ArrayList<Emprestimo>(emprestimos);
     }
 
-    public List<Emprestimo> listarTodos(int usuarioId) {
+    public List<Emprestimo> listarPorUsuario(int usuarioId) {
         List<Emprestimo> emprestimosFiltrados = new ArrayList<>();
 
         for (Emprestimo emprestimo : emprestimos) {
