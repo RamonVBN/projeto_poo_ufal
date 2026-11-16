@@ -89,7 +89,8 @@ public class UsuarioService extends Service  {
         this.validarStrings(nome);
         this.validarStrings(login);
         this.validarSenha(senha);
-        Usuario novoUsuario = new Usuario(nome, login, SenhaHashUtil.hash(senha), cargo);
+        String senhaHash = SenhaHashUtil.hash(senha);
+        Usuario novoUsuario = new Usuario(nome, login, senhaHash, cargo);
         usuarioRepositorio.adicionar(novoUsuario);
 
         return novoUsuario;
@@ -146,7 +147,7 @@ public class UsuarioService extends Service  {
         boolean usuarioComMesmoLogin = usuarioRepositorio.existeOutroUsuarioComLogin(login, usuarioId);
 
         if (usuarioComMesmoLogin) {
-            throw new ItemDuplicadoException("usuário");
+            throw new ItemDuplicadoException("usuário", "login");
         }
 
         String senha = usuarioParaAtualizar.getSenha();
@@ -194,7 +195,7 @@ public class UsuarioService extends Service  {
         boolean usuarioComMesmoLogin = usuarioRepositorio.existeOutroUsuarioComLogin(login, usuarioId);
 
         if (usuarioComMesmoLogin) {
-            throw new ItemDuplicadoException("usuário");
+            throw new ItemDuplicadoException("usuário", "login");
         }
 
         Usuario usuarioAtualizado = new Usuario(nome, login, senha, cargo, usuarioId);

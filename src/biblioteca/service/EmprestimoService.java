@@ -37,10 +37,6 @@ public class EmprestimoService extends Service {
         this.usuarioRepositorio = usuarioRepositorio;
     }
 
-    public void solicitarEmprestimo() {
-        // TODO -> O leitor precisa solicitar empréstimo para que algum bibliotecário ou admin registre.
-    }
-
     public void registrarEmprestimo
             (
                     int usuarioId,

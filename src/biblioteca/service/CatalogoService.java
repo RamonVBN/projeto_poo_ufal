@@ -5,7 +5,6 @@ import biblioteca.exception.*;
 import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
-import biblioteca.model.usuario.Cargo;
 import biblioteca.model.usuario.Permissao;
 import biblioteca.repository.MaterialRepositorio;
 
@@ -83,7 +82,7 @@ public class CatalogoService extends Service {
         return novoLivro;
     }
 
-    public Jornal cadastrarPeriodicos
+    public Jornal cadastrarPeriodico
             (
                 String titulo,
                 int anoPublicacao,
@@ -149,7 +148,7 @@ public class CatalogoService extends Service {
 
         MaterialBibliografico material = repositorio.buscarPorId(livroId);
 
-        if (!(material instanceof Livro livro)) {
+        if (!(material instanceof Livro)) {
             throw new TipoMaterialInvalidoException(material);
         }
 
@@ -158,7 +157,7 @@ public class CatalogoService extends Service {
         repositorio.atualizar(livroAtualizado);
     }
 
-    public void atualizarPeriodicos
+    public void atualizarPeriodico
             (
                     String titulo,
                     int anoPublicacao,
@@ -178,7 +177,7 @@ public class CatalogoService extends Service {
 
         MaterialBibliografico material = repositorio.buscarPorId(jornalRevistaId);
 
-        if (!(material instanceof Jornal jornalRevista)) {
+        if (!(material instanceof Jornal)) {
             throw new TipoMaterialInvalidoException(material);
         }
 
