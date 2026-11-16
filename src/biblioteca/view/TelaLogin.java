@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -17,10 +19,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-
-import biblioteca.model.usuario.Usuario;
-import biblioteca.model.usuario.UsuarioComum;
+import biblioteca.auth.Sessao;
+import biblioteca.exception.CredenciaisInvalidasException;
+import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.service.CatalogoService;
 import biblioteca.service.EmprestimoService;
 import biblioteca.service.UsuarioService;
@@ -134,21 +135,21 @@ public class TelaLogin extends JFrame{
         blogin.addActionListener(e -> {
         	String loginDigitado = this.login.getText();
         	String senhaDigitada = new String(this.senha.getPassword());
-        	UsuarioService.logar(loginDigitado, senhaDigitada);
-
-            if (this.sessao.estaAutenticado()) {
-                MenuPrincipal tela = new MenuPrincipal(this.sessao, this.usuarios, this.catalogo, this.emprestimos, () -> this.setVisible(true));
+        	try {
+				this.usuarios.logar(loginDigitado, senhaDigitada);
+				MenuPrincipal tela = new MenuPrincipal(this.sessao, this.usuarios, this.catalogo, this.emprestimos, () -> this.setVisible(true));
 
                 this.setVisible(false);
                 tela.setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Login ou senha incorretos!",
-                        "Erro de autenticação",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            }
+			} catch (NoSuchAlgorithmException e1) {
+				JOptionPane.showMessageDialog(this, "Algum erro aconteceu", "ERRO", JOptionPane.ERROR_MESSAGE);
+			} catch (InvalidKeySpecException e1) {
+				JOptionPane.showMessageDialog(this, "Algum erro aconteceu", "ERRO", JOptionPane.ERROR_MESSAGE);
+			} catch (CredenciaisInvalidasException e1) {
+				JOptionPane.showMessageDialog(this, "Credenciais inválidas", e1.getMessage(), JOptionPane.ERROR_MESSAGE);
+			} catch (RegistroNaoEncontradoException e1) {
+				JOptionPane.showMessageDialog(this, "Registro não encontrado", e1.getMessage(), JOptionPane.ERROR_MESSAGE);
+			}
         });
 
         painelPrincipal.add(blogin, gbc);
