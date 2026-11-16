@@ -50,7 +50,7 @@ public class EmprestimoService extends Service {
             ItemDuplicadoException {
 
         this.verificarAutenticacao();
-        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REALIZAR_EMPRESTIMO);
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REGISTRAR_EMPRESTIMO);
 
         MaterialBibliografico material = materialRepositorio.buscarPorId(materialId);
         Usuario usuario = usuarioRepositorio.buscarPorId(usuarioId);
@@ -59,7 +59,7 @@ public class EmprestimoService extends Service {
             throw new MaterialIndisponivelException();
         }
 
-        List<Emprestimo> emprestimosDoUsuario = emprestimoRepositorio.listarTodos(usuario.getID());
+        List<Emprestimo> emprestimosDoUsuario = emprestimoRepositorio.listarPorUsuario(usuario.getID());
         List<Emprestimo> emprestimosAtivos = new ArrayList<>();
 
         for (Emprestimo emprestimo : emprestimosDoUsuario) {
@@ -96,7 +96,7 @@ public class EmprestimoService extends Service {
             UsuarioNaoAutenticadoException {
 
         this.verificarAutenticacao();
-        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REALIZAR_DEVOLUCAO);
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REGISTRAR_DEVOLUCAO);
 
         Emprestimo emprestimoParaDevolver = emprestimoRepositorio.buscarPorId(emprestimoId);
         emprestimoParaDevolver.registrarDevolucao();
@@ -123,13 +123,13 @@ public class EmprestimoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_TODOS_EMPRESTIMOS);
 
-        return emprestimoRepositorio.listarTodos(usuarioId);
+        return emprestimoRepositorio.listarPorUsuario(usuarioId);
     }
     public List<Emprestimo> listarMeusEmprestimos() throws UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_PROPRIOS_EMPRESTIMOS);
 
-        return emprestimoRepositorio.listarTodos(sessao.getUsuarioLogado().getID());
+        return emprestimoRepositorio.listarPorUsuario(sessao.getUsuarioLogado().getID());
     }
 }
