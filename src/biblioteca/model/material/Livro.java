@@ -10,14 +10,14 @@ public class Livro extends MaterialBibliografico{
 	// construtor
 	
 	public Livro(String titulo, int anoPublicacao, String autor, String isbn, String editora) {
-		super(titulo, anoPublicacao);
+		super(titulo, anoPublicacao, editora);
 		this.setAutor(autor.trim());
 		this.setIsbn(isbn.trim());
 		this.setEditora(editora.trim());
 	}
 
 	public Livro(String titulo, int anoPublicacao, String autor, String isbn, String editora, int id) {
-		super(titulo, anoPublicacao, id);
+		super(titulo, anoPublicacao, editora, id);
 		this.setAutor(autor.trim());
 		this.setIsbn(isbn.trim());
 		this.setEditora(editora.trim());
@@ -39,14 +39,6 @@ public class Livro extends MaterialBibliografico{
 
 	public void setIsbn(String isbn) {
 		this.isbn = isbn;
-	}
-
-	public String getEditora() {
-		return editora;
-	}
-
-	public void setEditora(String editora) {
-		this.editora = editora;
 	}
 
 	// metodos

@@ -21,7 +21,7 @@ public abstract class MaterialBibliografico {
 		this.setDisponivel(true);
 	}
 
-	public MaterialBibliografico(String titulo, int anoPublicacao, int id) {
+	public MaterialBibliografico(String titulo, int anoPublicacao, String editora, int id) {
 		this.id = id;
 		this.setTitulo(titulo.trim());
 		this.setAnoPublicacao(anoPublicacao);
@@ -51,7 +51,7 @@ public abstract class MaterialBibliografico {
 		return this.disponivel;
 	}
 
-	private void setDisponivel(boolean disponivel) {
+	public void setDisponivel(boolean disponivel) {
 		this.disponivel = disponivel;
 	}
 
@@ -63,7 +63,7 @@ public abstract class MaterialBibliografico {
 		return editora;
 	}
 
-	private void setEditora(String editora) {
+	public void setEditora(String editora) {
 		this.editora = editora;
 	}
 	
