@@ -2,9 +2,11 @@ package biblioteca;
 
 import javax.swing.SwingUtilities;
 
+import biblioteca.auth.Sessao;
 import biblioteca.repository.EmprestimoRepositorio;
 import biblioteca.repository.MaterialRepositorio;
 import biblioteca.repository.UsuarioRepositorio;
+import biblioteca.service.AutorizacaoService;
 import biblioteca.service.CatalogoService;
 import biblioteca.service.EmprestimoService;
 import biblioteca.service.UsuarioService;
@@ -33,11 +35,11 @@ public class Main {
             
 			final UsuarioService usuarioService = new UsuarioService(usuarioRepositorio, emprestimoRepositorio, autorizacaoService, sessao);
 
-      final CatalogoService catalogoService = new CatalogoService(materialRepositorio, autorizacaoService, sessao);
+			final CatalogoService catalogoService = new CatalogoService(materialRepositorio, autorizacaoService, sessao);
 
-      final EmprestimoService emprestimoService = new EmprestimoService(emprestimoRepositorio, materialRepositorio, usuarioRepositorio, autorizacaoService, sessao);
+			final EmprestimoService emprestimoService = new EmprestimoService(emprestimoRepositorio, materialRepositorio, usuarioRepositorio, autorizacaoService, sessao);
             
-      // Tela inicial
+			// Tela inicial
 			TelaLogin telalogin = new TelaLogin(usuarioService, catalogoService, emprestimoService, sessao);
 			telalogin.setVisible(true);
 		});
