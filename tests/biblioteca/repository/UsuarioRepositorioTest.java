@@ -2,6 +2,7 @@ package biblioteca.repository;
 
 import biblioteca.exception.ItemDuplicadoException;
 import biblioteca.exception.RegistroNaoEncontradoException;
+import biblioteca.model.usuario.Cargo;
 import biblioteca.model.usuario.Usuario;
 
 
@@ -23,7 +24,8 @@ class UsuarioRepositorioTest {
         usuario = new Usuario(
             "João da Silva",
             "joao",
-            "123456"
+            "123456",
+            Cargo.LEITOR
         );
     }
 

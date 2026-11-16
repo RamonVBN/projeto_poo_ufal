@@ -10,7 +10,7 @@ class UsuarioTest {
     @Test
     void usuarioComumDeveExibirSeusDados() {
         Usuario usuario = new Usuario(
-            "Ana", "ana123", "senha"
+            "Ana", "ana123", "senha", Cargo.LEITOR
         );
 
         String dados = usuario.exibirDados();

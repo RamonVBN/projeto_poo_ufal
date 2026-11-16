@@ -4,7 +4,7 @@ import biblioteca.auth.Sessao;
 import biblioteca.exception.CredenciaisInvalidasException;
 import biblioteca.exception.UsuarioNaoAutenticadoException;
 
-public class Service {
+public abstract class Service {
 
     protected final AutorizacaoService autorizacaoService;
     protected final Sessao sessao;

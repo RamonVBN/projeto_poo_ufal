@@ -5,6 +5,7 @@ import biblioteca.exception.*;
 import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
+import biblioteca.model.usuario.Cargo;
 import biblioteca.model.usuario.Permissao;
 import biblioteca.repository.MaterialRepositorio;
 
@@ -82,7 +83,7 @@ public class CatalogoService extends Service {
         return novoLivro;
     }
 
-    public Jornal cadastrarJornalRevista
+    public Jornal cadastrarPeriodicos
             (
                 String titulo,
                 int anoPublicacao,
@@ -157,7 +158,7 @@ public class CatalogoService extends Service {
         repositorio.atualizar(livroAtualizado);
     }
 
-    public void atualizarJornalRevista
+    public void atualizarPeriodicos
             (
                     String titulo,
                     int anoPublicacao,

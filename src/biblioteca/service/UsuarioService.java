@@ -134,7 +134,8 @@ public class UsuarioService extends Service  {
             throws OperacaoNaoPermitidaException,
             RegistroNaoEncontradoException,
             UsuarioNaoAutenticadoException,
-            CredenciaisInvalidasException {
+            CredenciaisInvalidasException,
+            ItemDuplicadoException {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.ATUALIZAR_USUARIOS);
@@ -142,8 +143,84 @@ public class UsuarioService extends Service  {
         this.validarStrings(nome);
         this.validarStrings(login);
         Usuario usuarioParaAtualizar = usuarioRepositorio.buscarPorId(usuarioId);
-        Usuario usuarioAtualizado = new Usuario(nome, login, usuarioParaAtualizar);
+        boolean usuarioComMesmoLogin = usuarioRepositorio.existeOutroUsuarioComLogin(login, usuarioId);
 
+        if (usuarioComMesmoLogin) {
+            throw new ItemDuplicadoException("usuário");
+        }
+
+        String senha = usuarioParaAtualizar.getSenha();
+        Cargo cargo = usuarioParaAtualizar.getCargo();
+        Usuario usuarioAtualizado = new Usuario(nome, login, senha, cargo, usuarioId);
+        usuarioRepositorio.atualizar(usuarioAtualizado);
+    }
+
+    public void atualizarSenhaDoUsuario(String senhaNova, int usuarioId) throws RegistroNaoEncontradoException, NoSuchAlgorithmException, InvalidKeySpecException, CredenciaisInvalidasException, UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.ATUALIZAR_USUARIOS);
+        this.validarSenha(senhaNova);
+        Usuario usuarioParaAtualizar = usuarioRepositorio.buscarPorId(usuarioId);
+
+        String nome = usuarioParaAtualizar.getNome();
+        String login = usuarioParaAtualizar.getLogin();
+        String senhaNovaHash = SenhaHashUtil.hash(senhaNova);
+        Cargo cargo = usuarioParaAtualizar.getCargo();
+
+        Usuario usuarioAtualizado = new Usuario(nome, login, senhaNovaHash, cargo, usuarioId);
+        usuarioRepositorio.atualizar(usuarioAtualizado);
+    }
+
+    public void atualizarMeusDados
+            (
+                    String nome,
+                    String login
+            )
+            throws OperacaoNaoPermitidaException,
+            RegistroNaoEncontradoException,
+            UsuarioNaoAutenticadoException,
+            CredenciaisInvalidasException, ItemDuplicadoException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.ATUALIZAR_PROPRIOS_DADOS);
+
+        this.validarStrings(nome);
+        this.validarStrings(login);
+        Usuario usuarioParaAtualizar = sessao.getUsuarioLogado();
+        String senha = usuarioParaAtualizar.getSenha();
+        Cargo cargo = usuarioParaAtualizar.getCargo();
+        int usuarioId = usuarioParaAtualizar.getID();
+
+        boolean usuarioComMesmoLogin = usuarioRepositorio.existeOutroUsuarioComLogin(login, usuarioId);
+
+        if (usuarioComMesmoLogin) {
+            throw new ItemDuplicadoException("usuário");
+        }
+
+        Usuario usuarioAtualizado = new Usuario(nome, login, senha, cargo, usuarioId);
+        usuarioRepositorio.atualizar(usuarioAtualizado);
+    }
+
+    public void atualizarMinhaSenha(String senhaAtual, String senhaNova) throws RegistroNaoEncontradoException, NoSuchAlgorithmException, InvalidKeySpecException, CredenciaisInvalidasException, UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.ATUALIZAR_PROPRIOS_DADOS);
+
+        Usuario usuarioParaAtualizar = sessao.getUsuarioLogado();
+        String senhaAtualHash = SenhaHashUtil.hash(senhaAtual);
+
+        if (!usuarioParaAtualizar.getSenha().equals(senhaAtualHash)) {
+            throw new CredenciaisInvalidasException();
+        }
+
+        this.validarSenha(senhaNova);
+        String nome = usuarioParaAtualizar.getNome();
+        String login = usuarioParaAtualizar.getLogin();
+        String senhaNovaHash = SenhaHashUtil.hash(senhaNova);
+        Cargo cargo = usuarioParaAtualizar.getCargo();
+        int usuarioId = usuarioParaAtualizar.getID();
+
+        Usuario usuarioAtualizado = new Usuario(nome, login, senhaNovaHash, cargo, usuarioId);
         usuarioRepositorio.atualizar(usuarioAtualizado);
     }
 

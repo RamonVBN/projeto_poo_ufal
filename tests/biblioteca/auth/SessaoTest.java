@@ -1,5 +1,6 @@
 package biblioteca.auth;
 
+import biblioteca.model.usuario.Cargo;
 import biblioteca.model.usuario.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,8 @@ class SessaoTest {
         usuario = new Usuario(
                 "João Silva",
                 "joao",
-                "123456"
+                "123456",
+                Cargo.LEITOR
         );
     }
 
@@ -55,7 +57,8 @@ class SessaoTest {
         Usuario outroUsuario = new Usuario(
                 "Maria Silva",
                 "maria",
-                "654321"
+                "654321",
+                Cargo.LEITOR
         );
 
         sessao.iniciarSessao(usuario);

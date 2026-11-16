@@ -71,7 +71,7 @@ class CatalogoServiceTest {
             ItemDuplicadoException,
             RegistroNaoEncontradoException {
 
-        Jornal jornal = service.cadastrarJornalRevista(
+        Jornal jornal = service.cadastrarPeriodicos(
                 "National Geographic",
                 2024,
                 "National Geographic Society",
@@ -169,7 +169,7 @@ class CatalogoServiceTest {
     void deveImpedirCadastroDeJornalComNumeroEdicaoInvalido() {
 
         assertThrows(CredenciaisInvalidasException.class,
-                () -> service.cadastrarJornalRevista(
+                () -> service.cadastrarPeriodicos(
                         "National Geographic",
                         2024,
                         "National Geographic Society",
@@ -182,7 +182,7 @@ class CatalogoServiceTest {
     void deveImpedirCadastroDeJornalComDataInvalida() {
 
         assertThrows(CredenciaisInvalidasException.class,
-                () -> service.cadastrarJornalRevista(
+                () -> service.cadastrarPeriodicos(
                         "National Geographic",
                         2024,
                         "National Geographic Society",
@@ -300,7 +300,7 @@ class CatalogoServiceTest {
             CredenciaisInvalidasException,
             ItemDuplicadoException {
 
-        Jornal jornal = service.cadastrarJornalRevista(
+        Jornal jornal = service.cadastrarPeriodicos(
                 "National Geographic",
                 2024,
                 "National Geographic Society",
@@ -308,7 +308,7 @@ class CatalogoServiceTest {
                 "15/05/2024"
         );
 
-        service.atualizarJornalRevista(
+        service.atualizarPeriodicos(
                 "National Geographic - Nova edição",
                 2025,
                 "National Geographic Society",
@@ -336,7 +336,7 @@ class CatalogoServiceTest {
             CredenciaisInvalidasException,
             ItemDuplicadoException {
 
-        Jornal jornal = service.cadastrarJornalRevista(
+        Jornal jornal = service.cadastrarPeriodicos(
                 "National Geographic",
                 2024,
                 "National Geographic Society",
@@ -359,7 +359,7 @@ class CatalogoServiceTest {
     void deveImpedirAtualizacaoDeJornalComTipoIncorreto() {
 
         assertThrows(TipoMaterialInvalidoException.class,
-                () -> service.atualizarJornalRevista(
+                () -> service.atualizarPeriodicos(
                         "National Geographic",
                         2024,
                         "National Geographic Society",

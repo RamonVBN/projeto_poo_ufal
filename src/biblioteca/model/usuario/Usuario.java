@@ -14,14 +14,6 @@ public class Usuario {
 	private String senha;
 	
 	// construtor
-	
-	public Usuario(String nome, String login, String senha) {
-		this.id = new Random().nextInt();
-		this.cargo = Cargo.LEITOR;
-		this.setNome(nome.trim());
-		this.setLogin(login.trim());
-		this.setSenha(senha);
-	}
 
 	public Usuario(String nome, String login, String senha, Cargo cargo) {
 		this.id = new Random().nextInt();
@@ -31,10 +23,10 @@ public class Usuario {
 		this.setSenha(senha);
 	}
 
-	public Usuario(String nome, String login, Usuario usuarioParaCopiar) {
-		this.id = usuarioParaCopiar.getID();
-		this.cargo = usuarioParaCopiar.getCargo();
-		this.setSenha(usuarioParaCopiar.getSenha());
+	public Usuario(String nome, String login, String senha, Cargo cargo, int id) {
+		this.id = id;
+		this.cargo = cargo;
+		this.setSenha(senha);
 		this.setNome(nome.trim());
 		this.setLogin(login.trim());
 	}

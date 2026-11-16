@@ -50,6 +50,16 @@ public class UsuarioRepositorio implements Repositorio<Usuario> {
 
 		throw new RegistroNaoEncontradoException();
 	}
+
+	public boolean existeOutroUsuarioComLogin(String login, int usuarioId) {
+
+		for (Usuario usuario : usuarios) {
+			if (usuario.getLogin().equals(login) && usuario.getID() != usuarioId) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	@Override
 	public List<Usuario> listarTodos() {
