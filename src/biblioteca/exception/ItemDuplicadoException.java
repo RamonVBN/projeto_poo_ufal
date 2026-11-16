@@ -9,4 +9,8 @@ public class ItemDuplicadoException extends Exception {
 	public ItemDuplicadoException(String item) {
 		super("Já existe um "+item+" com esse ID");
 	}
+
+	public ItemDuplicadoException(String item, String atributoString) {
+		super("Já existe um "+item+" com esse " + atributoString);
+	}
 }

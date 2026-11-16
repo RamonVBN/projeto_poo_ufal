@@ -3,20 +3,20 @@ package biblioteca.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import biblioteca.exception.ItemDuplicadoException;
+import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.model.material.MaterialBibliografico;
 
-public class MaterialRepositorio extends Repositorio<MaterialBibliografico> {
+public class MaterialRepositorio implements Repositorio<MaterialBibliografico> {
 
-	private ArrayList<MaterialBibliografico> materiais = new ArrayList<>();
+	private final ArrayList<MaterialBibliografico> materiais = new ArrayList<>();
 	
 	@Override
-    public void adicionar(MaterialBibliografico material) {
+    public void adicionar(MaterialBibliografico material) throws ItemDuplicadoException {
 
         for (MaterialBibliografico m : materiais) {
             if (m.getId() == material.getId()) {
-                throw new IllegalArgumentException(
-                    "Já existe um material com esse ID."
-                );
+                throw new ItemDuplicadoException("material");
             }
         }
 
@@ -24,17 +24,31 @@ public class MaterialRepositorio extends Repositorio<MaterialBibliografico> {
     }
 	
 	@Override
-    public MaterialBibliografico buscarPorId(int id) {
+    public MaterialBibliografico buscarPorId(int materialId) throws RegistroNaoEncontradoException {
 
         for (MaterialBibliografico material : materiais) {
-            if (material.getId() == id) {
+            if (material.getId() == materialId) {
                 return material;
             }
         }
 
-        throw new IllegalArgumentException(
-            "Material não encontrado."
-        );
+        throw new RegistroNaoEncontradoException();
+    }
+
+    public List<MaterialBibliografico> listarPorTitulo(String titulo) {
+
+        List<MaterialBibliografico> resultado = new ArrayList<>();
+
+        if (titulo == null || titulo.isBlank()) {
+            return List.of();
+        }
+        for (MaterialBibliografico material : materiais) {
+            if (material.getTitulo().toLowerCase().contains(titulo.toLowerCase())) {
+                resultado.add(material);
+            }
+        }
+
+        return resultado;
     }
 	
 	@Override
@@ -43,7 +57,7 @@ public class MaterialRepositorio extends Repositorio<MaterialBibliografico> {
     }
 
     @Override
-    public void atualizar(MaterialBibliografico material) {
+    public void atualizar(MaterialBibliografico material) throws RegistroNaoEncontradoException {
 
         for (int i = 0; i < materiais.size(); i++) {
 
@@ -53,15 +67,13 @@ public class MaterialRepositorio extends Repositorio<MaterialBibliografico> {
             }
         }
 
-        throw new IllegalArgumentException(
-            "Material não encontrado."
-        );
+        throw new RegistroNaoEncontradoException();
     }
     
     @Override
-    public void remover(int id) {
+    public void remover(int materialId) throws RegistroNaoEncontradoException {
 
-        MaterialBibliografico material = buscarPorId(id);
+        MaterialBibliografico material = buscarPorId(materialId);
         materiais.remove(material);
     }
 }

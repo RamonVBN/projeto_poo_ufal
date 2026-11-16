@@ -1,16 +1,20 @@
 package biblioteca.repository;
 
+import biblioteca.exception.ItemDuplicadoException;
+import biblioteca.exception.RegistroNaoEncontradoException;
+import biblioteca.model.Emprestimo;
+
 import java.util.List;
 
-public abstract class Repositorio<N> {
+public interface Repositorio<N> {
 
-	public abstract void adicionar(N objeto);
+	void adicionar(N objeto) throws RegistroNaoEncontradoException, ItemDuplicadoException;
 
-    public abstract N buscarPorId(int id);
+    N buscarPorId(int id) throws RegistroNaoEncontradoException;
 
-    public abstract List<N> listarTodos();
+    List<N> listarTodos();
 
-    public abstract void atualizar(N objeto);
+    void atualizar(N objeto) throws RegistroNaoEncontradoException;
 
-    public abstract void remover(int id);
+    void remover(int id) throws RegistroNaoEncontradoException;
 }

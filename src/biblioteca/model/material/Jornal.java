@@ -10,18 +10,34 @@ public class Jornal extends MaterialBibliografico{
 	// construtor
 	
 	public Jornal(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao) {
-		super(titulo, anoPublicacao, editora);
+		super(titulo, anoPublicacao);
+		this.setEditora(editora.trim());
 		this.setNumeroEdicao(numeroEdicao);
-		this.setDataPublicacao(dataPublicacao);
+		this.setDataPublicacao(dataPublicacao.trim());
+	}
+
+	public Jornal(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, int id) {
+		super(titulo, anoPublicacao, id);
+		this.setEditora(editora.trim());
+		this.setNumeroEdicao(numeroEdicao);
+		this.setDataPublicacao(dataPublicacao.trim());
 	}
 	
 	// getters e setters
+
+	public String getEditora() {
+		return editora;
+	}
+
+	public void setEditora(String editora) {
+		this.editora = editora;
+	}
 
 	public int getNumeroEdicao() {
 		return numeroEdicao;
 	}
 
-	private void setNumeroEdicao(int numeroEdicao) {
+	public void setNumeroEdicao(int numeroEdicao) {
 		this.numeroEdicao = numeroEdicao;
 	}
 
@@ -29,7 +45,7 @@ public class Jornal extends MaterialBibliografico{
 		return dataPublicacao;
 	}
 
-	private void setDataPublicacao(String dataPublicacao) {
+	public void setDataPublicacao(String dataPublicacao) {
 		this.dataPublicacao = dataPublicacao;
 	}
 	
@@ -38,11 +54,6 @@ public class Jornal extends MaterialBibliografico{
 	@Override
 	public String exibirDetalhes() {
 		return "Titulo do jornal: %s - Ano de publicação: %s - Numero de edição: %s - Editora: %s".formatted(this.getTitulo(), this.getAnoPublicacao(), this.getNumeroEdicao(), this.getEditora());
-	}
-
-	@Override
-	public boolean podeSerEmprestado() {
-		return this.isDisponivel();
 	}
 	
 }

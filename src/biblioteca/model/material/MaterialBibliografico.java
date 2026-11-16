@@ -16,7 +16,14 @@ public abstract class MaterialBibliografico {
 	
 	public MaterialBibliografico(String titulo, int anoPublicacao, String editora) {
 		this.id = new Random().nextInt();
-		this.setTitulo(titulo);
+		this.setTitulo(titulo.trim());
+		this.setAnoPublicacao(anoPublicacao);
+		this.setDisponivel(true);
+	}
+
+	public MaterialBibliografico(String titulo, int anoPublicacao, int id) {
+		this.id = id;
+		this.setTitulo(titulo.trim());
 		this.setAnoPublicacao(anoPublicacao);
 		this.setDisponivel(true);
 		this.setEditora(editora);
@@ -28,7 +35,7 @@ public abstract class MaterialBibliografico {
 		return titulo;
 	}
 
-	private void setTitulo(String titulo) {
+	public void setTitulo(String titulo) {
 		this.titulo = titulo;
 	}
 
@@ -36,11 +43,11 @@ public abstract class MaterialBibliografico {
 		return anoPublicacao;
 	}
 
-	private void setAnoPublicacao(int anoPublicacao) {
+	public void setAnoPublicacao(int anoPublicacao) {
 		this.anoPublicacao = anoPublicacao;
 	}
 
-	public boolean isDisponivel() {
+	public boolean estaDisponivel() {
 		return this.disponivel;
 	}
 
@@ -63,11 +70,12 @@ public abstract class MaterialBibliografico {
 	// metodos
 
 	public abstract String exibirDetalhes();
-	
-	public abstract boolean podeSerEmprestado();
-	
-	public void alterarDisponibilidade() {
-		this.setDisponivel(!this.isDisponivel());
+
+	public void marcarComoDisponivel() {
+		this.setDisponivel(true);
 	}
-	
+
+	public void marcarComoIndisponivel() {
+		this.setDisponivel(false);
+	}
 }

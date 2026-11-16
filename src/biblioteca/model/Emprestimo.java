@@ -3,6 +3,7 @@ package biblioteca.model;
 import java.time.LocalDate;
 import java.util.Random;
 
+import biblioteca.exception.MaterialDevolvidoException;
 import biblioteca.model.material.MaterialBibliografico;
 import biblioteca.model.usuario.Usuario;
 
@@ -26,6 +27,16 @@ public class Emprestimo {
 		this.dataEmprestimo = LocalDate.now();
 		this.setStatus(StatusEmprestimo.ATIVO);
 	}
+
+	public Emprestimo(LocalDate dataPrevistaDevolucao, MaterialBibliografico material, Usuario usuario) {
+		this.id = new Random().nextInt();
+		this.dataEmprestimo = LocalDate.now();
+		this.setStatus(StatusEmprestimo.ATIVO);
+
+		this.dataPrevistaDevolucao = dataPrevistaDevolucao;
+		this.material = material;
+		this.usuario = usuario;
+	}
 	
 	// getters e setters
 
@@ -33,7 +44,7 @@ public class Emprestimo {
 		return dataPrevistaDevolucao;
 	}
 
-	private void setDataPrevistaDevolucao(LocalDate dataPrevistaDevolucao) {
+	public void setDataPrevistaDevolucao(LocalDate dataPrevistaDevolucao) {
 		this.dataPrevistaDevolucao = dataPrevistaDevolucao;
 	}
 
@@ -41,7 +52,7 @@ public class Emprestimo {
 		return dataDevolucao;
 	}
 
-	private void setDataDevolucao(LocalDate dataDevolucao) {
+	public void setDataDevolucao(LocalDate dataDevolucao) {
 		this.dataDevolucao = dataDevolucao;
 	}
 
@@ -53,12 +64,19 @@ public class Emprestimo {
 		this.status = status;
 	}
 
-	private void setMaterial(MaterialBibliografico material) {
+	public void setMaterial(MaterialBibliografico material) {
 		this.material = material;
 	}
+	public MaterialBibliografico getMaterial() {
+		return this.material;
+	}
 
-	private void setUsuario(Usuario usuario) {
+	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+
+	public Usuario getUsuario() {
+		return this.usuario;
 	}
 
 	public int getId() {
@@ -71,13 +89,17 @@ public class Emprestimo {
 	
 	// metodos
 	
-	public void registrarDevolucao() {
+	public void registrarDevolucao() throws MaterialDevolvidoException {
+
+		if (dataDevolucao != null) {
+			throw new MaterialDevolvidoException();
+		}
+
+		this.dataDevolucao = LocalDate.now();
 		this.setStatus(StatusEmprestimo.DEVOLVIDO);
 	}
 	
 	public boolean estaAtivo() {
 		return this.getStatus() == StatusEmprestimo.ATIVO;
 	}
-	
-	
 }

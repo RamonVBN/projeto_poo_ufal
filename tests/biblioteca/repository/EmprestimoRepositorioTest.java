@@ -1,5 +1,6 @@
 package biblioteca.repository;
 
+import biblioteca.exception.ItemDuplicadoException;
 import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.model.Emprestimo;
 
@@ -22,7 +23,7 @@ class EmprestimoRepositorioTest {
     }
 
     @Test
-    void deveCadastrarEmprestimo() {
+    void deveCadastrarEmprestimo() throws ItemDuplicadoException, RegistroNaoEncontradoException {
         repositorio.adicionar(emprestimo);
 
         Emprestimo encontrado = repositorio.buscarPorId(emprestimo.getId());
@@ -32,7 +33,7 @@ class EmprestimoRepositorioTest {
     }
 
     @Test
-    void deveListarEmprestimosCadastrados() {
+    void deveListarEmprestimosCadastrados() throws ItemDuplicadoException {
         repositorio.adicionar(emprestimo);
 
         List<Emprestimo> emprestimos = repositorio.listarTodos();
@@ -50,7 +51,7 @@ class EmprestimoRepositorioTest {
     }
 
     @Test
-    void deveRemoverEmprestimoCadastrado() {
+    void deveRemoverEmprestimoCadastrado() throws ItemDuplicadoException, RegistroNaoEncontradoException {
         repositorio.adicionar(emprestimo);
 
         repositorio.remover(emprestimo.getId());
@@ -75,7 +76,7 @@ class EmprestimoRepositorioTest {
     }
 
     @Test
-    void deveAtualizarEmprestimoCadastrado() {
+    void deveAtualizarEmprestimoCadastrado() throws ItemDuplicadoException, RegistroNaoEncontradoException {
         repositorio.adicionar(emprestimo);
 
         repositorio.atualizar(emprestimo);

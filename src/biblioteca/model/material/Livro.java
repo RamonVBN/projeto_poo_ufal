@@ -10,9 +10,17 @@ public class Livro extends MaterialBibliografico{
 	// construtor
 	
 	public Livro(String titulo, int anoPublicacao, String autor, String isbn, String editora) {
-		super(titulo, anoPublicacao, editora);
-		this.setAutor(autor);
-		this.setIsbn(isbn);
+		super(titulo, anoPublicacao);
+		this.setAutor(autor.trim());
+		this.setIsbn(isbn.trim());
+		this.setEditora(editora.trim());
+	}
+
+	public Livro(String titulo, int anoPublicacao, String autor, String isbn, String editora, int id) {
+		super(titulo, anoPublicacao, id);
+		this.setAutor(autor.trim());
+		this.setIsbn(isbn.trim());
+		this.setEditora(editora.trim());
 	}
 	
 	// getters e setters
@@ -21,7 +29,7 @@ public class Livro extends MaterialBibliografico{
 		return autor;
 	}
 
-	private void setAutor(String autor) {
+	public void setAutor(String autor) {
 		this.autor = autor;
 	}
 
@@ -29,8 +37,16 @@ public class Livro extends MaterialBibliografico{
 		return isbn;
 	}
 
-	private void setIsbn(String isbn) {
+	public void setIsbn(String isbn) {
 		this.isbn = isbn;
+	}
+
+	public String getEditora() {
+		return editora;
+	}
+
+	public void setEditora(String editora) {
+		this.editora = editora;
 	}
 
 	// metodos
@@ -39,12 +55,4 @@ public class Livro extends MaterialBibliografico{
 	public String exibirDetalhes() {
 		return "Titulo do livro: %s - Autor: %s - Ano de publicação: %s - ISBN: %s - Editora: %s".formatted(this.getTitulo(), this.getAutor(), this.getAnoPublicacao(), this.getIsbn(), this.getEditora());
 	}
-
-	@Override
-	public boolean podeSerEmprestado() {
-		return this.isDisponivel();
-	}
-	
-	
-
 }

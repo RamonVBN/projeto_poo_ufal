@@ -3,20 +3,20 @@ package biblioteca.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import biblioteca.exception.ItemDuplicadoException;
+import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.model.Emprestimo;
 
-public class EmprestimoRepositorio extends Repositorio<Emprestimo> {
+public class EmprestimoRepositorio implements Repositorio<Emprestimo> {
 
-	private ArrayList<Emprestimo> emprestimos = new ArrayList<>();
+    private final ArrayList<Emprestimo> emprestimos = new ArrayList<Emprestimo>();
 	
 	@Override
-    public void adicionar(Emprestimo emprestimo) {
+    public void adicionar(Emprestimo emprestimo) throws ItemDuplicadoException {
 
         for (Emprestimo e : emprestimos) {
             if (e.getId() == emprestimo.getId()) {
-                throw new IllegalArgumentException(
-                    "Já existe um empréstimo com esse ID."
-                );
+                throw new ItemDuplicadoException("empréstimo");
             }
         }
 
@@ -24,26 +24,36 @@ public class EmprestimoRepositorio extends Repositorio<Emprestimo> {
     }
 	
 	@Override
-    public Emprestimo buscarPorId(int id) {
+    public Emprestimo buscarPorId(int emprestimoId) throws RegistroNaoEncontradoException {
 
         for (Emprestimo emprestimo : emprestimos) {
-            if (emprestimo.getId() == id) {
+            if (emprestimo.getId() == emprestimoId) {
                 return emprestimo;
             }
         }
 
-        throw new IllegalArgumentException(
-            "Empréstimo não encontrado."
-        );
+        throw new RegistroNaoEncontradoException();
     }
 	
 	@Override
     public List<Emprestimo> listarTodos() {
-        return new ArrayList<>(emprestimos);
+        return new ArrayList<Emprestimo>(emprestimos);
+    }
+
+    public List<Emprestimo> listarTodos(int usuarioId) {
+        List<Emprestimo> emprestimosFiltrados = new ArrayList<>();
+
+        for (Emprestimo emprestimo : emprestimos) {
+            if (emprestimo.getUsuario().getID() == (usuarioId)) {
+                emprestimosFiltrados.add(emprestimo);
+            }
+        }
+
+        return emprestimosFiltrados;
     }
 
     @Override
-    public void atualizar(Emprestimo emprestimo) {
+    public void atualizar(Emprestimo emprestimo) throws RegistroNaoEncontradoException {
 
         for (int i = 0; i < emprestimos.size(); i++) {
 
@@ -53,15 +63,13 @@ public class EmprestimoRepositorio extends Repositorio<Emprestimo> {
             }
         }
 
-        throw new IllegalArgumentException(
-            "Empréstimo não encontrado."
-        );
+        throw new RegistroNaoEncontradoException();
     }
     
     @Override
-    public void remover(int id) {
+    public void remover(int emprestimoId) throws RegistroNaoEncontradoException {
 
-        Emprestimo emprestimo = buscarPorId(id);
+        Emprestimo emprestimo = buscarPorId(emprestimoId);
         emprestimos.remove(emprestimo);
     }
 }

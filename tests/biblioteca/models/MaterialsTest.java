@@ -63,17 +63,17 @@ public class MaterialsTest {
             "9780132350884", "Prentice Hall"
         );
 
-        assertTrue(livro.podeSerEmprestado(),
+        assertTrue(livro.estaDisponivel(),
             "Um material recém-cadastrado deve estar disponível.");
 
-        livro.alterarDisponibilidade();
+        livro.marcarComoIndisponivel();
 
-        assertFalse(livro.podeSerEmprestado(),
+        assertFalse(livro.estaDisponivel(),
             "Após alterar a disponibilidade, o material não deve poder ser emprestado.");
 
-        livro.alterarDisponibilidade();
+        livro.marcarComoDisponivel();
 
-        assertTrue(livro.podeSerEmprestado(),
+        assertTrue(livro.estaDisponivel(),
             "Após alternar novamente, o material deve voltar a ficar disponível.");
     }
 }

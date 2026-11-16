@@ -1,5 +1,6 @@
 package biblioteca.repository;
 
+import biblioteca.exception.ItemDuplicadoException;
 import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
@@ -30,7 +31,7 @@ class MaterialRepositorioTest {
     }
 
     @Test
-    void deveCadastrarMaterial() {
+    void deveCadastrarMaterial() throws ItemDuplicadoException, RegistroNaoEncontradoException {
         repositorio.adicionar(material);
 
         MaterialBibliografico encontrado =
@@ -41,7 +42,7 @@ class MaterialRepositorioTest {
     }
 
     @Test
-    void deveListarMateriaisCadastrados() {
+    void deveListarMateriaisCadastrados() throws ItemDuplicadoException {
         repositorio.adicionar(material);
 
         List<MaterialBibliografico> materiais =
@@ -61,7 +62,7 @@ class MaterialRepositorioTest {
     }
 
     @Test
-    void deveRemoverMaterialCadastrado() {
+    void deveRemoverMaterialCadastrado() throws ItemDuplicadoException, RegistroNaoEncontradoException {
         repositorio.adicionar(material);
 
         repositorio.remover(material.getId());
@@ -86,16 +87,16 @@ class MaterialRepositorioTest {
     }
 
     @Test
-    void deveAtualizarMaterialCadastrado() {
+    void deveAtualizarMaterialCadastrado() throws ItemDuplicadoException, RegistroNaoEncontradoException {
         repositorio.adicionar(material);
-
         MaterialBibliografico materialAtualizado =
             new Livro(
                 "Clean Code - Nova edição",
                 2024,
                 "Robert C. Martin",
                 "9780132350884",
-                "Prentice Hall"
+                "Prentice Hall",
+                    material.getId()
             );
 
         // A atualização deve preservar o ID do material original.

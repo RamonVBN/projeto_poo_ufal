@@ -33,11 +33,11 @@ public class Main {
             
 			final UsuarioService usuarioService = new UsuarioService(usuarioRepositorio, emprestimoRepositorio, autorizacaoService, sessao);
 
-            final CatalogoService catalogoService = new CatalogoService(materialRepositorio, autorizacaoService, sessao);
+      final CatalogoService catalogoService = new CatalogoService(materialRepositorio, autorizacaoService, sessao);
 
-            final EmprestimoService emprestimoService = new EmprestimoService(emprestimoRepositorio, materialRepositorio, usuarioRepositorio, autorizacaoService, sessao);
+      final EmprestimoService emprestimoService = new EmprestimoService(emprestimoRepositorio, materialRepositorio, usuarioRepositorio, autorizacaoService, sessao);
             
-            // Tela inicial
+      // Tela inicial
 			TelaLogin telalogin = new TelaLogin(usuarioService, catalogoService, emprestimoService, sessao);
 			telalogin.setVisible(true);
 		});
