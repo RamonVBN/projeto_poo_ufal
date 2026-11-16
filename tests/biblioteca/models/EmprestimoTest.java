@@ -2,6 +2,7 @@ package biblioteca.models;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import biblioteca.exception.MaterialDevolvidoException;
 import org.junit.jupiter.api.Test;
 
 import biblioteca.model.Emprestimo;
@@ -19,7 +20,7 @@ public class EmprestimoTest {
     }
 
     @Test
-    void registrarDevolucaoDeveFinalizarEmprestimo() {
+    void registrarDevolucaoDeveFinalizarEmprestimo() throws MaterialDevolvidoException {
         Emprestimo emprestimo = new Emprestimo();
 
         emprestimo.registrarDevolucao();

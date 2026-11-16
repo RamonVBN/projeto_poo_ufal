@@ -9,7 +9,7 @@ import biblioteca.model.Emprestimo;
 
 public class EmprestimoRepositorio implements Repositorio<Emprestimo> {
 
-	final private ArrayList<Emprestimo> emprestimos = new ArrayList<Emprestimo>();
+    private final ArrayList<Emprestimo> emprestimos = new ArrayList<Emprestimo>();
 	
 	@Override
     public void adicionar(Emprestimo emprestimo) throws ItemDuplicadoException {
@@ -24,10 +24,10 @@ public class EmprestimoRepositorio implements Repositorio<Emprestimo> {
     }
 	
 	@Override
-    public Emprestimo buscarPorId(int id) throws RegistroNaoEncontradoException {
+    public Emprestimo buscarPorId(int emprestimoId) throws RegistroNaoEncontradoException {
 
         for (Emprestimo emprestimo : emprestimos) {
-            if (emprestimo.getId() == id) {
+            if (emprestimo.getId() == emprestimoId) {
                 return emprestimo;
             }
         }
@@ -37,7 +37,19 @@ public class EmprestimoRepositorio implements Repositorio<Emprestimo> {
 	
 	@Override
     public List<Emprestimo> listarTodos() {
-        return new ArrayList<>(emprestimos);
+        return new ArrayList<Emprestimo>(emprestimos);
+    }
+
+    public List<Emprestimo> listarTodos(int usuarioId) {
+        List<Emprestimo> emprestimosFiltrados = new ArrayList<>();
+
+        for (Emprestimo emprestimo : emprestimos) {
+            if (emprestimo.getUsuario().getID() == (usuarioId)) {
+                emprestimosFiltrados.add(emprestimo);
+            }
+        }
+
+        return emprestimosFiltrados;
     }
 
     @Override
@@ -55,9 +67,9 @@ public class EmprestimoRepositorio implements Repositorio<Emprestimo> {
     }
     
     @Override
-    public void remover(int id) throws RegistroNaoEncontradoException {
+    public void remover(int emprestimoId) throws RegistroNaoEncontradoException {
 
-        Emprestimo emprestimo = buscarPorId(id);
+        Emprestimo emprestimo = buscarPorId(emprestimoId);
         emprestimos.remove(emprestimo);
     }
 }

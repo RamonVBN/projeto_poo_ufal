@@ -1,12 +1,14 @@
+
 package biblioteca.service;
 
-import biblioteca.exception.LimiteEmprestimosException;
-import biblioteca.exception.MaterialIndisponivelException;
+import biblioteca.auth.Sessao;
+import biblioteca.exception.*;
 import biblioteca.model.Emprestimo;
+import biblioteca.model.StatusEmprestimo;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
+import biblioteca.model.usuario.Cargo;
 import biblioteca.model.usuario.Usuario;
-import biblioteca.model.usuario.UsuarioComum;
 import biblioteca.repository.EmprestimoRepositorio;
 import biblioteca.repository.MaterialRepositorio;
 import biblioteca.repository.UsuarioRepositorio;
@@ -14,6 +16,7 @@ import biblioteca.repository.UsuarioRepositorio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,26 +27,33 @@ class EmprestimoServiceTest {
     private EmprestimoRepositorio emprestimoRepositorio;
     private MaterialRepositorio materialRepositorio;
     private UsuarioRepositorio usuarioRepositorio;
+    private AutorizacaoService autorizacaoService;
+    private Sessao sessao;
 
-    private Usuario usuario;
+    private Usuario usuarioPermitido;
     private MaterialBibliografico material;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws ItemDuplicadoException {
         emprestimoRepositorio = new EmprestimoRepositorio();
         materialRepositorio = new MaterialRepositorio();
         usuarioRepositorio = new UsuarioRepositorio();
+        autorizacaoService = new AutorizacaoService();
+        sessao = new Sessao();
 
         service = new EmprestimoService(
                 emprestimoRepositorio,
                 materialRepositorio,
-                usuarioRepositorio
+                usuarioRepositorio,
+                autorizacaoService,
+                sessao
         );
 
-        usuario = new UsuarioComum(
+        usuarioPermitido = new Usuario(
                 "João Silva",
                 "joao",
-                "123456"
+                "123456",
+                Cargo.BIBLIOTECARIO
         );
 
         material = new Livro(
@@ -54,78 +64,83 @@ class EmprestimoServiceTest {
                 "Prentice Hall"
         );
 
-        usuarioRepositorio.adicionar(usuario);
+        usuarioRepositorio.adicionar(usuarioPermitido);
         materialRepositorio.adicionar(material);
+        sessao.iniciarSessao(usuarioPermitido);
     }
 
-    @Test
-    void deveRegistrarEmprestimo() {
-        service.registrarEmprestimo(usuario.getID(), material.getId());
+    // REGISTRO DE EMPRÉSTIMOS
 
-        List<Emprestimo> emprestimos = emprestimoRepositorio.listarTodos();
+    @Test
+    void deveRegistrarEmprestimo() throws Exception {
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        List<Emprestimo> emprestimos =
+                emprestimoRepositorio.listarTodos();
 
         assertEquals(1, emprestimos.size());
-        assertTrue(emprestimos.get(0).estaAtivo());
+        assertTrue(emprestimos.getFirst().estaAtivo());
     }
 
     @Test
-    void deveMarcarMaterialComoIndisponivelAposEmprestimo() {
-        service.registrarEmprestimo(usuario.getID(), material.getId());
+    void deveMarcarMaterialComoIndisponivelAposEmprestimo()
+            throws Exception {
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
 
-        MaterialBibliografico encontrado = materialRepositorio.buscarPorId(material.getId());
+        MaterialBibliografico encontrado =
+                materialRepositorio.buscarPorId(material.getId());
 
-        assertFalse(encontrado.podeSerEmprestado());
+        assertFalse(encontrado.estaDisponivel());
     }
 
     @Test
-    void deveImpedirEmprestimoDeMaterialIndisponivel() {
-        service.registrarEmprestimo(usuario.getID(), material.getId());
+    void deveImpedirEmprestimoDeMaterialIndisponivel()
+            throws Exception {
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
 
         assertThrows(
                 MaterialIndisponivelException.class,
                 () -> service.registrarEmprestimo(
-                        usuario.getID(),
+                        usuarioPermitido.getID(),
                         material.getId()
                 )
         );
     }
 
     @Test
-    void deveRegistrarDevolucao() {
-        service.registrarEmprestimo(usuario.getID(), material.getId());
-
-        Emprestimo emprestimo = emprestimoRepositorio.listarTodos().get(0);
-
-        service.registrarDevolucao(emprestimo.getId());
-
-        assertFalse(emprestimo.estaAtivo());
+    void deveImpedirEmprestimoComUsuarioInexistente() {
+        assertThrows(
+                RegistroNaoEncontradoException.class,
+                () -> service.registrarEmprestimo(
+                        -1,
+                        material.getId()
+                )
+        );
     }
 
     @Test
-    void deveMarcarMaterialComoDisponivelAposDevolucao() {
-        service.registrarEmprestimo(usuario.getID(), material.getId());
-
-        Emprestimo emprestimo =
-                emprestimoRepositorio.listarTodos().get(0);
-
-        service.registrarDevolucao(emprestimo.getId());
-
-        MaterialBibliografico encontrado = materialRepositorio.buscarPorId(material.getId());
-
-        assertTrue(encontrado.podeSerEmprestado());
+    void deveImpedirEmprestimoComMaterialInexistente() {
+        assertThrows(
+                RegistroNaoEncontradoException.class,
+                () -> service.registrarEmprestimo(
+                        usuarioPermitido.getID(),
+                        -1
+                )
+        );
     }
 
     @Test
-    void deveListarEmprestimosDeUmUsuario() {
-        service.registrarEmprestimo(usuario.getID(), material.getId());
-
-        List<Emprestimo> emprestimos = service.listarEmprestimosPorUsuario(usuario.getID());
-
-        assertEquals(1, emprestimos.size());
-    }
-
-    @Test
-    void deveImpedirMaisDeTresEmprestimosAtivos() {
+    void deveImpedirMaisDeTresEmprestimosAtivos()
+            throws Exception {
         MaterialBibliografico livro2 = new Livro(
                 "Clean Architecture",
                 2017,
@@ -154,15 +169,231 @@ class EmprestimoServiceTest {
         materialRepositorio.adicionar(livro3);
         materialRepositorio.adicionar(livro4);
 
-        service.registrarEmprestimo(usuario.getID(), material.getId());
-        service.registrarEmprestimo(usuario.getID(), livro2.getId());
-        service.registrarEmprestimo(usuario.getID(), livro3.getId());
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                livro2.getId()
+        );
+
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                livro3.getId()
+        );
 
         assertThrows(
                 LimiteEmprestimosException.class,
                 () -> service.registrarEmprestimo(
-                        usuario.getID(),
+                        usuarioPermitido.getID(),
                         livro4.getId()
+                )
+        );
+    }
+
+    @Test
+    void devePermitirNovoEmprestimoAposDevolucao()
+            throws Exception {
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        Emprestimo emprestimo =
+                emprestimoRepositorio.listarTodos().getFirst();
+
+        service.registrarDevolucao(emprestimo.getId());
+
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        assertEquals(2, emprestimoRepositorio.listarTodos().size());
+    }
+
+    // DEVOLUÇÃO DE EMPRÉSTIMOS
+
+    @Test
+    void deveRegistrarDevolucao() throws Exception {
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        Emprestimo emprestimo =
+                emprestimoRepositorio.listarTodos().getFirst();
+
+        service.registrarDevolucao(emprestimo.getId());
+
+        assertFalse(emprestimo.estaAtivo());
+        assertEquals(StatusEmprestimo.DEVOLVIDO, emprestimo.getStatus());
+    }
+
+    @Test
+    void deveMarcarMaterialComoDisponivelAposDevolucao()
+            throws Exception {
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        Emprestimo emprestimo =
+                emprestimoRepositorio.listarTodos().getFirst();
+
+        service.registrarDevolucao(emprestimo.getId());
+
+        MaterialBibliografico encontrado =
+                materialRepositorio.buscarPorId(material.getId());
+
+        assertTrue(encontrado.estaDisponivel());
+    }
+
+    @Test
+    void deveImpedirDevolucaoDuplicada() throws Exception {
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        Emprestimo emprestimo =
+                emprestimoRepositorio.listarTodos().getFirst();
+
+        service.registrarDevolucao(emprestimo.getId());
+
+        assertThrows(
+                MaterialDevolvidoException.class,
+                () -> service.registrarDevolucao(emprestimo.getId())
+        );
+    }
+
+    // CONSULTA DE EMPRÉSTIMOS
+
+    @Test
+    void deveBuscarEmprestimoPorId() throws Exception {
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        Emprestimo esperado =
+                emprestimoRepositorio.listarTodos().getFirst();
+
+        Emprestimo encontrado =
+                service.buscarEmprestimo(esperado.getId());
+
+        assertEquals(esperado.getId(), encontrado.getId());
+    }
+
+    @Test
+    void deveImpedirBuscaDeEmprestimoInexistente() {
+        assertThrows(
+                RegistroNaoEncontradoException.class,
+                () -> service.buscarEmprestimo(-1)
+        );
+    }
+
+    @Test
+    void deveListarTodosOsEmprestimos() throws Exception {
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        List<Emprestimo> emprestimos =
+                service.listarEmprestimos();
+
+        assertEquals(1, emprestimos.size());
+    }
+
+    @Test
+    void deveListarEmprestimosDeUmUsuario()
+            throws Exception {
+        service.registrarEmprestimo(
+                usuarioPermitido.getID(),
+                material.getId()
+        );
+
+        List<Emprestimo> emprestimos =
+                service.listarEmprestimosPorUsuario(
+                        usuarioPermitido.getID()
+                );
+
+        assertEquals(1, emprestimos.size());
+    }
+
+    @Test
+    void deveListarMeusEmprestimos() throws Exception {
+        Usuario leitor = new Usuario(
+                "Maria Silva",
+                "maria",
+                "123456",
+                Cargo.LEITOR
+        );
+
+        usuarioRepositorio.adicionar(leitor);
+
+        MaterialBibliografico livro = new Livro(
+                "Java Efetivo",
+                2018,
+                "Joshua Bloch",
+                "9780134685991",
+                "Alta Books"
+        );
+
+        materialRepositorio.adicionar(livro);
+
+        service.registrarEmprestimo(
+                leitor.getID(),
+                livro.getId()
+        );
+
+        sessao.iniciarSessao(leitor);
+
+        List<Emprestimo> emprestimos =
+                service.listarMeusEmprestimos();
+
+        assertEquals(1, emprestimos.size());
+        assertEquals(
+                leitor.getID(),
+                emprestimos.getFirst().getUsuario().getID()
+        );
+    }
+
+    // AUTENTICAÇÃO E AUTORIZAÇÃO
+
+    @Test
+    void deveImpedirEmprestimoSemAutenticacao() {
+        sessao.encerrarSessao();
+
+        assertThrows(
+                UsuarioNaoAutenticadoException.class,
+                () -> service.registrarEmprestimo(
+                        usuarioPermitido.getID(),
+                        material.getId()
+                )
+        );
+    }
+
+    @Test
+    void deveImpedirEmprestimoSemPermissao()
+            throws Exception {
+        Usuario leitor = new Usuario(
+                "Maria Silva",
+                "maria",
+                "123456",
+                Cargo.LEITOR
+        );
+
+        sessao.iniciarSessao(leitor);
+
+        assertThrows(
+                OperacaoNaoPermitidaException.class,
+                () -> service.registrarEmprestimo(
+                        usuarioPermitido.getID(),
+                        material.getId()
                 )
         );
     }

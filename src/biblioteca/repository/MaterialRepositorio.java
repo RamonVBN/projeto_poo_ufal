@@ -9,7 +9,7 @@ import biblioteca.model.material.MaterialBibliografico;
 
 public class MaterialRepositorio implements Repositorio<MaterialBibliografico> {
 
-	final private ArrayList<MaterialBibliografico> materiais = new ArrayList<MaterialBibliografico>();
+	private final ArrayList<MaterialBibliografico> materiais = new ArrayList<>();
 	
 	@Override
     public void adicionar(MaterialBibliografico material) throws ItemDuplicadoException {
@@ -24,15 +24,31 @@ public class MaterialRepositorio implements Repositorio<MaterialBibliografico> {
     }
 	
 	@Override
-    public MaterialBibliografico buscarPorId(int id) throws RegistroNaoEncontradoException {
+    public MaterialBibliografico buscarPorId(int materialId) throws RegistroNaoEncontradoException {
 
         for (MaterialBibliografico material : materiais) {
-            if (material.getId() == id) {
+            if (material.getId() == materialId) {
                 return material;
             }
         }
 
         throw new RegistroNaoEncontradoException();
+    }
+
+    public List<MaterialBibliografico> listarPorTitulo(String titulo) {
+
+        List<MaterialBibliografico> resultado = new ArrayList<>();
+
+        if (titulo == null || titulo.isBlank()) {
+            return List.of();
+        }
+        for (MaterialBibliografico material : materiais) {
+            if (material.getTitulo().toLowerCase().contains(titulo.toLowerCase())) {
+                resultado.add(material);
+            }
+        }
+
+        return resultado;
     }
 	
 	@Override
@@ -55,9 +71,9 @@ public class MaterialRepositorio implements Repositorio<MaterialBibliografico> {
     }
     
     @Override
-    public void remover(int id) throws RegistroNaoEncontradoException {
+    public void remover(int materialId) throws RegistroNaoEncontradoException {
 
-        MaterialBibliografico material = buscarPorId(id);
+        MaterialBibliografico material = buscarPorId(materialId);
         materiais.remove(material);
     }
 }

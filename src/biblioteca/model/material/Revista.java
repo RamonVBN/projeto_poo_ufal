@@ -11,41 +11,41 @@ public class Revista extends MaterialBibliografico{
 	// construtor
 	public Revista(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao) {
 		super(titulo, anoPublicacao);
-		this.setEditora(editora);
+		this.setEditora(editora.trim());
 		this.setNumeroEdicao(numeroEdicao);
-		this.setDataPublicacao(dataPublicacao);
+		this.setDataPublicacao(dataPublicacao.trim());
 	}
 
 	public Revista(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, int id) {
 		super(titulo, anoPublicacao, id);
-		this.setEditora(editora);
+		this.setEditora(editora.trim());
 		this.setNumeroEdicao(numeroEdicao);
-		this.setDataPublicacao(dataPublicacao);
+		this.setDataPublicacao(dataPublicacao.trim());
 	}
 	
 	// getters e setters
 
-	private String getEditora() {
+	public String getEditora() {
 		return editora;
 	}
 
-	private void setEditora(String editora) {
+	public void setEditora(String editora) {
 		this.editora = editora;
 	}
 
-	private int getNumeroEdicao() {
+	public int getNumeroEdicao() {
 		return numeroEdicao;
 	}
 
-	private void setNumeroEdicao(int numeroEdicao) {
+	public void setNumeroEdicao(int numeroEdicao) {
 		this.numeroEdicao = numeroEdicao;
 	}
 
-	private String getDataPublicacao() {
+	public String getDataPublicacao() {
 		return dataPublicacao;
 	}
 
-	private void setDataPublicacao(String dataPublicacao) {
+	public void setDataPublicacao(String dataPublicacao) {
 		this.dataPublicacao = dataPublicacao;
 	}
 	
@@ -54,10 +54,5 @@ public class Revista extends MaterialBibliografico{
 	@Override
 	public String exibirDetalhes() {
 		return "Titulo da revista: %s - Ano de publicação: %s - Numero de edição: %s - Editora: %s".formatted(this.getTitulo(), this.getAnoPublicacao(), this.getNumeroEdicao(), this.getEditora());
-	}
-
-	@Override
-	public boolean podeSerEmprestado() {
-		return this.isDisponivel();
 	}
 }

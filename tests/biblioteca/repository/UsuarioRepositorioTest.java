@@ -2,8 +2,9 @@ package biblioteca.repository;
 
 import biblioteca.exception.ItemDuplicadoException;
 import biblioteca.exception.RegistroNaoEncontradoException;
+import biblioteca.model.usuario.Cargo;
 import biblioteca.model.usuario.Usuario;
-import biblioteca.model.usuario.UsuarioComum;
+
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,10 +21,11 @@ class UsuarioRepositorioTest {
     @BeforeEach
     void setUp() {
         repositorio = new UsuarioRepositorio();
-        usuario = new UsuarioComum(
+        usuario = new Usuario(
             "João da Silva",
             "joao",
-            "123456"
+            "123456",
+            Cargo.LEITOR
         );
     }
 
