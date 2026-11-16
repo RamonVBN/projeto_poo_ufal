@@ -7,7 +7,7 @@ import biblioteca.exception.ItemDuplicadoException;
 import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.model.material.MaterialBibliografico;
 
-public class MaterialRepositorio implements Repositorio<MaterialBibliografico> {
+public class MaterialRepositorio implements Repositorio<MaterialBibliografico>, RepositorioRemovivel<MaterialBibliografico> {
 
 	private final ArrayList<MaterialBibliografico> materiais = new ArrayList<>();
 	

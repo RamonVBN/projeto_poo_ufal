@@ -15,6 +15,4 @@ public interface Repositorio<N> {
     List<N> listarTodos();
 
     void atualizar(N objeto) throws RegistroNaoEncontradoException;
-
-    void remover(int id) throws RegistroNaoEncontradoException;
 }
