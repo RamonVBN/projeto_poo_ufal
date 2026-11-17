@@ -101,7 +101,6 @@ public class UsuarioRepositorio implements Repositorio<Usuario> {
 	
 	@Override
 	public void atualizar(Usuario usuario) throws RegistroNaoEncontradoException {
-
 	    for (int i = 0; i < usuarios.size(); i++) {
 
 	        if (usuarios.get(i).getID() == usuario.getID()) {

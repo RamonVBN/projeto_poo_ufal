@@ -1,7 +1,14 @@
 package biblioteca.view;
 
+import biblioteca.auth.Sessao;
+import biblioteca.exception.CredenciaisInvalidasException;
+import biblioteca.exception.ItemDuplicadoException;
+import biblioteca.exception.MaterialDevolvidoException;
+import biblioteca.exception.OperacaoNaoPermitidaException;
+import biblioteca.exception.RegistroNaoEncontradoException;
+import biblioteca.exception.UsuarioNaoAutenticadoException;
 import biblioteca.model.Emprestimo;
-import biblioteca.model.usuario.Usuario;
+import biblioteca.model.StatusEmprestimo;
 import biblioteca.service.EmprestimoService;
 import biblioteca.service.UsuarioService;
 
@@ -12,8 +19,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -21,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
@@ -32,12 +43,17 @@ public class MeusDados extends JPanel {
     private EmprestimoService emprestimos;
     private UsuarioService usuarioService;
     
+    private JPanel painelEmprestimos;
+    
+    private Runnable voltarLogin;
+    
     // construtor
     
-    public MeusDados(Sessao sessao, UsuarioService usuarioService, EmprestimoService emprestimos) {
+    public MeusDados(Sessao sessao, UsuarioService usuarioService, EmprestimoService emprestimos, Runnable voltarLogin) {
         this.sessao = sessao;
         this.usuarioService = usuarioService;
         this.emprestimos = emprestimos;
+        this.voltarLogin = voltarLogin;
 
         configurarPainel();
         criarComponentes();
@@ -69,7 +85,6 @@ public class MeusDados extends JPanel {
         JLabel labelLogin = new JLabel("Login atual: "+this.sessao.getUsuarioLogado().getLogin());
         JTextField inputLogin = new JTextField();
         inputLogin.setBorder(new EmptyBorder(5, 5, 5, 5));
-        inputLogin.setText("Alterar login");
 
         campoLogin.add(labelLogin, BorderLayout.NORTH);
         campoLogin.add(inputLogin, BorderLayout.CENTER);
@@ -78,12 +93,15 @@ public class MeusDados extends JPanel {
         JPanel campoSenha = new JPanel(new BorderLayout(0, 5));
         campoSenha.setBackground(new Color(220, 220, 220));
 
-        JLabel labelSenha = new JLabel("Senha atual: *****");
-        JTextField inputSenha = new JTextField();
-        inputSenha.setBorder(new EmptyBorder(5, 5, 5, 5));
+        JLabel labelSenha = new JLabel("Senha atual:");
+        JTextField inputSenhaAtual = new JTextField();
+        JTextField inputSenhaNova = new JTextField();
+        inputSenhaAtual.setBorder(new EmptyBorder(5, 5, 5, 5));
+        inputSenhaNova.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         campoSenha.add(labelSenha, BorderLayout.NORTH);
-        campoSenha.add(inputSenha, BorderLayout.CENTER);
+        campoSenha.add(inputSenhaAtual, BorderLayout.CENTER);
+        campoSenha.add(inputSenhaNova, BorderLayout.SOUTH);
 
         // Campo de nome
         JPanel campoNome = new JPanel(new BorderLayout(0, 5));
@@ -110,10 +128,38 @@ public class MeusDados extends JPanel {
 
         botaoAtualizar.addActionListener(e -> {
             String novoLogin = inputLogin.getText();
-            String novaSenha = new String(inputSenha.getText()); // ainda não aceita alteração de senha no service
+            String antigaSenha = inputSenhaAtual.getText();
+            String novaSenha = new String(inputSenhaNova.getText());
             String novoNome = inputNome.getText();
-            this.usuarioService.atualizarUsuario(novoNome, novoLogin, this.sessao.getUsuarioLogado().getID());
-            // TODO atualizar dados no service
+            try {
+            	if (novoLogin.isBlank() || novoLogin.isEmpty()) {
+            		novoLogin = this.sessao.getUsuarioLogado().getLogin();
+            	} if (novoNome.isBlank() || novoNome.isEmpty()) {
+            		novoNome = this.sessao.getUsuarioLogado().getNome();
+            	} if (!(novaSenha.isBlank() || novaSenha.isEmpty())) {
+            		try {
+						this.usuarioService.atualizarMinhaSenha(antigaSenha, novaSenha);
+					} catch (NoSuchAlgorithmException e1) {
+						JOptionPane.showMessageDialog(this, "Ocorreu um erro ao atualizar a senha", "Erro ao atualizar dados", JOptionPane.ERROR_MESSAGE);
+					} catch (InvalidKeySpecException e1) {
+						JOptionPane.showMessageDialog(this, "Ocorreu um erro ao atualizar a senha", "Erro ao atualizar dados", JOptionPane.ERROR_MESSAGE);
+					}
+            	}
+            	JOptionPane.showMessageDialog(this, "Seus dados serão atualizados no próximo login", "Dados atualizados com sucesso", JOptionPane.INFORMATION_MESSAGE);
+				this.usuarioService.atualizarMeusDados(novoNome, novoLogin);
+				this.criarComponentes();
+			} catch (OperacaoNaoPermitidaException one) {
+				JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+			} catch (RegistroNaoEncontradoException e1) {
+				JOptionPane.showMessageDialog(this, e1.getMessage(), "Erro ao atualizar dados", JOptionPane.ERROR_MESSAGE);
+			} catch (UsuarioNaoAutenticadoException une) {
+				JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+				voltarLogin.run();
+			} catch (CredenciaisInvalidasException e1) {
+				JOptionPane.showMessageDialog(this, e1.getMessage(), "Erro ao atualizar dados", JOptionPane.ERROR_MESSAGE);
+			} catch (ItemDuplicadoException e1) {
+				JOptionPane.showMessageDialog(this, e1.getMessage(), "Erro ao atualizar dados", JOptionPane.ERROR_MESSAGE);
+			}
         });
         
         painelDados.add(campos, BorderLayout.CENTER);
@@ -122,24 +168,101 @@ public class MeusDados extends JPanel {
         add(painelDados, BorderLayout.NORTH);
 
 
-        // Painel de empréstimos
-        JPanel painelEmprestimos = new JPanel();
-        painelEmprestimos.setLayout(new BoxLayout(painelEmprestimos, BoxLayout.Y_AXIS));
-        painelEmprestimos.setBackground(new Color(220, 220, 220));
-
-        JLabel tituloEmprestimos = new JLabel("Empréstimos");
-        tituloEmprestimos.setAlignmentX(Component.LEFT_ALIGNMENT);
-        tituloEmprestimos.setBorder(new EmptyBorder(5, 0, 20, 0));
-
-        painelEmprestimos.add(tituloEmprestimos);
-        
-        for (Emprestimo emprestimo : this.emprestimos.listarEmprestimosPorUsuario(this.sessao.getUsuarioLogado().getID())) {
-            painelEmprestimos.add(criarMaterial(emprestimo));
-            painelEmprestimos.add(Box.createVerticalStrut(15));
-        }
-        
-        add(painelEmprestimos, BorderLayout.CENTER);
+        criarPainelEmprestimos();
     }
+
+
+	private void criarPainelEmprestimos() {
+	    this.painelEmprestimos = new JPanel(new GridLayout(1, 2, 20, 20));
+	    painelEmprestimos.setBackground(new Color(220, 220, 220));
+	
+	    // =================================
+	    // EMPRÉSTIMOS ATIVOS
+	    // =================================
+	
+	    JPanel areaAtivos = new JPanel(new BorderLayout(0, 10));
+	    areaAtivos.setBackground(new Color(220, 220, 220));
+	
+	    JPanel cabecalhoEmprestimos = new JPanel();
+	    cabecalhoEmprestimos.setLayout(new BoxLayout(cabecalhoEmprestimos, BoxLayout.X_AXIS));
+	    cabecalhoEmprestimos.setOpaque(false);
+	    cabecalhoEmprestimos.setBorder(new EmptyBorder(5, 0, 10, 0));
+	
+	    JLabel tituloEmprestimos = new JLabel("Empréstimos ativos");
+	
+	    JButton btnAtualizar = new JButton("Atualizar");
+	
+	    cabecalhoEmprestimos.add(tituloEmprestimos);
+	    cabecalhoEmprestimos.add(Box.createHorizontalGlue());
+	    cabecalhoEmprestimos.add(btnAtualizar);
+	
+	    JPanel painelListaEmprestimos = new JPanel();
+	    painelListaEmprestimos.setLayout(new BoxLayout(painelListaEmprestimos, BoxLayout.Y_AXIS));
+	    painelListaEmprestimos.setOpaque(false);
+	
+	    areaAtivos.add(cabecalhoEmprestimos, BorderLayout.NORTH);
+	    areaAtivos.add(painelListaEmprestimos, BorderLayout.CENTER);
+	
+	    // =================================
+	    // HISTÓRICO DE EMPRÉSTIMOS
+	    // =================================
+	
+	    JPanel areaHistorico = new JPanel(new BorderLayout(0, 10));
+	    areaHistorico.setBackground(new Color(220, 220, 220));
+	
+	    JLabel tituloHistorico = new JLabel("Histórico de empréstimos");
+	
+	    JPanel painelListaHistorico = new JPanel();
+	    painelListaHistorico.setLayout(new BoxLayout(painelListaHistorico, BoxLayout.Y_AXIS));
+	    painelListaHistorico.setBackground(new Color(220, 220, 220));
+	
+	    JScrollPane scrollHistorico = new JScrollPane(painelListaHistorico);
+	    scrollHistorico.setBorder(null);
+	    scrollHistorico.getVerticalScrollBar().setUnitIncrement(15);
+	
+	    areaHistorico.add(tituloHistorico, BorderLayout.NORTH);
+	    areaHistorico.add(scrollHistorico, BorderLayout.CENTER);
+	    
+	    btnAtualizar.addActionListener(e -> {
+	        painelListaEmprestimos.removeAll();
+	        painelListaHistorico.removeAll();
+	
+	        this.criarMateriais(painelListaEmprestimos, painelListaHistorico);
+	
+	        painelListaEmprestimos.revalidate();
+	        painelListaEmprestimos.repaint();
+	    });
+	
+	    // =================================
+	    // ORGANIZAÇÃO FINAL
+	    // =================================
+	
+	    painelEmprestimos.add(areaAtivos);
+	    painelEmprestimos.add(areaHistorico);
+	
+	    add(painelEmprestimos, BorderLayout.CENTER);
+	}
+
+
+	private void criarMateriais(JPanel painelEmprestimos, JPanel painelHistorico) {
+		try {
+			List<Emprestimo> emprestimosUsuario = this.emprestimos.listarMeusEmprestimos();
+			for (Emprestimo emprestimo : emprestimosUsuario) {
+				if (emprestimo.getStatus() == StatusEmprestimo.DEVOLVIDO) {
+					painelHistorico.add(criarMaterial(emprestimo));
+					painelHistorico.add(Box.createVerticalStrut(15));
+				} else {
+		            painelEmprestimos.add(criarMaterial(emprestimo));
+		            painelEmprestimos.add(Box.createVerticalStrut(15));
+				}
+	        }
+		} catch (OperacaoNaoPermitidaException one) {
+			JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+		} catch (UsuarioNaoAutenticadoException une) {
+			JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+			voltarLogin.run();
+		}
+	}
     
 
 	private JPanel criarMaterial(Emprestimo emprestimo) {
@@ -149,13 +272,21 @@ public class MeusDados extends JPanel {
 	    itemEmprestimo.setBorder(new EmptyBorder(20, 30, 20, 30));
 	    itemEmprestimo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 65));
 	    itemEmprestimo.setAlignmentX(Component.LEFT_ALIGNMENT);
+	    
+	    JLabel informacao;
+	    
+	    if (emprestimo.getStatus() == StatusEmprestimo.DEVOLVIDO) {
+	    	informacao = new JLabel(emprestimo.getMaterial().getTitulo() + " - devolvido em: " + emprestimo.getDataDevolucao());
+	    	itemEmprestimo.add(informacao, BorderLayout.CENTER);
+	    	return itemEmprestimo;
+	    }
 	
 	    // Informações do material
-	    long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(), emprestimo.getDataDevolucao());
+	    long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(), emprestimo.getDataPrevistaDevolucao());
 	    // TODO se os dias forem negativos, formatar em vermelho
 	    
-	    JLabel informacao = new JLabel(
-	        emprestimo.getMaterial().getTitulo() + " Tempo restante: " + String.valueOf(diasRestantes)
+	    informacao = new JLabel(
+	        emprestimo.getMaterial().getTitulo() + " - Tempo restante: " + String.valueOf(diasRestantes)
 	    );
 	
 	    // Botão de devolução
@@ -168,8 +299,19 @@ public class MeusDados extends JPanel {
 	    botaoDevolver.addActionListener(e -> {
 	    	int opcao = JOptionPane.showConfirmDialog(this, "Deseja devolver este material?", "Confirmar devolução", JOptionPane.YES_NO_OPTION);
 	    	if (opcao == JOptionPane.YES_OPTION) {
-	    		this.emprestimos.registrarDevolucao(emprestimo.getId()); // TODO: isso será substituido por try futuramente
-	    		this.criarComponentes();
+	    		try {
+					this.emprestimos.registrarDevolucao(emprestimo.getId());
+					this.criarComponentes();
+				} catch (OperacaoNaoPermitidaException one) {
+					JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+				} catch (RegistroNaoEncontradoException e1) {
+					JOptionPane.showMessageDialog(this, e1.getMessage(), "Erro ao devolver", JOptionPane.ERROR_MESSAGE);
+				} catch (MaterialDevolvidoException e1) {
+					JOptionPane.showMessageDialog(this, e1.getMessage(), "Erro ao devolver", JOptionPane.ERROR_MESSAGE);
+				} catch (UsuarioNaoAutenticadoException une) {
+					JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+					voltarLogin.run();
+				}
 	    	}
 	    });
 	
