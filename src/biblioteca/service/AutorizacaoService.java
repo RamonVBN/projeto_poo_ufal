@@ -24,6 +24,7 @@ public class AutorizacaoService {
                      CONSULTAR_CATALOGO,
                      CONSULTAR_TODOS_EMPRESTIMOS,
                      CONSULTAR_USUARIOS,
+                     CONSULTAR_PROPRIOS_EMPRESTIMOS,
                      ATUALIZAR_PROPRIOS_DADOS -> true;
 
                 default -> false;
