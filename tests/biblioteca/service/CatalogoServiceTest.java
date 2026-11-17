@@ -3,8 +3,9 @@ package biblioteca.service;
 
 import biblioteca.auth.Sessao;
 import biblioteca.exception.*;
-import biblioteca.model.material.Jornal;
 import biblioteca.model.material.MaterialBibliografico;
+import biblioteca.model.material.Periodico;
+import biblioteca.model.material.TipoPeriodico;
 import biblioteca.model.usuario.Cargo;
 import biblioteca.model.usuario.Usuario;
 import biblioteca.repository.MaterialRepositorio;
@@ -71,19 +72,20 @@ class CatalogoServiceTest {
             ItemDuplicadoException,
             RegistroNaoEncontradoException {
 
-        Jornal jornal = service.cadastrarPeriodico(
+        Periodico jornal = service.cadastrarPeriodico(
                 "National Geographic",
                 2024,
                 "National Geographic Society",
                 150,
-                "15/05/2024"
+                "15/05/2024",
+                TipoPeriodico.JORNAL
         );
 
         MaterialBibliografico encontrado =
                 service.buscarMaterial(jornal.getId());
 
         assertNotNull(encontrado);
-        assertInstanceOf(Jornal.class, encontrado);
+        assertInstanceOf(Periodico.class, encontrado);
         assertEquals(jornal.getId(), encontrado.getId());
     }
 
@@ -174,7 +176,8 @@ class CatalogoServiceTest {
                         2024,
                         "National Geographic Society",
                         0,
-                        "15/05/2024"
+                        "15/05/2024",
+                        TipoPeriodico.JORNAL
                 ));
     }
 
@@ -187,7 +190,8 @@ class CatalogoServiceTest {
                         2024,
                         "National Geographic Society",
                         150,
-                        " "
+                        " ",
+                        TipoPeriodico.REVISTA
                 ));
     }
 
@@ -300,12 +304,13 @@ class CatalogoServiceTest {
             CredenciaisInvalidasException,
             ItemDuplicadoException {
 
-        Jornal jornal = service.cadastrarPeriodico(
+        Periodico jornal = service.cadastrarPeriodico(
                 "National Geographic",
                 2024,
                 "National Geographic Society",
                 150,
-                "15/05/2024"
+                "15/05/2024",
+                TipoPeriodico.JORNAL
         );
 
         service.atualizarPeriodico(
@@ -336,12 +341,13 @@ class CatalogoServiceTest {
             CredenciaisInvalidasException,
             ItemDuplicadoException {
 
-        Jornal jornal = service.cadastrarPeriodico(
+        Periodico jornal = service.cadastrarPeriodico(
                 "National Geographic",
                 2024,
                 "National Geographic Society",
                 150,
-                "15/05/2024"
+                "15/05/2024",
+                TipoPeriodico.JORNAL
         );
 
         assertThrows(TipoMaterialInvalidoException.class,

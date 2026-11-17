@@ -2,9 +2,10 @@ package biblioteca.service;
 
 import biblioteca.auth.Sessao;
 import biblioteca.exception.*;
-import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
+import biblioteca.model.material.Periodico;
+import biblioteca.model.material.TipoPeriodico;
 import biblioteca.model.usuario.Permissao;
 import biblioteca.repository.MaterialRepositorio;
 
@@ -45,7 +46,7 @@ public class CatalogoService extends Service {
         this.validarAnoPublicacao(anoPublicacao);
     }
 
-    private void validarJornalRevista
+    private void validarPeriodico
             (
                 String titulo, int anoPublicacao,
                 String editora, int numeroEdicao,
@@ -82,23 +83,24 @@ public class CatalogoService extends Service {
         return novoLivro;
     }
 
-    public Jornal cadastrarPeriodico
+    public Periodico cadastrarPeriodico
             (
                 String titulo,
                 int anoPublicacao,
                 String editora,
                 int numeroEdicao,
-                String dataPublicacao
+                String dataPublicacao,
+                TipoPeriodico tipoPeriodico
             )
             throws OperacaoNaoPermitidaException, ItemDuplicadoException, UsuarioNaoAutenticadoException, CredenciaisInvalidasException {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
 
-        this.validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
-        Jornal novoJornal = new Jornal(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
-        repositorio.adicionar(novoJornal);
-        return novoJornal;
+        this.validarPeriodico(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
+        Periodico novoPeriodico = new Periodico(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, tipoPeriodico);
+        repositorio.adicionar(novoPeriodico);
+        return novoPeriodico;
     }
 
     public MaterialBibliografico buscarMaterial(int materialId)
@@ -146,10 +148,10 @@ public class CatalogoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
 
-        MaterialBibliografico material = repositorio.buscarPorId(livroId);
+        MaterialBibliografico livroParaAtualizar = repositorio.buscarPorId(livroId);
 
-        if (!(material instanceof Livro)) {
-            throw new TipoMaterialInvalidoException(material);
+        if (!(livroParaAtualizar instanceof Livro)) {
+            throw new TipoMaterialInvalidoException(livroParaAtualizar);
         }
 
         this.validarLivro(titulo, anoPublicacao, autor, isbn, editora);
@@ -164,7 +166,7 @@ public class CatalogoService extends Service {
                     String editora,
                     int numeroEdicao,
                     String dataPublicacao,
-                    int jornalRevistaId
+                    int periodicoId
             )
             throws OperacaoNaoPermitidaException,
             RegistroNaoEncontradoException,
@@ -174,15 +176,15 @@ public class CatalogoService extends Service {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
+        MaterialBibliografico periodicoParaAtualizar = repositorio.buscarPorId(periodicoId);
 
-        MaterialBibliografico material = repositorio.buscarPorId(jornalRevistaId);
-
-        if (!(material instanceof Jornal)) {
-            throw new TipoMaterialInvalidoException(material);
+        if (!(periodicoParaAtualizar instanceof Periodico)) {
+            throw new TipoMaterialInvalidoException(periodicoParaAtualizar);
         }
 
-        this.validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
-        Jornal jornalRevistaAtualizado = new Jornal(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, jornalRevistaId);
+        this.validarPeriodico(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
+        TipoPeriodico tipoPeriodico = ((Periodico) periodicoParaAtualizar).getTipoPeriodico();
+        Periodico jornalRevistaAtualizado = new Periodico(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, tipoPeriodico, periodicoId);
         repositorio.atualizar(jornalRevistaAtualizado);
 
     }
