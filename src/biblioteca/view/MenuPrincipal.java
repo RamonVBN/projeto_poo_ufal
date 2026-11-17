@@ -7,7 +7,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -24,13 +23,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import biblioteca.auth.Sessao;
+import biblioteca.exception.ItemDuplicadoException;
+import biblioteca.exception.LimiteEmprestimosException;
+import biblioteca.exception.MaterialIndisponivelException;
+import biblioteca.exception.OperacaoNaoPermitidaException;
+import biblioteca.exception.RegistroNaoEncontradoException;
+import biblioteca.exception.UsuarioNaoAutenticadoException;
 import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
 import biblioteca.model.material.Revista;
-import biblioteca.model.usuario.Administrador;
-import biblioteca.model.usuario.Bibliotecario;
-import biblioteca.model.usuario.Usuario;
+import biblioteca.model.usuario.Cargo;
 import biblioteca.service.CatalogoService;
 import biblioteca.service.EmprestimoService;
 import biblioteca.service.UsuarioService;
@@ -52,7 +56,6 @@ public class MenuPrincipal extends JFrame{
     
     private Runnable voltarLogin;
     
-    
     // construtor
     
     public MenuPrincipal(Sessao usuario, UsuarioService usuarios, CatalogoService catalogo, EmprestimoService emprestimos, Runnable voltarLogin) {
@@ -65,7 +68,6 @@ public class MenuPrincipal extends JFrame{
         criarMenu();
         criarConteudo();
         atualizarMateriais();
-        carregarMateriaisExemplo();
 	}
     
     // metodos
@@ -89,6 +91,7 @@ public class MenuPrincipal extends JFrame{
 
         itemInicio.addActionListener(e -> {
             cardLayout.show(painelCentral, "CATALOGO");
+            this.atualizarMateriais();
         });
 
         itemMeusDados.addActionListener(e -> {
@@ -104,9 +107,15 @@ public class MenuPrincipal extends JFrame{
             );
 
             if (opcao == JOptionPane.YES_OPTION) {
-            	this.usuarios.deslogar();
-                dispose();
-                voltarLogin.run();
+            	try {
+					this.usuarios.deslogar();
+					dispose();
+	                voltarLogin.run();
+				} catch (UsuarioNaoAutenticadoException e1) {
+					JOptionPane.showMessageDialog(this, "Você não está autenticado", "Usuario não autenticado", ERROR);
+					dispose();
+	                voltarLogin.run();
+				}
             }
         });
 
@@ -159,13 +168,13 @@ public class MenuPrincipal extends JFrame{
         painelCentral.add(criarPainelCatalogo(), "CATALOGO");
 
         // Adiciona a tela de dados
-        painelCentral.add(new MeusDados(this.sessao, this.usuarios, this.emprestimos),"MEUS_DADOS");
+        painelCentral.add(new MeusDados(this.sessao, this.usuarios, this.emprestimos, voltarLogin),"MEUS_DADOS");
         
         // Adiciona a tela do bibliotecario
-        painelCentral.add(new MenuBibliotecario(this.catalogo), "BIBLIOTECARIO");
+        painelCentral.add(new MenuBibliotecario(this.catalogo, voltarLogin), "BIBLIOTECARIO");
         
         // Adiciona a tela do administrador
-        painelCentral.add(new MenuAdministrador(this.usuarios), "ADMINISTRADOR");
+        painelCentral.add(new MenuAdministrador(this.usuarios, voltarLogin), "ADMINISTRADOR");
 
         add(painelCentral, BorderLayout.CENTER);
     }
@@ -187,8 +196,21 @@ public class MenuPrincipal extends JFrame{
 	
 	    botaoBuscar.addActionListener(e -> {
 	        String tituloBusca = this.campoPesquisa.getText();
-	        List<MaterialBibliografico> resultadoBusca = this.catalogo.listarMateriais(tituloBusca);
-	        this.carregarMateriais(resultadoBusca);
+	        if (tituloBusca.isBlank() || tituloBusca.isEmpty()) {
+	        	this.atualizarMateriais();
+	        } else {
+		        List<MaterialBibliografico> resultadoBusca;
+				try {
+					resultadoBusca = this.catalogo.listarMateriaisPorTitulo(tituloBusca);
+					this.carregarMateriais(resultadoBusca);
+				} catch (OperacaoNaoPermitidaException one) {
+					JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+				} catch (UsuarioNaoAutenticadoException une) {
+					JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+					dispose();
+					voltarLogin.run();
+				}
+	        }
 	    });
 	
 	    painelPesquisa.add(campoPesquisa);
@@ -211,15 +233,6 @@ public class MenuPrincipal extends JFrame{
 	
 	    return painelCatalogo;
 	}
-
-    
-    private void carregarMateriaisExemplo() {
-        adicionarMaterial(new Livro("Clean Code", 2008, "Robert C. Martin", "9780132350884", "Prentice Hall"));
-
-        adicionarMaterial(new Revista("Revista Ciência Hoje", 2024, "SBPC", 395, "21/07/2024"));
-
-        adicionarMaterial(new Jornal("Jornal da Cidade", 2025, "Editora Local", 120, "23/01/2025"));
-    }
     
     private void carregarMateriais(List<MaterialBibliografico> materiais) {
     	this.painelMateriais.removeAll();
@@ -280,12 +293,12 @@ public class MenuPrincipal extends JFrame{
 
         painelAcao.setBackground(Color.WHITE);
 
-        JLabel status = new JLabel(material.isDisponivel() ? "Disponível" : "Indisponível");
+        JLabel status = new JLabel(material.estaDisponivel() ? "Disponível" : "Indisponível");
 
         status.setOpaque(true);
         status.setForeground(Color.BLACK);
 
-        status.setBackground(material.isDisponivel() ? new Color(100, 210, 120) : new Color(240, 70, 70));
+        status.setBackground(material.estaDisponivel() ? new Color(100, 210, 120) : new Color(240, 70, 70));
 
         status.setBorder(new EmptyBorder(8, 10, 8, 10));
         status.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -293,7 +306,7 @@ public class MenuPrincipal extends JFrame{
         painelAcao.add(status);
 
         // O BOTAO SO APARECE SE O MATERIAL ESTIVER DISPONIVEL
-        if (material.isDisponivel()) {
+        if (material.estaDisponivel()) {
 
             JButton botaoEmprestar = new JButton("Emprestar");
 
@@ -311,18 +324,24 @@ public class MenuPrincipal extends JFrame{
                 );
 
                 if (opcao == JOptionPane.YES_OPTION) {
-
-                    // TODO: Criar o objeto Emprestimo.
-                    // TODO: Registrar o empréstimo usando EmprestimoService.
-                    // TODO: Alterar a disponibilidade do material.
-                    // TODO: Atualizar a interface após o empréstimo.
-
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Confirmação recebida! O registro do empréstimo será implementado.",
-                            "Empréstimo",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
+                    try {
+						this.emprestimos.registrarEmprestimo(this.sessao.getUsuarioLogado().getID(), material.getId());
+						this.atualizarMateriais();
+					} catch (OperacaoNaoPermitidaException one) {
+						JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+					} catch (UsuarioNaoAutenticadoException une) {
+						JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+						dispose();
+						voltarLogin.run();
+					} catch (RegistroNaoEncontradoException e1) {
+						JOptionPane.showMessageDialog(this, "Material não encontrado", "Erro ao emprestar", JOptionPane.ERROR_MESSAGE);
+					} catch (MaterialIndisponivelException e1) {
+						JOptionPane.showMessageDialog(this, "O material está indisponivel no momento", "Erro ao emprestar", JOptionPane.ERROR_MESSAGE);
+					} catch (LimiteEmprestimosException e1) {
+						JOptionPane.showMessageDialog(this, "Limite de emprestimos excedido, você não pode mais pegar materiais emprestados", "Erro ao emprestar", JOptionPane.ERROR_MESSAGE);
+					} catch (ItemDuplicadoException e1) {
+						JOptionPane.showMessageDialog(this, "Esse emprestimo já existe", "Erro ao emprestar", JOptionPane.ERROR_MESSAGE);
+					}
                 }
             });
 
@@ -360,7 +379,16 @@ public class MenuPrincipal extends JFrame{
     }
     
     private void atualizarMateriais() {
-        ArrayList<MaterialBibliografico> materiais = this.catalogo.listarMateriais();
-        carregarMateriais(materiais);
+        List<MaterialBibliografico> materiais;
+		try {
+			materiais = this.catalogo.listarMateriais();
+			carregarMateriais(materiais);
+		} catch (OperacaoNaoPermitidaException one) {
+			JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+		} catch (UsuarioNaoAutenticadoException une) {
+			JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+			dispose();
+			voltarLogin.run();
+		}
     }
 }
