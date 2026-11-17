@@ -78,6 +78,7 @@ public class MenuPrincipal extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setMinimumSize(new Dimension(700, 500));
+        setResizable(false);
     }
     
     private void criarMenu() {
@@ -130,7 +131,7 @@ public class MenuPrincipal extends JFrame{
             JMenuItem itemGerenciar = new JMenuItem("Gerenciar materiais");
 
             itemGerenciar.addActionListener(e -> {
-                cardLayout.show(itemGerenciar, "BIBLIOTECARIO");
+                cardLayout.show(painelCentral, "BIBLIOTECARIO"); // TODO deve passar um JPanel e não um JMenuItem
             });
             
             menuPrincipal.add(itemGerenciar);
@@ -142,7 +143,7 @@ public class MenuPrincipal extends JFrame{
             JMenuItem itemGerenciarUsuarios = new JMenuItem("Gerenciar usuários");
 
             itemGerenciarUsuarios.addActionListener(e -> {
-                cardLayout.show(itemGerenciarUsuarios, "ADMINISTRADOR");
+                cardLayout.show(painelCentral, "ADMINISTRADOR"); // TODO deve passar um JPanel e não um JMenuItem
             });
 
             menuPrincipal.add(itemGerenciarUsuarios);
@@ -171,11 +172,14 @@ public class MenuPrincipal extends JFrame{
         painelCentral.add(new MeusDados(this.sessao, this.usuarios, this.emprestimos, voltarLogin),"MEUS_DADOS");
         
         // Adiciona a tela do bibliotecario
-        painelCentral.add(new MenuBibliotecario(this.catalogo, voltarLogin), "BIBLIOTECARIO");
+        if (this.sessao.getUsuarioLogado().getCargo() == Cargo.BIBLIOTECARIO || this.sessao.getUsuarioLogado().getCargo() == Cargo.ADMINISTRADOR) {
+        	painelCentral.add(new MenuBibliotecario(this.catalogo, voltarLogin), "BIBLIOTECARIO");
+        }
         
         // Adiciona a tela do administrador
-        painelCentral.add(new MenuAdministrador(this.usuarios, voltarLogin), "ADMINISTRADOR");
-
+        if (this.sessao.getUsuarioLogado().getCargo() == Cargo.ADMINISTRADOR) {
+        	painelCentral.add(new MenuAdministrador(this.usuarios, voltarLogin), "ADMINISTRADOR");
+        }
         add(painelCentral, BorderLayout.CENTER);
     }
     

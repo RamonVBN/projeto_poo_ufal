@@ -22,12 +22,16 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import biblioteca.exception.CredenciaisInvalidasException;
 import biblioteca.exception.ItemDuplicadoException;
 import biblioteca.exception.MaterialIndisponivelException;
+import biblioteca.exception.OperacaoNaoPermitidaException;
+import biblioteca.exception.RegistroNaoEncontradoException;
+import biblioteca.exception.UsuarioNaoAutenticadoException;
+import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
 import biblioteca.model.material.Revista;
-import biblioteca.model.usuario.Usuario;
 import biblioteca.service.CatalogoService;
 
 public class MenuBibliotecario extends JPanel{
@@ -35,13 +39,15 @@ public class MenuBibliotecario extends JPanel{
 	// atributos
 	
 	private CatalogoService catalogo;
+	private Runnable voltarLogin;
 	
 	private JPanel painelListaMateriais;
 
 	// construtor
 	
-	public MenuBibliotecario(CatalogoService catalogo) {
+	public MenuBibliotecario(CatalogoService catalogo, Runnable voltarLogin) {
 		this.catalogo = catalogo;
+		this.voltarLogin = voltarLogin;
 		configurarPainel();
         criarComponentes();
     }
@@ -90,8 +96,16 @@ public class MenuBibliotecario extends JPanel{
         botaoBuscar.addActionListener(e -> {
             String pesquisa = campoPesquisa.getText();
 
-            List<MaterialBibliografico> materiais = this.catalogo.listarMateriais(pesquisa);
-            this.criarMateriais(materiais);
+            List<MaterialBibliografico> materiais;
+			try {
+				materiais = this.catalogo.listarMateriaisPorTitulo(pesquisa);
+				this.criarMateriais(materiais);
+			} catch (OperacaoNaoPermitidaException one) {
+				JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+			} catch (UsuarioNaoAutenticadoException une) {
+				JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+				voltarLogin.run();
+			}
         });
 
         painelPrincipal.add(painelPesquisa);
@@ -188,32 +202,60 @@ public class MenuBibliotecario extends JPanel{
         	switch (tipo) {
 	        	case "Livro": {
 	        		try {
-	        			this.catalogo.cadastrarLivro(campoTitulo.getText(), Integer.parseInt(campoAno.getText()), campoAutor.getText(), campoISBN.getText(), campoEditora.getText());
+						this.catalogo.cadastrarLivro(campoTitulo.getText(), Integer.parseInt(campoAno.getText()), campoAutor.getText(), campoISBN.getText(), campoEditora.getText());
+						limparCampos(formulario);
+	        		} catch (NumberFormatException e1) {
+						JOptionPane.showMessageDialog(this, "O ano digitado deve ser númerico", "Erro de digitação", JOptionPane.ERROR_MESSAGE);
+					} catch (OperacaoNaoPermitidaException one) {
+						JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+					} catch (UsuarioNaoAutenticadoException une) {
+						JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+						voltarLogin.run();
 	        		} catch (ItemDuplicadoException ide) {
-	        			JOptionPane.showMessageDialog(this, "Esta obra já existe!", "Obra duplicada", ERROR);
+        				JOptionPane.showMessageDialog(this, "Esta obra já existe!", "Obra duplicada", JOptionPane.ERROR_MESSAGE);
 	        		} catch (CredenciaisInvalidasException cie) {
-	        			JOptionPane.showMessageDialog(this, "Algum dado digitado é inválido!", "Dados inválidos", ERROR);
+        				JOptionPane.showMessageDialog(this, "Algum dado digitado é inválido!", "Dados inválidos", JOptionPane.ERROR_MESSAGE);
 	        		}
+	        		break;
 	        	} case "Revista", "Jornal": {
 	        		try {
-	        			this.catalogo.cadastrarJornalRevista(
-	        					campoTitulo.getText(),
-	        					Integer.parseInt(campoAno.getText()),
-	        					campoEditora.getText(),
-	        					campoNumeroEdicao.getText(),
-	        					campoDataPublicacao.getText());
+						this.catalogo.cadastrarPeriodico(
+							campoTitulo.getText(),
+							Integer.parseInt(campoAno.getText()),
+							campoEditora.getText(),
+							Integer.parseInt(campoNumeroEdicao.getText()),
+							campoDataPublicacao.getText());
+						limparCampos(formulario);
+	        		} catch (NumberFormatException e1) {
+						JOptionPane.showMessageDialog(this, "O ano digitado e o número de edição devem ser númerico", "Erro de digitação", JOptionPane.ERROR_MESSAGE);
+					} catch (OperacaoNaoPermitidaException one) {
+						JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+					} catch (UsuarioNaoAutenticadoException une) {
+						JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+						voltarLogin.run();
 	        		} catch (ItemDuplicadoException ide) {
-	        			JOptionPane.showMessageDialog(this, "Esta obra já existe!", "Obra duplicada", ERROR);
+	        			JOptionPane.showMessageDialog(this, "Esta obra já existe!", "Obra duplicada", JOptionPane.ERROR_MESSAGE);
 	        		} catch (CredenciaisInvalidasException cie) {
-	        			JOptionPane.showMessageDialog(this, "Algum dado digitado é inválido!", "Dados inválidos", ERROR);
+	        			JOptionPane.showMessageDialog(this, "Algum dado digitado é inválido!", "Dados inválidos", JOptionPane.ERROR_MESSAGE);
 	        		}
+	        		break;
 	        	}
         	}
         });
+        
+        formulario.add(botaoAdicionar);
 
         painelPrincipal.add(formulario);
 
         add(painelPrincipal, BorderLayout.NORTH);
+    }
+    
+    private void limparCampos(JPanel painel) {
+    	for (Component component : painel.getComponents()) {
+			if (component instanceof JTextField) {
+				((JTextField) component).setText("");
+			}
+		}
     }
 
     private void adicionarCampo(
@@ -263,8 +305,12 @@ public class MenuBibliotecario extends JPanel{
             }
             informacoes.add(new JLabel(material.getEditora()));
             informacoes.add(new JLabel(String.valueOf(material.getAnoPublicacao())));
-            if (!(material instanceof Livro)) {
+            if (material instanceof Revista) {
             	Revista material_temp = (Revista) material;
+            	informacoes.add(new JLabel(String.valueOf(material_temp.getNumeroEdicao())));
+            }
+            if (material instanceof Jornal) {
+            	Jornal material_temp = (Jornal) material;
             	informacoes.add(new JLabel(String.valueOf(material_temp.getNumeroEdicao())));
             }
 
@@ -280,10 +326,17 @@ public class MenuBibliotecario extends JPanel{
             	int opcao = JOptionPane.showConfirmDialog(this, "Deseja realmente remover esse material?", "Remover material", JOptionPane.YES_NO_OPTION);
             	if (opcao == JOptionPane.YES_OPTION) {
             		try {
-            			this.catalogo.removerMaterial(material.getId());
-            			this.criarMateriais(materiais);
-            		} catch (MaterialIndisponivelException mie) {
-            			JOptionPane.showMessageDialog(this, "Este material está emprestado, não foi possível remover!", "Erro ao remover", ERROR);
+						this.catalogo.removerMaterial(material.getId());
+						this.criarMateriais(materiais);
+					} catch (OperacaoNaoPermitidaException one) {
+						JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+					} catch (RegistroNaoEncontradoException e1) {
+						JOptionPane.showMessageDialog(this, "Erro ao procurar pelo material", "Erro de busca", JOptionPane.ERROR_MESSAGE);
+					} catch (UsuarioNaoAutenticadoException une) {
+						JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+						voltarLogin.run();
+					} catch (MaterialIndisponivelException mie) {
+        			JOptionPane.showMessageDialog(this, "Este material está emprestado, não foi possível remover!", "Erro ao remover", JOptionPane.ERROR_MESSAGE);
             		}
             	}
             });

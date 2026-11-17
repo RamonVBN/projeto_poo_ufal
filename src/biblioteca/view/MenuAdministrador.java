@@ -2,12 +2,15 @@ package biblioteca.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 import javax.swing.Box;
@@ -21,6 +24,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import biblioteca.exception.CredenciaisInvalidasException;
+import biblioteca.exception.ItemDuplicadoException;
+import biblioteca.exception.OperacaoNaoPermitidaException;
+import biblioteca.exception.RegistroNaoEncontradoException;
+import biblioteca.exception.UsuarioNaoAutenticadoException;
+import biblioteca.exception.UsuarioPossuiEmprestimosAtivosException;
+import biblioteca.model.usuario.Cargo;
 import biblioteca.model.usuario.Usuario;
 import biblioteca.service.UsuarioService;
 
@@ -29,10 +39,12 @@ public class MenuAdministrador extends JPanel{
 	// atributos
 	
 	private UsuarioService usuarios;
+	private Runnable voltarLogin;
 	private JPanel painelListaUsuarios;
 
-	public MenuAdministrador(UsuarioService usuarios) {
-	this.usuarios = usuarios;
+	public MenuAdministrador(UsuarioService usuarios, Runnable voltarLogin) {
+		this.usuarios = usuarios;
+		this.voltarLogin = voltarLogin;
 		configurarPainel();
 		criarComponentes();
     }
@@ -65,7 +77,7 @@ public class MenuAdministrador extends JPanel{
         painelPesquisa.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
         
         // Opções de pesquisa
-        JComboBox<String> comboPesquisa = new JComboBox<>(new String[]{"Nome", "Login"});
+        JComboBox<String> comboPesquisa = new JComboBox<String>(new String[]{"Nome", "Login"});
         
         comboPesquisa.setPreferredSize(new Dimension(110, 38));
 
@@ -87,27 +99,40 @@ public class MenuAdministrador extends JPanel{
             List<Usuario> resultado;
             switch (criterio) {
             	case "Nome":
-            		resultado = this.usuarios.listarUsuariosPorNome(pesquisa);
+					try {
+						resultado = this.usuarios.listarUsuariosPorNome(pesquisa);
+						this.criarUsuarios(resultado);
+					} catch (OperacaoNaoPermitidaException one) {
+						JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+					} catch (UsuarioNaoAutenticadoException une) {
+						JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+						voltarLogin.run();
+					}
             		break;
             	case "Login":
-            		resultado = this.usuarios.listarUsuariosPorLogin(pesquisa);
+					try {
+						resultado = this.usuarios.listarUsuariosPorLogin(pesquisa);
+						this.criarUsuarios(resultado);
+					} catch (OperacaoNaoPermitidaException one) {
+						JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+					} catch (UsuarioNaoAutenticadoException une) {
+						JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+						voltarLogin.run();
+					}
             		break;
             }
-            this.criarUsuarios(resultado);
         });
 
         painelPrincipal.add(painelPesquisa);
-        painelPrincipal.add(Box.createVerticalStrut(22));
+        painelPrincipal.add(Box.createVerticalStrut(10));
 
         // Lista de usuários encontrados
         painelListaUsuarios = new JPanel();
-        painelListaUsuarios.setLayout(
-            new BoxLayout(painelListaUsuarios, BoxLayout.Y_AXIS)
-        );
+        painelListaUsuarios.setLayout(new BoxLayout(painelListaUsuarios, BoxLayout.Y_AXIS));
         painelListaUsuarios.setBackground(new Color(220, 220, 220));
 
         painelPrincipal.add(painelListaUsuarios);
-        painelPrincipal.add(Box.createVerticalStrut(65));
+        painelPrincipal.add(Box.createVerticalStrut(25));
 
         // =================================
         // CADASTRAR USUÁRIO
@@ -178,13 +203,29 @@ public class MenuAdministrador extends JPanel{
 	    	Cargo cargo;
 	    	switch (tipo) {
 	    		case "Administrador":
-	    			Cargo cargo = Cargo.ADMINISTRADOR;
+	    			cargo = Cargo.ADMINISTRADOR;
 	    		case "Bibliotecário":
-	    			Cargo cargo = Cargo.BIBLIOTECARIO;
+	    			cargo = Cargo.BIBLIOTECARIO;
     			default:
-	    			Cargo cargo = Cargo.LEITOR
+	    			cargo = Cargo.LEITOR;
 	    	}
-	    	this.usuarios.cadastrarUsuario(nome, login, senha, cargo);
+	    	try {
+				this.usuarios.cadastrarUsuario(nome, login, senha, cargo);
+				this.limparCampos(formulario);
+			} catch (NoSuchAlgorithmException e1) {
+				JOptionPane.showMessageDialog(this, "Algum erro aconteceu", "ERRO", JOptionPane.ERROR_MESSAGE);
+			} catch (InvalidKeySpecException e1) {
+				JOptionPane.showMessageDialog(this, "Algum erro aconteceu", "ERRO", JOptionPane.ERROR_MESSAGE);
+			} catch (CredenciaisInvalidasException e1) {
+				JOptionPane.showMessageDialog(this, e1.getMessage(), "Erro nas credenciais digitadas", JOptionPane.ERROR_MESSAGE);
+			} catch (ItemDuplicadoException e1) {
+				JOptionPane.showMessageDialog(this, "Este login já está em uso, escolha outro", "Login já usado", JOptionPane.ERROR_MESSAGE);
+			} catch (OperacaoNaoPermitidaException one) {
+				JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+			} catch (UsuarioNaoAutenticadoException une) {
+				JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+				voltarLogin.run();
+			}
 	    });
 	
 		painelBotao.add(botaoAdicionar);
@@ -220,6 +261,14 @@ public class MenuAdministrador extends JPanel{
         campo.setPreferredSize(new Dimension(400, 25));
         painel.add(campo, gbc);
     }
+    
+    private void limparCampos(JPanel painel) {
+    	for (Component component : painel.getComponents()) {
+			if (component instanceof JTextField) {
+				((JTextField) component).setText("");
+			}
+		}
+    }
 
     // =================================
     // CRIAR COMPONENTES DOS USUÁRIOS
@@ -251,7 +300,18 @@ public class MenuAdministrador extends JPanel{
             botaoRemover.addActionListener(e -> {
             	int opcao = JOptionPane.showConfirmDialog(this, "Deseja remover esse usuario?", "Remover usuario", JOptionPane.YES_NO_OPTION);
             	if (opcao == JOptionPane.YES_OPTION) {
-            		this.usuarios.remover(usuario.getID());
+            		try {
+						this.usuarios.removerUsuario(usuario.getID());
+					} catch (RegistroNaoEncontradoException e1) {
+						JOptionPane.showMessageDialog(this, "Não foi foi possível encontrar o usuario para deletar", "Erro ao remover usuario", JOptionPane.ERROR_MESSAGE);
+					} catch (OperacaoNaoPermitidaException one) {
+						JOptionPane.showMessageDialog(this, "Você não tem permissão para realizar essa operação", one.getMessage(), JOptionPane.ERROR_MESSAGE);
+					} catch (UsuarioNaoAutenticadoException une) {
+						JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
+						voltarLogin.run();
+					} catch (UsuarioPossuiEmprestimosAtivosException e1) {
+						JOptionPane.showMessageDialog(this, "Não é possivel remover este usuario pois ele possui emprestimos ativos", "Erro ao remover usuario", JOptionPane.ERROR_MESSAGE);
+					}
             		this.criarComponentes();
             	}
             });
