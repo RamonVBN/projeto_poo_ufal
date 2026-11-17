@@ -102,6 +102,7 @@ public class EmprestimoService extends Service {
         emprestimoParaDevolver.registrarDevolucao();
         emprestimoParaDevolver.getMaterial().marcarComoDisponivel();
     }
+    
     public Emprestimo buscarEmprestimo(int emprestimoId)
             throws UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException, RegistroNaoEncontradoException {
 
@@ -118,6 +119,7 @@ public class EmprestimoService extends Service {
 
         return emprestimoRepositorio.listarTodos();
     }
+    
     public List<Emprestimo> listarEmprestimosPorUsuario(int usuarioId) throws UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException {
 
         this.verificarAutenticacao();
@@ -125,6 +127,7 @@ public class EmprestimoService extends Service {
 
         return emprestimoRepositorio.listarTodos(usuarioId);
     }
+    
     public List<Emprestimo> listarMeusEmprestimos() throws UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException {
 
         this.verificarAutenticacao();

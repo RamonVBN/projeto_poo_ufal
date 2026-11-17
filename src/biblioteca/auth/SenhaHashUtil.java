@@ -27,8 +27,7 @@ public class SenhaHashUtil {
         );
 
         try {
-            SecretKeyFactory factory =
-                    SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 
             byte[] hash = factory.generateSecret(spec).getEncoded();
 
