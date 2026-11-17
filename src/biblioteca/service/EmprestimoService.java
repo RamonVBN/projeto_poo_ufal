@@ -4,9 +4,10 @@ import biblioteca.auth.Sessao;
 import biblioteca.exception.*;
 import biblioteca.model.Emprestimo;
 import biblioteca.model.StatusEmprestimo;
-import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
+import biblioteca.model.material.Periodico;
+import biblioteca.model.material.TipoPeriodico;
 import biblioteca.model.usuario.Permissao;
 import biblioteca.model.usuario.Usuario;
 import biblioteca.repository.EmprestimoRepositorio;
@@ -52,10 +53,10 @@ public class EmprestimoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REGISTRAR_EMPRESTIMO);
 
-        MaterialBibliografico material = materialRepositorio.buscarPorId(materialId);
+        MaterialBibliografico materialParaEmprestar = materialRepositorio.buscarPorId(materialId);
         Usuario usuario = usuarioRepositorio.buscarPorId(usuarioId);
 
-        if (!material.estaDisponivel()) {
+        if (!materialParaEmprestar.estaDisponivel()) {
             throw new MaterialIndisponivelException();
         }
 
@@ -74,17 +75,19 @@ public class EmprestimoService extends Service {
 
         LocalDate dataPrevistaDevolucao = LocalDate.now();
 
-        if (material instanceof Livro) {
+        if (materialParaEmprestar instanceof Livro) {
             dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(14);
-        } else if (material instanceof Jornal) {
-            dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(3);
         } else {
-            dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(2);
+            TipoPeriodico tipoPeriodico = ((Periodico) materialParaEmprestar).getTipoPeriodico();
+            switch (tipoPeriodico) {
+                case JORNAL -> dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(3);
+                case REVISTA -> dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(2);
+            }
         }
 
-        Emprestimo novoEmprestimo = new Emprestimo(dataPrevistaDevolucao, material, usuario);
+        Emprestimo novoEmprestimo = new Emprestimo(dataPrevistaDevolucao, materialParaEmprestar, usuario);
         emprestimoRepositorio.adicionar(novoEmprestimo);
-        material.marcarComoIndisponivel();
+        materialParaEmprestar.marcarComoIndisponivel();
     }
 
     // registrarDevolucao: até o momento, apenas muda o status do empréstimo.

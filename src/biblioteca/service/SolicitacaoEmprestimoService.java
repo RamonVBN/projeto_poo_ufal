@@ -38,7 +38,7 @@ public class SolicitacaoEmprestimoService extends Service {
 
         for (SolicitacaoEmprestimo solicitacaoEmprestimo : solicitacoesPendentesDoUsuario) {
             if (solicitacaoEmprestimo.getMaterialSolicitado().getId() == materialId) {
-                throw new ItemDuplicadoException("solicitação");
+                throw new ItemDuplicadoException("solicitação", "material");
             }
         }
     }
