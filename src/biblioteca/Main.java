@@ -24,8 +24,10 @@ public class Main {
 			// repository
 			
 			final UsuarioRepositorio usuarioRepositorio = new UsuarioRepositorio();
+			usuarioRepositorio.cadastrarUsuariosIniciais();
 			
 			final MaterialRepositorio materialRepositorio = new MaterialRepositorio();
+			materialRepositorio.cadastrarMateriaisIniciais();
 			
 			final EmprestimoRepositorio emprestimoRepositorio = new EmprestimoRepositorio();
 			

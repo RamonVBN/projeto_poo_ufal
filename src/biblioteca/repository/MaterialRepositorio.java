@@ -1,5 +1,6 @@
 package biblioteca.repository;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +15,7 @@ public class MaterialRepositorio implements Repositorio<MaterialBibliografico> {
 
 	private final ArrayList<MaterialBibliografico> materiais = new ArrayList<>();
 	
-	public MaterialRepositorio() {
-		this.cadastrarMateriaisIniciais();
-	}
+	public final static String uploadsDirectory = Path.of("src", "biblioteca", "upload").toString();
 	
 	@Override
     public void adicionar(MaterialBibliografico material) throws ItemDuplicadoException {
@@ -84,10 +83,10 @@ public class MaterialRepositorio implements Repositorio<MaterialBibliografico> {
         materiais.remove(material);
     }
     
-    private void cadastrarMateriaisIniciais() {
-    	Livro livro = new Livro("Clean Code", 2008, "Robert C. Martin", "9780132350884", "Prentice Hall");
-    	Revista revista = new Revista("Revista Ciência Hoje", 2024, "SBPC", 395, "21/07/2024");
-    	Jornal jornal = new Jornal("Jornal da Cidade", 2025, "Editora Local", 120, "23/01/2025");
+    public void cadastrarMateriaisIniciais() {
+    	Livro livro = new Livro("Clean Code", 2008, "Robert C. Martin", "9780132350884", "Prentice Hall", Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg"));
+    	Revista revista = new Revista("Revista Ciência Hoje", 2024, "SBPC", 395, "21/07/2024", Path.of(MaterialRepositorio.uploadsDirectory, "revista_ciencia_hoje.jpg"));
+    	Jornal jornal = new Jornal("Jornal da Cidade", 2025, "Editora Local", 120, "23/01/2025", Path.of(MaterialRepositorio.uploadsDirectory, "jornal_da_cidade.jpg"));
     	try {
 			this.adicionar(livro);
 		} catch (ItemDuplicadoException e) {

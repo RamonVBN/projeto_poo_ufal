@@ -1,5 +1,6 @@
 package biblioteca.model.material;
 
+import java.nio.file.Path;
 import java.util.Random;
 
 public abstract class MaterialBibliografico {
@@ -11,22 +12,25 @@ public abstract class MaterialBibliografico {
 	private int anoPublicacao;
 	private boolean disponivel;
 	private String editora;
+	private Path caminhoCapa; 
 	
 	// construtor
 	
-	public MaterialBibliografico(String titulo, int anoPublicacao, String editora) {
+	public MaterialBibliografico(String titulo, int anoPublicacao, String editora, Path caminhoCapa) {
 		this.id = new Random().nextInt();
 		this.setTitulo(titulo.trim());
 		this.setAnoPublicacao(anoPublicacao);
 		this.setDisponivel(true);
+		this.setCaminhoCapa(caminhoCapa);
 	}
 
-	public MaterialBibliografico(String titulo, int anoPublicacao, String editora, int id) {
+	public MaterialBibliografico(String titulo, int anoPublicacao, String editora, int id, Path caminhoCapa) {
 		this.id = id;
 		this.setTitulo(titulo.trim());
 		this.setAnoPublicacao(anoPublicacao);
 		this.setDisponivel(true);
 		this.setEditora(editora);
+		this.setCaminhoCapa(caminhoCapa);
 	}
 	
 	// getters e setters
@@ -65,6 +69,14 @@ public abstract class MaterialBibliografico {
 
 	public void setEditora(String editora) {
 		this.editora = editora;
+	}
+	
+	public Path getCaminhoCapa() {
+		return caminhoCapa;
+	}
+
+	public void setCaminhoCapa(Path caminhoCapa) {
+		this.caminhoCapa = caminhoCapa;
 	}
 	
 	// metodos

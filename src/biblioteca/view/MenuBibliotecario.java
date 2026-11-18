@@ -10,12 +10,17 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -40,6 +45,7 @@ public class MenuBibliotecario extends JPanel{
 	
 	private CatalogoService catalogo;
 	private Runnable voltarLogin;
+	private Path caminhoCapa;
 	
 	private JPanel painelListaMateriais;
 
@@ -190,6 +196,56 @@ public class MenuBibliotecario extends JPanel{
         // Numero de edição
         adicionarCampo(formulario, gbc, 6, "Número de edição", campoNumeroEdicao);
         
+        // 1. Rótulo "Adicionar capa"
+        
+        JPanel painelCapa = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        painelCapa.setOpaque(false); // Mantém o fundo transparente igual ao formulário
+
+        // Rótulo da capa
+        JLabel labelCapa = new JLabel("Adicionar capa");
+        
+        // Botão para selecionar a capa (File Picker)
+        JButton botaoEscolherCapa = new JButton("Escolher Imagem");
+        botaoEscolherCapa.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Selecionar capa do livro");
+            // Filtro opcional para aceitar apenas imagens
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Imagens (JPG, PNG)", "jpg", "png", "jpeg"));
+            int resultado = fileChooser.showOpenDialog(formulario);
+            if (resultado == JFileChooser.APPROVE_OPTION) {
+                File arquivoSelecionado = fileChooser.getSelectedFile();
+                try {
+                    // Definindo a pasta de destino (src/biblioteca/upload)
+                    Path pastaDestino = Path.of("src", "biblioteca", "upload");
+                    // Garante que a pasta de destino existe, se não, cria
+                    if (!Files.exists(pastaDestino)) {
+                        Files.createDirectories(pastaDestino);
+                    }
+                    // Definindo o caminho final do arquivo na pasta de upload
+                    Path destinoFinal = pastaDestino.resolve(arquivoSelecionado.getName());
+                    // Copia o arquivo selecionado para a pasta do projeto
+                    Files.copy(arquivoSelecionado.toPath(), destinoFinal, StandardCopyOption.REPLACE_EXISTING);
+                    // Salva o Path na sua variável
+                    this.caminhoCapa = destinoFinal;
+                    botaoEscolherCapa.setText("Capa selecionada!");
+                    JOptionPane.showMessageDialog(formulario, "Capa carregada com sucesso!");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(formulario, "Erro ao salvar a imagem: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        
+        painelCapa.add(labelCapa);
+        
+        painelCapa.add(Box.createHorizontalStrut(10)); 
+        painelCapa.add(botaoEscolherCapa);
+        
+        gbc.gridy = 7;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        formulario.add(painelCapa, gbc);
+        
         // Botao adicionar
         JButton botaoAdicionar = new JButton("Adicionar material");
         botaoAdicionar.setBackground(new Color(220, 20, 30));
@@ -202,8 +258,16 @@ public class MenuBibliotecario extends JPanel{
         	switch (tipo) {
 	        	case "Livro": {
 	        		try {
-						this.catalogo.cadastrarLivro(campoTitulo.getText(), Integer.parseInt(campoAno.getText()), campoAutor.getText(), campoISBN.getText(), campoEditora.getText());
+						this.catalogo.cadastrarLivro(
+								campoTitulo.getText(),
+								Integer.parseInt(campoAno.getText()),
+								campoAutor.getText(),
+								campoISBN.getText(),
+								campoEditora.getText(),
+								this.caminhoCapa
+								);
 						limparCampos(formulario);
+						this.caminhoCapa = null;
 	        		} catch (NumberFormatException e1) {
 						JOptionPane.showMessageDialog(this, "O ano digitado deve ser númerico", "Erro de digitação", JOptionPane.ERROR_MESSAGE);
 					} catch (OperacaoNaoPermitidaException one) {
@@ -224,8 +288,11 @@ public class MenuBibliotecario extends JPanel{
 							Integer.parseInt(campoAno.getText()),
 							campoEditora.getText(),
 							Integer.parseInt(campoNumeroEdicao.getText()),
-							campoDataPublicacao.getText());
+							campoDataPublicacao.getText(),
+							this.caminhoCapa
+							);
 						limparCampos(formulario);
+						this.caminhoCapa = null;
 	        		} catch (NumberFormatException e1) {
 						JOptionPane.showMessageDialog(this, "O ano digitado e o número de edição devem ser númerico", "Erro de digitação", JOptionPane.ERROR_MESSAGE);
 					} catch (OperacaoNaoPermitidaException one) {

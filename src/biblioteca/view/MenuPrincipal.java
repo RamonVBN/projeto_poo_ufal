@@ -7,10 +7,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -263,7 +265,11 @@ public class MenuPrincipal extends JFrame{
         capa.setPreferredSize(new Dimension(75, 90));
         capa.setBackground(new Color(210, 210, 210));
 
-        capa.add(new JLabel("CAPA"));
+        ImageIcon capa_material = new ImageIcon(material.getCaminhoCapa().toString());
+        Image imagemRedimencionada = capa_material.getImage().getScaledInstance(81, 93, Image.SCALE_SMOOTH);
+        capa_material = new ImageIcon(imagemRedimencionada);
+        
+        capa.add(new JLabel(capa_material));
 
         card.add(capa, BorderLayout.WEST);
 

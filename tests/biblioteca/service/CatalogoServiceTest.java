@@ -12,6 +12,7 @@ import biblioteca.repository.MaterialRepositorio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,7 +47,8 @@ class CatalogoServiceTest {
                 2008,
                 "Robert C. Martin",
                 "9780132350884",
-                "Prentice Hall"
+                "Prentice Hall",
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
     }
 
@@ -76,7 +78,8 @@ class CatalogoServiceTest {
                 2024,
                 "National Geographic Society",
                 150,
-                "15/05/2024"
+                "15/05/2024",
+                Path.of(MaterialRepositorio.uploadsDirectory, "revista_ciencia_hoje.jpg")
         );
 
         MaterialBibliografico encontrado =
@@ -96,7 +99,8 @@ class CatalogoServiceTest {
                         2008,
                         "Robert C. Martin",
                         "9780132350884",
-                        "Prentice Hall"
+                        "Prentice Hall",
+                        Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
                 ));
     }
 
@@ -109,7 +113,8 @@ class CatalogoServiceTest {
                         0,
                         "Robert C. Martin",
                         "9780132350884",
-                        "Prentice Hall"
+                        "Prentice Hall",
+                        Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
                 ));
     }
 
@@ -122,7 +127,8 @@ class CatalogoServiceTest {
                         java.time.LocalDate.now().getYear() + 1,
                         "Robert C. Martin",
                         "9780132350884",
-                        "Prentice Hall"
+                        "Prentice Hall",
+                        Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
                 ));
     }
 
@@ -135,7 +141,8 @@ class CatalogoServiceTest {
                         2008,
                         " ",
                         "9780132350884",
-                        "Prentice Hall"
+                        "Prentice Hall",
+                        Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
                 ));
     }
 
@@ -148,7 +155,8 @@ class CatalogoServiceTest {
                         2008,
                         "Robert C. Martin",
                         " ",
-                        "Prentice Hall"
+                        "Prentice Hall",
+                        Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
                 ));
     }
 
@@ -161,7 +169,8 @@ class CatalogoServiceTest {
                         2008,
                         "Robert C. Martin",
                         "9780132350884",
-                        ""
+                        "",
+                        Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
                 ));
     }
 
@@ -174,7 +183,8 @@ class CatalogoServiceTest {
                         2024,
                         "National Geographic Society",
                         0,
-                        "15/05/2024"
+                        "15/05/2024",
+                        Path.of(MaterialRepositorio.uploadsDirectory, "")
                 ));
     }
 
@@ -187,7 +197,8 @@ class CatalogoServiceTest {
                         2024,
                         "National Geographic Society",
                         150,
-                        " "
+                        " ",
+                        Path.of(MaterialRepositorio.uploadsDirectory, "")
                 ));
     }
 
@@ -280,7 +291,8 @@ class CatalogoServiceTest {
                 "Robert C. Martin",
                 "9780132350884",
                 "Prentice Hall",
-                livroTeste.getId()
+                livroTeste.getId(),
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         MaterialBibliografico encontrado =
@@ -305,7 +317,8 @@ class CatalogoServiceTest {
                 2024,
                 "National Geographic Society",
                 150,
-                "15/05/2024"
+                "15/05/2024",
+                Path.of(MaterialRepositorio.uploadsDirectory, "jornal_da_cidade.jpg")
         );
 
         service.atualizarPeriodico(
@@ -314,7 +327,8 @@ class CatalogoServiceTest {
                 "National Geographic Society",
                 151,
                 "15/06/2025",
-                jornal.getId()
+                jornal.getId(),
+                Path.of(MaterialRepositorio.uploadsDirectory, "jornal_da_cidade.jpg")
         );
 
         MaterialBibliografico encontrado =
@@ -341,7 +355,8 @@ class CatalogoServiceTest {
                 2024,
                 "National Geographic Society",
                 150,
-                "15/05/2024"
+                "15/05/2024",
+                Path.of(MaterialRepositorio.uploadsDirectory, "jornal_da_cidade.jpg")
         );
 
         assertThrows(TipoMaterialInvalidoException.class,
@@ -351,7 +366,8 @@ class CatalogoServiceTest {
                         "Autor",
                         "9780132350884",
                         "Editora",
-                        jornal.getId()
+                        jornal.getId(),
+                        Path.of(MaterialRepositorio.uploadsDirectory, "")
                 ));
     }
 
@@ -365,7 +381,8 @@ class CatalogoServiceTest {
                         "National Geographic Society",
                         150,
                         "15/05/2024",
-                        livroTeste.getId()
+                        livroTeste.getId(),
+                        Path.of(MaterialRepositorio.uploadsDirectory, "")
                 ));
     }
 
@@ -379,7 +396,8 @@ class CatalogoServiceTest {
                         "Autor",
                         "9780132350884",
                         "Editora",
-                        Integer.MIN_VALUE
+                        Integer.MIN_VALUE,
+                        Path.of(MaterialRepositorio.uploadsDirectory, "")
                 ));
     }
 
@@ -393,7 +411,8 @@ class CatalogoServiceTest {
                         "Robert C. Martin",
                         "9780132350884",
                         "Prentice Hall",
-                        livroTeste.getId()
+                        livroTeste.getId(),
+                        Path.of(MaterialRepositorio.uploadsDirectory, "")
                 ));
     }
 
@@ -453,7 +472,8 @@ class CatalogoServiceTest {
                         2024,
                         "Autor",
                         "9780132350884",
-                        "Editora"
+                        "Editora",
+                        Path.of(MaterialRepositorio.uploadsDirectory, "")
                 ));
     }
 
@@ -483,7 +503,8 @@ class CatalogoServiceTest {
                         2024,
                         "Autor",
                         "9780132350884",
-                        "Editora"
+                        "Editora",
+                        Path.of(MaterialRepositorio.uploadsDirectory, "")
                 ));
     }
 
@@ -503,7 +524,8 @@ class CatalogoServiceTest {
                         "Robert C. Martin",
                         "9780132350884",
                         "Prentice Hall",
-                        livroTeste.getId()
+                        livroTeste.getId(),
+                        Path.of(MaterialRepositorio.uploadsDirectory, "")
                 ));
     }
 

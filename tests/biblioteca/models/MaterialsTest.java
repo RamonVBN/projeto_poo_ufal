@@ -2,11 +2,14 @@ package biblioteca.models;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.Test;
 
 import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.Revista;
+import biblioteca.repository.MaterialRepositorio;
 
 public class MaterialsTest {
 
@@ -14,7 +17,7 @@ public class MaterialsTest {
     void livroDeveExibirSeusDetalhes() {
         Livro livro = new Livro(
             "Clean Code", 2008, "Robert C. Martin",
-            "9780132350884", "Prentice Hall"
+            "9780132350884", "Prentice Hall", Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         String detalhes = livro.exibirDetalhes();
@@ -30,7 +33,7 @@ public class MaterialsTest {
     void revistaDeveExibirSeusDetalhes() {
         Revista revista = new Revista(
             "National Geographic", 2024, "Editora Abril",
-            150, "01/2024"
+            150, "01/2024", Path.of(MaterialRepositorio.uploadsDirectory, "")
         );
 
         String detalhes = revista.exibirDetalhes();
@@ -45,7 +48,7 @@ public class MaterialsTest {
     void jornalDeveExibirSeusDetalhes() {
         Jornal jornal = new Jornal(
             "Jornal da Cidade", 2025, "Editora Local",
-            42, "10/03/2025"
+            42, "10/03/2025", Path.of(MaterialRepositorio.uploadsDirectory, "jornal_da_cidade.jpg")
         );
 
         String detalhes = jornal.exibirDetalhes();
@@ -60,7 +63,7 @@ public class MaterialsTest {
     void materialDeveComecarDisponivelEPermitirAlternarDisponibilidade() {
         Livro livro = new Livro(
             "Clean Code", 2008, "Robert C. Martin",
-            "9780132350884", "Prentice Hall"
+            "9780132350884", "Prentice Hall", Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         assertTrue(livro.estaDisponivel(),

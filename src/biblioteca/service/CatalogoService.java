@@ -8,6 +8,8 @@ import biblioteca.model.material.MaterialBibliografico;
 import biblioteca.model.usuario.Permissao;
 import biblioteca.repository.MaterialRepositorio;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -36,26 +38,39 @@ public class CatalogoService extends Service {
             int anoPublicacao,
             String autor,
             String isbn,
-            String editora
+            String editora,
+            Path capa
     ) throws CredenciaisInvalidasException {
         this.validarStrings(titulo);
         this.validarStrings(editora);
         this.validarStrings(autor);
         this.validarStrings(isbn);
         this.validarAnoPublicacao(anoPublicacao);
+        this.validarCapa(capa);
     }
 
-    private void validarJornalRevista
+    private void validarCapa(Path capa) throws CredenciaisInvalidasException{
+		if (!Files.exists(capa)) {
+			throw new CredenciaisInvalidasException();
+		} if (!Files.isRegularFile(capa)) {
+			throw new CredenciaisInvalidasException();
+		} if (!Files.isReadable(capa)) {
+			throw new CredenciaisInvalidasException();
+		}
+	}
+
+	private void validarJornalRevista
             (
                 String titulo, int anoPublicacao,
                 String editora, int numeroEdicao,
-                String dataPublicacao
+                String dataPublicacao, Path capa
             ) throws CredenciaisInvalidasException {
 
         this.validarStrings(titulo);
         this.validarStrings(editora);
         this.validarStrings(dataPublicacao);
         this.validarAnoPublicacao(anoPublicacao);
+        this.validarCapa(capa);
 
         if (numeroEdicao <= 0) {
             throw new CredenciaisInvalidasException();
@@ -68,15 +83,16 @@ public class CatalogoService extends Service {
                     int anoPublicacao,
                     String autor,
                     String isbn,
-                    String editora
+                    String editora,
+                    Path capa
             )
             throws OperacaoNaoPermitidaException, ItemDuplicadoException, UsuarioNaoAutenticadoException, CredenciaisInvalidasException {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
 
-        this.validarLivro(titulo, anoPublicacao, autor, isbn, editora);
-        Livro novoLivro = new Livro(titulo, anoPublicacao, autor, isbn, editora);
+        this.validarLivro(titulo, anoPublicacao, autor, isbn, editora, capa);
+        Livro novoLivro = new Livro(titulo, anoPublicacao, autor, isbn, editora, capa);
         repositorio.adicionar(novoLivro);
 
         return novoLivro;
@@ -88,15 +104,16 @@ public class CatalogoService extends Service {
                 int anoPublicacao,
                 String editora,
                 int numeroEdicao,
-                String dataPublicacao
+                String dataPublicacao,
+                Path capa
             )
             throws OperacaoNaoPermitidaException, ItemDuplicadoException, UsuarioNaoAutenticadoException, CredenciaisInvalidasException {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
 
-        this.validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
-        Jornal novoJornal = new Jornal(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
+        this.validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, capa);
+        Jornal novoJornal = new Jornal(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, capa);
         repositorio.adicionar(novoJornal);
         return novoJornal;
     }
@@ -135,7 +152,8 @@ public class CatalogoService extends Service {
             String autor,
             String isbn,
             String editora,
-            int livroId
+            int livroId,
+            Path capa
     )
             throws OperacaoNaoPermitidaException,
             RegistroNaoEncontradoException,
@@ -152,8 +170,8 @@ public class CatalogoService extends Service {
             throw new TipoMaterialInvalidoException(material);
         }
 
-        this.validarLivro(titulo, anoPublicacao, autor, isbn, editora);
-        Livro livroAtualizado = new Livro(titulo, anoPublicacao, autor, isbn, editora, livroId);
+        this.validarLivro(titulo, anoPublicacao, autor, isbn, editora, capa);
+        Livro livroAtualizado = new Livro(titulo, anoPublicacao, autor, isbn, editora, livroId, capa);
         repositorio.atualizar(livroAtualizado);
     }
 
@@ -164,7 +182,8 @@ public class CatalogoService extends Service {
                     String editora,
                     int numeroEdicao,
                     String dataPublicacao,
-                    int jornalRevistaId
+                    int jornalRevistaId,
+                    Path capa
             )
             throws OperacaoNaoPermitidaException,
             RegistroNaoEncontradoException,
@@ -181,8 +200,8 @@ public class CatalogoService extends Service {
             throw new TipoMaterialInvalidoException(material);
         }
 
-        this.validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao);
-        Jornal jornalRevistaAtualizado = new Jornal(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, jornalRevistaId);
+        this.validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, capa);
+        Jornal jornalRevistaAtualizado = new Jornal(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, jornalRevistaId, capa);
         repositorio.atualizar(jornalRevistaAtualizado);
 
     }
