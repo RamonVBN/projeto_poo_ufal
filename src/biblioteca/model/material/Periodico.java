@@ -4,7 +4,7 @@ public class Periodico extends MaterialBibliografico{
 
     // atributos
 
-    private String editora;
+
     private int numeroEdicao;
     private String dataPublicacao;
     private final TipoPeriodico tipoPeriodico;
@@ -12,7 +12,7 @@ public class Periodico extends MaterialBibliografico{
     // construtor
 
     public Periodico(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, TipoPeriodico tipoPeriodico) {
-        super(titulo, anoPublicacao);
+        super(titulo, anoPublicacao, editora);
         this.tipoPeriodico = tipoPeriodico;
         this.setEditora(editora.trim());
         this.setNumeroEdicao(numeroEdicao);
@@ -20,7 +20,7 @@ public class Periodico extends MaterialBibliografico{
     }
 
     public Periodico(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, TipoPeriodico tipoPeriodico, int id) {
-        super(titulo, anoPublicacao, id);
+        super(titulo, anoPublicacao, editora, id);
         this.tipoPeriodico = tipoPeriodico;
         this.setEditora(editora.trim());
         this.setNumeroEdicao(numeroEdicao);
@@ -31,14 +31,6 @@ public class Periodico extends MaterialBibliografico{
 
     public TipoPeriodico getTipoPeriodico() {
         return tipoPeriodico;
-    }
-
-    public String getEditora() {
-        return editora;
-    }
-
-    public void setEditora(String editora) {
-        this.editora = editora;
     }
 
     public int getNumeroEdicao() {
