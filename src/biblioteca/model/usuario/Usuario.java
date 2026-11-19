@@ -7,7 +7,6 @@ public class Usuario {
 	// atributos
 	
 	private final int id;
-
 	private final Cargo cargo;
 	private String nome;
 	private String login;

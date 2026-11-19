@@ -10,6 +10,8 @@ public abstract class MaterialBibliografico {
 	private final int id;
 	private String titulo;
 	private int anoPublicacao;
+
+	private String editora;
 	private boolean disponivel;
 	private String editora;
 	private Path caminhoCapa; 
@@ -28,6 +30,7 @@ public abstract class MaterialBibliografico {
 		this.id = id;
 		this.setTitulo(titulo.trim());
 		this.setAnoPublicacao(anoPublicacao);
+		setEditora(editora);
 		this.setDisponivel(true);
 		this.setEditora(editora);
 		this.setCaminhoCapa(caminhoCapa);
@@ -49,6 +52,14 @@ public abstract class MaterialBibliografico {
 
 	public void setAnoPublicacao(int anoPublicacao) {
 		this.anoPublicacao = anoPublicacao;
+	}
+
+	public String getEditora() {
+		return editora;
+	}
+
+	public void setEditora(String editora) {
+		this.editora = editora;
 	}
 
 	public boolean estaDisponivel() {

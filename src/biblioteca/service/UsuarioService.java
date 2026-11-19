@@ -237,7 +237,7 @@ public class UsuarioService extends Service  {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REMOVER_USUARIO);
 
-        List<Emprestimo> emprestimosDoUsuario = emprestimoRepositorio.listarTodos(usuarioId);
+        List<Emprestimo> emprestimosDoUsuario = emprestimoRepositorio.listarPorUsuario(usuarioId);
         List<Emprestimo> emprestimosAtivos = new ArrayList<>();
 
         for (Emprestimo emprestimo : emprestimosDoUsuario) {

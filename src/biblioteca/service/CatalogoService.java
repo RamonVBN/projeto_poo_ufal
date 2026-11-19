@@ -166,10 +166,10 @@ public class CatalogoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
 
-        MaterialBibliografico material = repositorio.buscarPorId(livroId);
+        MaterialBibliografico livroParaAtualizar = repositorio.buscarPorId(livroId);
 
-        if (!(material instanceof Livro)) {
-            throw new TipoMaterialInvalidoException(material);
+        if (!(livroParaAtualizar instanceof Livro)) {
+            throw new TipoMaterialInvalidoException(livroParaAtualizar);
         }
 
         this.validarLivro(titulo, anoPublicacao, autor, isbn, editora, capa);
@@ -195,6 +195,7 @@ public class CatalogoService extends Service {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
+        MaterialBibliografico periodicoParaAtualizar = repositorio.buscarPorId(periodicoId);
 
         MaterialBibliografico material = repositorio.buscarPorId(periodicoId);
 

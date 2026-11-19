@@ -51,16 +51,16 @@ public class EmprestimoService extends Service {
             ItemDuplicadoException {
 
         this.verificarAutenticacao();
-        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REALIZAR_EMPRESTIMO);
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REGISTRAR_EMPRESTIMO);
 
-        MaterialBibliografico material = materialRepositorio.buscarPorId(materialId);
+        MaterialBibliografico materialParaEmprestar = materialRepositorio.buscarPorId(materialId);
         Usuario usuario = usuarioRepositorio.buscarPorId(usuarioId);
 
-        if (!material.estaDisponivel()) {
+        if (!materialParaEmprestar.estaDisponivel()) {
             throw new MaterialIndisponivelException();
         }
 
-        List<Emprestimo> emprestimosDoUsuario = emprestimoRepositorio.listarTodos(usuario.getID());
+        List<Emprestimo> emprestimosDoUsuario = emprestimoRepositorio.listarPorUsuario(usuario.getID());
         List<Emprestimo> emprestimosAtivos = new ArrayList<>();
 
         for (Emprestimo emprestimo : emprestimosDoUsuario) {
@@ -75,19 +75,19 @@ public class EmprestimoService extends Service {
 
         LocalDate dataPrevistaDevolucao = LocalDate.now();
 
-        if (material instanceof Livro) {
+        if (materialParaEmprestar instanceof Livro) {
             dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(14);
         } else {
-        	TipoPeriodico tipoPeriodico = ((Periodico) material).getTipoPeriodico();
+            TipoPeriodico tipoPeriodico = ((Periodico) materialParaEmprestar).getTipoPeriodico();
             switch (tipoPeriodico) {
                 case JORNAL -> dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(3);
                 case REVISTA -> dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(2);
             }
         }
 
-        Emprestimo novoEmprestimo = new Emprestimo(dataPrevistaDevolucao, material, usuario);
+        Emprestimo novoEmprestimo = new Emprestimo(dataPrevistaDevolucao, materialParaEmprestar, usuario);
         emprestimoRepositorio.adicionar(novoEmprestimo);
-        material.marcarComoIndisponivel();
+        materialParaEmprestar.marcarComoIndisponivel();
     }
 
     // registrarDevolucao: até o momento, apenas muda o status do empréstimo.
@@ -99,7 +99,7 @@ public class EmprestimoService extends Service {
             UsuarioNaoAutenticadoException {
 
         this.verificarAutenticacao();
-        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REALIZAR_DEVOLUCAO);
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.REGISTRAR_DEVOLUCAO);
 
         Emprestimo emprestimoParaDevolver = emprestimoRepositorio.buscarPorId(emprestimoId);
         emprestimoParaDevolver.registrarDevolucao();
@@ -128,7 +128,7 @@ public class EmprestimoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_TODOS_EMPRESTIMOS);
 
-        return emprestimoRepositorio.listarTodos(usuarioId);
+        return emprestimoRepositorio.listarPorUsuario(usuarioId);
     }
     
     public List<Emprestimo> listarMeusEmprestimos() throws UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException {
@@ -136,6 +136,6 @@ public class EmprestimoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_PROPRIOS_EMPRESTIMOS);
 
-        return emprestimoRepositorio.listarTodos(sessao.getUsuarioLogado().getID());
+        return emprestimoRepositorio.listarPorUsuario(sessao.getUsuarioLogado().getID());
     }
 }
