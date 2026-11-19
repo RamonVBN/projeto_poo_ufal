@@ -1,24 +1,25 @@
 package biblioteca.model.material;
 
+import java.nio.file.Path;
+
 public class Livro extends MaterialBibliografico{
 
 	// atributos
 	
 	private String autor;
 	private String isbn;
-	private String editora;
 	
 	// construtor
 	
-	public Livro(String titulo, int anoPublicacao, String autor, String isbn, String editora) {
-		super(titulo, anoPublicacao, editora);
+	public Livro(String titulo, int anoPublicacao, String autor, String isbn, String editora, Path caminhoCapa) {
+		super(titulo, anoPublicacao, editora, caminhoCapa);
 		this.setAutor(autor.trim());
 		this.setIsbn(isbn.trim());
 		this.setEditora(editora.trim());
 	}
 
-	public Livro(String titulo, int anoPublicacao, String autor, String isbn, String editora, int id) {
-		super(titulo, anoPublicacao, editora, id);
+	public Livro(String titulo, int anoPublicacao, String autor, String isbn, String editora, int id, Path caminhoCapa) {
+		super(titulo, anoPublicacao, editora, id, caminhoCapa);
 		this.setAutor(autor.trim());
 		this.setIsbn(isbn.trim());
 		this.setEditora(editora.trim());
@@ -40,14 +41,6 @@ public class Livro extends MaterialBibliografico{
 
 	public void setIsbn(String isbn) {
 		this.isbn = isbn;
-	}
-
-	public String getEditora() {
-		return editora;
-	}
-
-	public void setEditora(String editora) {
-		this.editora = editora;
 	}
 
 	// metodos

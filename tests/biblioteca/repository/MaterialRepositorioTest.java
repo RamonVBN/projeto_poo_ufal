@@ -8,6 +8,7 @@ import biblioteca.model.material.MaterialBibliografico;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +27,7 @@ class MaterialRepositorioTest {
             2008,
             "Robert C. Martin",
             "9780132350884",
-            "Prentice Hall"
+            "Prentice Hall", Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
     }
 
@@ -96,7 +97,8 @@ class MaterialRepositorioTest {
                 "Robert C. Martin",
                 "9780132350884",
                 "Prentice Hall",
-                    material.getId()
+                material.getId(), 
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
             );
 
         // A atualização deve preservar o ID do material original.

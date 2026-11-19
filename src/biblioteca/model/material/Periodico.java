@@ -1,9 +1,10 @@
 package biblioteca.model.material;
 
-public class Periodico extends MaterialBibliografico{
+import java.nio.file.Path;
 
-    // atributos
+public class Periodico extends MaterialBibliografico {
 
+	// atributos
 
     private int numeroEdicao;
     private String dataPublicacao;
@@ -11,16 +12,16 @@ public class Periodico extends MaterialBibliografico{
 
     // construtor
 
-    public Periodico(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, TipoPeriodico tipoPeriodico) {
-        super(titulo, anoPublicacao, editora);
+    public Periodico(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, TipoPeriodico tipoPeriodico, Path caminhoCapa) {
+        super(titulo, anoPublicacao, editora, caminhoCapa);
         this.tipoPeriodico = tipoPeriodico;
         this.setEditora(editora.trim());
         this.setNumeroEdicao(numeroEdicao);
         this.setDataPublicacao(dataPublicacao.trim());
     }
 
-    public Periodico(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, TipoPeriodico tipoPeriodico, int id) {
-        super(titulo, anoPublicacao, editora, id);
+    public Periodico(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, TipoPeriodico tipoPeriodico, int id, Path caminhoCapa) {
+        super(titulo, anoPublicacao, editora, id, caminhoCapa);
         this.tipoPeriodico = tipoPeriodico;
         this.setEditora(editora.trim());
         this.setNumeroEdicao(numeroEdicao);

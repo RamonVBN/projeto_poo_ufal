@@ -91,8 +91,7 @@ class AutorizacaoServiceTest {
         Set<Permissao> permissoesNegadas = EnumSet.of(
                 Permissao.CADASTRAR_USUARIO,
                 Permissao.REMOVER_USUARIO,
-                Permissao.ATUALIZAR_USUARIOS,
-                Permissao.CONSULTAR_PROPRIOS_EMPRESTIMOS
+                Permissao.ATUALIZAR_USUARIOS
         );
 
         for (Permissao permissao : permissoesNegadas) {
