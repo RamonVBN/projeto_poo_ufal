@@ -6,9 +6,9 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
-import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
-import biblioteca.model.material.Revista;
+import biblioteca.model.material.Periodico;
+import biblioteca.model.material.TipoPeriodico;
 import biblioteca.repository.MaterialRepositorio;
 
 public class MaterialsTest {
@@ -31,9 +31,10 @@ public class MaterialsTest {
 
     @Test
     void revistaDeveExibirSeusDetalhes() {
-        Revista revista = new Revista(
+        Periodico revista = new Periodico(
             "National Geographic", 2024, "Editora Abril",
-            150, "01/2024", Path.of(MaterialRepositorio.uploadsDirectory, "")
+            150, "01/2024", 
+            TipoPeriodico.REVISTA ,Path.of(MaterialRepositorio.uploadsDirectory, "")
         );
 
         String detalhes = revista.exibirDetalhes();
@@ -46,9 +47,10 @@ public class MaterialsTest {
 
     @Test
     void jornalDeveExibirSeusDetalhes() {
-        Jornal jornal = new Jornal(
+        Periodico jornal = new Periodico(
             "Jornal da Cidade", 2025, "Editora Local",
-            42, "10/03/2025", Path.of(MaterialRepositorio.uploadsDirectory, "jornal_da_cidade.jpg")
+            42, "10/03/2025",
+            TipoPeriodico.JORNAL ,Path.of(MaterialRepositorio.uploadsDirectory, "jornal_da_cidade.jpg")
         );
 
         String detalhes = jornal.exibirDetalhes();
