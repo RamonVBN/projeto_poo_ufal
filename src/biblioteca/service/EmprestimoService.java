@@ -179,11 +179,36 @@ public class EmprestimoService extends Service {
 
         return emprestimoRepositorio.listarPorUsuario(usuarioId);
     }
+
+    public List<Emprestimo> listarEmprestimosPorStatus(StatusEmprestimo status) throws UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_TODOS_EMPRESTIMOS);
+
+        return emprestimoRepositorio.listarPorStatus(status);
+    }
+
+    public List<Emprestimo> listarEmprestimosPorUsuarioEStatus(int usuarioId, StatusEmprestimo status) throws UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_TODOS_EMPRESTIMOS);
+
+        return emprestimoRepositorio.listarPorUsuarioEStatus(usuarioId, status);
+    }
+
     public List<Emprestimo> listarMeusEmprestimos() throws UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException {
 
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_PROPRIOS_EMPRESTIMOS);
 
         return emprestimoRepositorio.listarPorUsuario(sessao.getUsuarioLogado().getID());
+    }
+
+    public List<Emprestimo> listarMeusEmprestimosPorStatus(StatusEmprestimo status) throws UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException {
+
+        this.verificarAutenticacao();
+        autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.CONSULTAR_PROPRIOS_EMPRESTIMOS);
+
+        return emprestimoRepositorio.listarPorUsuarioEStatus(sessao.getUsuarioLogado().getID(), status);
     }
 }

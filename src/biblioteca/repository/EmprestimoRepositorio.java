@@ -6,6 +6,7 @@ import java.util.List;
 import biblioteca.exception.ItemDuplicadoException;
 import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.model.Emprestimo;
+import biblioteca.model.StatusEmprestimo;
 
 public class EmprestimoRepositorio implements Repositorio<Emprestimo> {
 
@@ -39,11 +40,36 @@ public class EmprestimoRepositorio implements Repositorio<Emprestimo> {
         return new ArrayList<Emprestimo>(emprestimos);
     }
 
+    public List<Emprestimo> listarPorStatus(StatusEmprestimo status) {
+        List<Emprestimo> emprestimosFiltrados = new ArrayList<>();
+
+        for (Emprestimo emprestimo : emprestimos) {
+            if (emprestimo.getStatus() == status) {
+                emprestimosFiltrados.add(emprestimo);
+            }
+        }
+
+        return emprestimosFiltrados;
+    }
+
     public List<Emprestimo> listarPorUsuario(int usuarioId) {
         List<Emprestimo> emprestimosFiltrados = new ArrayList<>();
 
         for (Emprestimo emprestimo : emprestimos) {
             if (emprestimo.getUsuario().getID() == (usuarioId)) {
+                emprestimosFiltrados.add(emprestimo);
+            }
+        }
+
+        return emprestimosFiltrados;
+    }
+
+    public List<Emprestimo> listarPorUsuarioEStatus(int usuarioId, StatusEmprestimo status) {
+        List<Emprestimo> emprestimosFiltrados = new ArrayList<>();
+        List<Emprestimo> emprestimosDoUsuario = this.listarPorUsuario(usuarioId);
+
+        for (Emprestimo emprestimo : emprestimosDoUsuario) {
+            if (emprestimo.getStatus() == status) {
                 emprestimosFiltrados.add(emprestimo);
             }
         }

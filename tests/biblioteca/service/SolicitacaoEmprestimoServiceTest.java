@@ -128,8 +128,7 @@ class SolicitacaoEmprestimoServiceTest {
 
         assertEquals(1, solicitacaoRepositorio.listarTodos().size());
 
-        SolicitacaoEmprestimo solicitacao =
-                solicitacaoRepositorio.listarTodos().get(0);
+        SolicitacaoEmprestimo solicitacao = solicitacaoRepositorio.listarTodos().getFirst();
 
         assertSame(leitor, solicitacao.getSolicitante());
         assertSame(livro1, solicitacao.getMaterialSolicitado());
