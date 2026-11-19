@@ -12,6 +12,7 @@ import biblioteca.model.usuario.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,9 +35,9 @@ class SolicitacaoEmprestimoRepositorioTest {
         usuario1 = new Usuario("João", "joao", "123", Cargo.LEITOR);
         usuario2 = new Usuario("Maria", "maria", "123", Cargo.LEITOR);
 
-        livro1 = new Livro("Clean Code", 2008, "Robert Martin", "111", "Prentice Hall");
-        livro2 = new Livro("Clean Architecture", 2017, "Robert Martin", "222", "Prentice Hall");
-        livro3 = new Livro("Effective Java", 2018, "Joshua Bloch", "333", "Addison-Wesley");
+        livro1 = new Livro("Clean Code", 2008, "Robert Martin", "111", "Prentice Hall", Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg"));
+        livro2 = new Livro("Clean Architecture", 2017, "Robert Martin", "222", "Prentice Hall", Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg"));
+        livro3 = new Livro("Effective Java", 2018, "Joshua Bloch", "333", "Addison-Wesley", Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg"));
     }
 
     private SolicitacaoEmprestimo criarSolicitacao(
