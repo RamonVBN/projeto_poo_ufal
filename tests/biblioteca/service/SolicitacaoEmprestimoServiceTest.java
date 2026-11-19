@@ -8,10 +8,7 @@ import biblioteca.model.StatusSolicitacao;
 import biblioteca.model.material.Livro;
 import biblioteca.model.usuario.Cargo;
 import biblioteca.model.usuario.Usuario;
-import biblioteca.repository.EmprestimoRepositorio;
-import biblioteca.repository.MaterialRepositorio;
-import biblioteca.repository.SolicitacaoEmprestimoRepositorio;
-import biblioteca.repository.UsuarioRepositorio;
+import biblioteca.repository.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,11 +38,11 @@ class SolicitacaoEmprestimoServiceTest {
         MaterialRepositorio materialRepositorio = new MaterialRepositorio();
         emprestimoRepositorio = new EmprestimoRepositorio();
         usuarioRepositorio = new UsuarioRepositorio();
-
+        MultaRepositorio multaRepositorio = new MultaRepositorio();
         sessao = new Sessao();
         Sessao sessaoEmprestimo = new Sessao();
-
         AutorizacaoService autorizacaoService = new AutorizacaoService();
+        MultaService multaService = new MultaService(autorizacaoService, sessaoEmprestimo, multaRepositorio);
 
         leitor = new Usuario(
                 "João",
@@ -91,7 +88,8 @@ class SolicitacaoEmprestimoServiceTest {
                 materialRepositorio,
                 usuarioRepositorio,
                 autorizacaoService,
-                sessaoEmprestimo
+                sessaoEmprestimo,
+                multaService
         );
 
         service = new SolicitacaoEmprestimoService(
@@ -243,7 +241,7 @@ class SolicitacaoEmprestimoServiceTest {
 
         autenticarAdministrador();
 
-        assertEquals(1, service.listarSolicitacoesPendentes().size());
+        assertEquals(1, service.listarSolicitacoesPorStatus(StatusSolicitacao.PENDENTE).size());
     }
 
     @Test
@@ -259,7 +257,7 @@ class SolicitacaoEmprestimoServiceTest {
 
         autenticarAdministrador();
 
-        assertEquals(1, service.listarSolicitacoesAprovadas().size());
+        assertEquals(1, service.listarSolicitacoesPorStatus(StatusSolicitacao.APROVADA).size());
     }
 
     @Test
@@ -275,7 +273,7 @@ class SolicitacaoEmprestimoServiceTest {
 
         autenticarAdministrador();
 
-        assertEquals(1, service.listarSolicitacoesRejeitadas().size());
+        assertEquals(1, service.listarSolicitacoesPorStatus(StatusSolicitacao.REJEITADA).size());
     }
 
     @Test
