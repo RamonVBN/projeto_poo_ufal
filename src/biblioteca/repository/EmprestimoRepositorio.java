@@ -19,7 +19,6 @@ public class EmprestimoRepositorio implements Repositorio<Emprestimo> {
                 throw new ItemDuplicadoException("empréstimo");
             }
         }
-
         emprestimos.add(emprestimo);
     }
 	
@@ -56,7 +55,6 @@ public class EmprestimoRepositorio implements Repositorio<Emprestimo> {
     public void atualizar(Emprestimo emprestimo) throws RegistroNaoEncontradoException {
 
         for (int i = 0; i < emprestimos.size(); i++) {
-
             if (emprestimos.get(i).getId() == emprestimo.getId()) {
                 emprestimos.set(i, emprestimo);
                 return;
