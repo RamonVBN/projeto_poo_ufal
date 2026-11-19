@@ -19,7 +19,6 @@ public class MaterialRepositorio implements Repositorio<MaterialBibliografico>, 
                 throw new ItemDuplicadoException("material");
             }
         }
-
         materiais.add(material);
     }
 	
