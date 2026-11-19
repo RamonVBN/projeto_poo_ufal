@@ -9,6 +9,7 @@ import biblioteca.model.usuario.Permissao;
 import biblioteca.repository.MultaRepositorio;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 public class MultaService extends Service {
@@ -57,7 +58,8 @@ public class MultaService extends Service {
         long diasAtraso = multaParaPagar.getDiasAtraso();
         BigDecimal valor = multaParaPagar.getValor();
         Emprestimo emprestimoAssociado = multaParaPagar.getEmprestimo();
-        Multa multaAtualizada = new Multa(diasAtraso, valor, emprestimoAssociado, multaId);
+        LocalDate dataGeracao = multaParaPagar.getDataGeracao();
+        Multa multaAtualizada = new Multa(diasAtraso, valor, dataGeracao, emprestimoAssociado, multaId);
         multaAtualizada.registrarPagamento();
         multaRepositorio.atualizar(multaAtualizada);
     }
@@ -75,7 +77,8 @@ public class MultaService extends Service {
         long diasAtraso = multaParaCancelar.getDiasAtraso();
         BigDecimal valor = multaParaCancelar.getValor();
         Emprestimo emprestimoAssociado = multaParaCancelar.getEmprestimo();
-        Multa multaAtualizada = new Multa(diasAtraso, valor, emprestimoAssociado, multaId);
+        LocalDate dataGeracao = multaParaCancelar.getDataGeracao();
+        Multa multaAtualizada = new Multa(diasAtraso, valor, dataGeracao, emprestimoAssociado, multaId);
         multaAtualizada.registrarCancelamento();
         multaRepositorio.atualizar(multaAtualizada);
     }

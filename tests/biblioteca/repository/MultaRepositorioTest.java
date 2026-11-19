@@ -137,6 +137,7 @@ class MultaRepositorioTest {
         Multa multaDuplicada = new Multa(
                 3,
                 new BigDecimal("6.00"),
+                LocalDate.now(),
                 outroEmprestimo,
                 multa.getId()
         );
@@ -246,6 +247,7 @@ class MultaRepositorioTest {
         Multa multaAtualizada = new Multa(
                 multa.getDiasAtraso(),
                 multa.getValor(),
+                multa.getDataGeracao(),
                 multa.getEmprestimo(),
                 multa.getId()
         );

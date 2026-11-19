@@ -26,11 +26,11 @@ public class Multa {
         this.emprestimo = emprestimo;
     }
 
-    public Multa(long diasAtraso, BigDecimal valor, Emprestimo emprestimo, int id) {
+    public Multa(long diasAtraso, BigDecimal valor, LocalDate dataGeracao, Emprestimo emprestimo, int id) {
         this.id = id;
         this.diasAtraso = diasAtraso;
         this.valor = valor;
-        this.dataGeracao = LocalDate.now();
+        this.dataGeracao = dataGeracao;
         this.emprestimo = emprestimo;
         this.status = StatusMulta.PENDENTE;
     }

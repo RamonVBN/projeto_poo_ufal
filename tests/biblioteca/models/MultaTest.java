@@ -65,6 +65,7 @@ class MultaTest {
         Multa multa = new Multa(
                 5,
                 new BigDecimal("10.00"),
+                LocalDate.now(),
                 emprestimo,
                 123
         );
