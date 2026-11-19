@@ -7,10 +7,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,10 +32,9 @@ import biblioteca.exception.MaterialIndisponivelException;
 import biblioteca.exception.OperacaoNaoPermitidaException;
 import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.exception.UsuarioNaoAutenticadoException;
-import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
-import biblioteca.model.material.Revista;
+import biblioteca.model.material.Periodico;
 import biblioteca.model.usuario.Cargo;
 import biblioteca.service.CatalogoService;
 import biblioteca.service.EmprestimoService;
@@ -263,7 +264,11 @@ public class MenuPrincipal extends JFrame{
         capa.setPreferredSize(new Dimension(75, 90));
         capa.setBackground(new Color(210, 210, 210));
 
-        capa.add(new JLabel("CAPA"));
+        ImageIcon capa_material = new ImageIcon(material.getCaminhoCapa().toString());
+        Image imagemRedimencionada = capa_material.getImage().getScaledInstance(81, 93, Image.SCALE_SMOOTH);
+        capa_material = new ImageIcon(imagemRedimencionada);
+        
+        capa.add(new JLabel(capa_material));
 
         card.add(capa, BorderLayout.WEST);
 
@@ -279,10 +284,8 @@ public class MenuPrincipal extends JFrame{
 
         if (material instanceof Livro) {
         	this.criarInformacoes(informacoes, (Livro) material);
-        } else if (material instanceof Jornal) {
-        	this.criarInformacoes(informacoes, (Jornal) material);
         } else {
-        	this.criarInformacoes(informacoes, (Revista) material);
+        	this.criarInformacoes(informacoes, (Periodico) material);
         }
         
         informacoes.add(Box.createVerticalStrut(5));
@@ -370,13 +373,7 @@ public class MenuPrincipal extends JFrame{
         informacoes.add(new JLabel("ISBN / Edição: " + material.getIsbn()));
     }
     
-    private void criarInformacoes(JPanel informacoes, Jornal material) {
-        informacoes.add(new JLabel("Ano de publicação: " + material.getAnoPublicacao()));
-        informacoes.add(Box.createVerticalStrut(5));
-        informacoes.add(new JLabel("ISBN / Edição: " + material.getNumeroEdicao()));
-    }
-    
-    private void criarInformacoes(JPanel informacoes, Revista material) {
+    private void criarInformacoes(JPanel informacoes, Periodico material) {
         informacoes.add(new JLabel("Ano de publicação: " + material.getAnoPublicacao()));
         informacoes.add(Box.createVerticalStrut(5));
         informacoes.add(new JLabel("ISBN / Edição: " + material.getNumeroEdicao()));

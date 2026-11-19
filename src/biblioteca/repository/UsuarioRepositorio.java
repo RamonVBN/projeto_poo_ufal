@@ -15,10 +15,6 @@ public class UsuarioRepositorio implements Repositorio<Usuario> {
 
 	private final ArrayList<Usuario> usuarios = new ArrayList<Usuario>();
 	
-	public UsuarioRepositorio() {
-		this.cadastrarUsuariosIniciais();
-	}
-	
 	@Override
 	public void adicionar(Usuario usuario) throws ItemDuplicadoException {
 
@@ -128,7 +124,7 @@ public class UsuarioRepositorio implements Repositorio<Usuario> {
 		}
 	}
 	
-	private void cadastrarUsuariosIniciais() {
+	public void cadastrarUsuariosIniciais() {
 		Usuario leitor = new Usuario("Jorge", "jorge", hashearSenha("senha123"), Cargo.LEITOR);
 		Usuario bibliotecario = new Usuario("Josefina", "josefina123", hashearSenha("jose123"), Cargo.BIBLIOTECARIO);
 		Usuario adm = new Usuario("Administrador", "admin123", hashearSenha("admin123") , Cargo.ADMINISTRADOR);
