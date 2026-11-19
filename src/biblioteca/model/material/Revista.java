@@ -4,20 +4,19 @@ public class Revista extends MaterialBibliografico{
 	
 	// atributos
 	
-	private String editora;
 	private int numeroEdicao;
 	private String dataPublicacao;
 	
 	// construtor
 	public Revista(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao) {
-		super(titulo, anoPublicacao);
+		super(titulo, anoPublicacao, editora);
 		this.setEditora(editora.trim());
 		this.setNumeroEdicao(numeroEdicao);
 		this.setDataPublicacao(dataPublicacao.trim());
 	}
 
 	public Revista(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, int id) {
-		super(titulo, anoPublicacao, id);
+		super(titulo, anoPublicacao, editora, id);
 		this.setEditora(editora.trim());
 		this.setNumeroEdicao(numeroEdicao);
 		this.setDataPublicacao(dataPublicacao.trim());
@@ -25,16 +24,8 @@ public class Revista extends MaterialBibliografico{
 	
 	// getters e setters
 
-	public String getEditora() {
-		return editora;
-	}
-
-	public void setEditora(String editora) {
-		this.editora = editora;
-	}
-
 	public int getNumeroEdicao() {
-		return numeroEdicao;
+		return this.numeroEdicao;
 	}
 
 	public void setNumeroEdicao(int numeroEdicao) {
@@ -42,7 +33,7 @@ public class Revista extends MaterialBibliografico{
 	}
 
 	public String getDataPublicacao() {
-		return dataPublicacao;
+		return this.dataPublicacao;
 	}
 
 	public void setDataPublicacao(String dataPublicacao) {

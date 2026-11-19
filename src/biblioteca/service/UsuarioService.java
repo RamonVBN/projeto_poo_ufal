@@ -200,6 +200,7 @@ public class UsuarioService extends Service  {
 
         Usuario usuarioAtualizado = new Usuario(nome, login, senha, cargo, usuarioId);
         usuarioRepositorio.atualizar(usuarioAtualizado);
+        this.sessao.iniciarSessao(usuarioAtualizado);
     }
 
     public void atualizarMinhaSenha(String senhaAtual, String senhaNova) throws RegistroNaoEncontradoException, NoSuchAlgorithmException, InvalidKeySpecException, CredenciaisInvalidasException, UsuarioNaoAutenticadoException, OperacaoNaoPermitidaException {
@@ -220,9 +221,10 @@ public class UsuarioService extends Service  {
         String senhaNovaHash = SenhaHashUtil.hash(senhaNova);
         Cargo cargo = usuarioParaAtualizar.getCargo();
         int usuarioId = usuarioParaAtualizar.getID();
-
+        System.out.println("Nova senha: " + senhaNovaHash);
         Usuario usuarioAtualizado = new Usuario(nome, login, senhaNovaHash, cargo, usuarioId);
         usuarioRepositorio.atualizar(usuarioAtualizado);
+        this.sessao.iniciarSessao(usuarioAtualizado);
     }
 
     public void removerUsuario(int usuarioId)

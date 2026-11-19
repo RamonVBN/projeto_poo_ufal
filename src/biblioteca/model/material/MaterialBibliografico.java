@@ -10,21 +10,23 @@ public abstract class MaterialBibliografico {
 	private String titulo;
 	private int anoPublicacao;
 	private boolean disponivel;
+	private String editora;
 	
 	// construtor
 	
-	public MaterialBibliografico(String titulo, int anoPublicacao) {
+	public MaterialBibliografico(String titulo, int anoPublicacao, String editora) {
 		this.id = new Random().nextInt();
 		this.setTitulo(titulo.trim());
 		this.setAnoPublicacao(anoPublicacao);
 		this.setDisponivel(true);
 	}
 
-	public MaterialBibliografico(String titulo, int anoPublicacao, int id) {
+	public MaterialBibliografico(String titulo, int anoPublicacao, String editora, int id) {
 		this.id = id;
 		this.setTitulo(titulo.trim());
 		this.setAnoPublicacao(anoPublicacao);
 		this.setDisponivel(true);
+		this.setEditora(editora);
 	}
 	
 	// getters e setters
@@ -46,10 +48,10 @@ public abstract class MaterialBibliografico {
 	}
 
 	public boolean estaDisponivel() {
-		return disponivel;
+		return this.disponivel;
 	}
 
-	private void setDisponivel(boolean disponivel) {
+	public void setDisponivel(boolean disponivel) {
 		this.disponivel = disponivel;
 	}
 
@@ -57,8 +59,16 @@ public abstract class MaterialBibliografico {
 		return id;
 	}
 	
-	// metodos
+	public String getEditora() {
+		return editora;
+	}
+
+	public void setEditora(String editora) {
+		this.editora = editora;
+	}
 	
+	// metodos
+
 	public abstract String exibirDetalhes();
 
 	public void marcarComoDisponivel() {

@@ -3,36 +3,27 @@ package biblioteca.model.material;
 public class Jornal extends MaterialBibliografico{
 
 	// atributos
-	
-	private String editora;
+
 	private int numeroEdicao;
 	private String dataPublicacao;
 	
 	// construtor
 	
 	public Jornal(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao) {
-		super(titulo, anoPublicacao);
+		super(titulo, anoPublicacao, editora);
 		this.setEditora(editora.trim());
 		this.setNumeroEdicao(numeroEdicao);
 		this.setDataPublicacao(dataPublicacao.trim());
 	}
 
 	public Jornal(String titulo, int anoPublicacao, String editora, int numeroEdicao, String dataPublicacao, int id) {
-		super(titulo, anoPublicacao, id);
+		super(titulo, anoPublicacao, editora, id);
 		this.setEditora(editora.trim());
 		this.setNumeroEdicao(numeroEdicao);
 		this.setDataPublicacao(dataPublicacao.trim());
 	}
 	
 	// getters e setters
-
-	public String getEditora() {
-		return editora;
-	}
-
-	public void setEditora(String editora) {
-		this.editora = editora;
-	}
 
 	public int getNumeroEdicao() {
 		return numeroEdicao;

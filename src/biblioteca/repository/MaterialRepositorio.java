@@ -5,11 +5,18 @@ import java.util.List;
 
 import biblioteca.exception.ItemDuplicadoException;
 import biblioteca.exception.RegistroNaoEncontradoException;
+import biblioteca.model.material.Jornal;
+import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
+import biblioteca.model.material.Revista;
 
 public class MaterialRepositorio implements Repositorio<MaterialBibliografico> {
 
 	private final ArrayList<MaterialBibliografico> materiais = new ArrayList<>();
+	
+	public MaterialRepositorio() {
+		this.cadastrarMateriaisIniciais();
+	}
 	
 	@Override
     public void adicionar(MaterialBibliografico material) throws ItemDuplicadoException {
@@ -75,5 +82,26 @@ public class MaterialRepositorio implements Repositorio<MaterialBibliografico> {
 
         MaterialBibliografico material = buscarPorId(materialId);
         materiais.remove(material);
+    }
+    
+    private void cadastrarMateriaisIniciais() {
+    	Livro livro = new Livro("Clean Code", 2008, "Robert C. Martin", "9780132350884", "Prentice Hall");
+    	Revista revista = new Revista("Revista Ciência Hoje", 2024, "SBPC", 395, "21/07/2024");
+    	Jornal jornal = new Jornal("Jornal da Cidade", 2025, "Editora Local", 120, "23/01/2025");
+    	try {
+			this.adicionar(livro);
+		} catch (ItemDuplicadoException e) {
+			
+		}
+    	try {
+			this.adicionar(revista);
+		} catch (ItemDuplicadoException e) {
+			
+		}
+    	try {
+			this.adicionar(jornal);
+		} catch (ItemDuplicadoException e) {
+			
+		}
     }
 }
