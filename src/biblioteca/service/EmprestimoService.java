@@ -4,9 +4,10 @@ import biblioteca.auth.Sessao;
 import biblioteca.exception.*;
 import biblioteca.model.Emprestimo;
 import biblioteca.model.StatusEmprestimo;
-import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
+import biblioteca.model.material.Periodico;
+import biblioteca.model.material.TipoPeriodico;
 import biblioteca.model.usuario.Permissao;
 import biblioteca.model.usuario.Usuario;
 import biblioteca.repository.EmprestimoRepositorio;
@@ -76,10 +77,12 @@ public class EmprestimoService extends Service {
 
         if (material instanceof Livro) {
             dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(14);
-        } else if (material instanceof Jornal) {
-            dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(3);
         } else {
-            dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(2);
+        	TipoPeriodico tipoPeriodico = ((Periodico) material).getTipoPeriodico();
+            switch (tipoPeriodico) {
+                case JORNAL -> dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(3);
+                case REVISTA -> dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(2);
+            }
         }
 
         Emprestimo novoEmprestimo = new Emprestimo(dataPrevistaDevolucao, material, usuario);

@@ -2,9 +2,10 @@ package biblioteca.service;
 
 import biblioteca.auth.Sessao;
 import biblioteca.exception.*;
-import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
+import biblioteca.model.material.Periodico;
+import biblioteca.model.material.TipoPeriodico;
 import biblioteca.model.usuario.Permissao;
 import biblioteca.repository.MaterialRepositorio;
 
@@ -59,7 +60,7 @@ public class CatalogoService extends Service {
 		}
 	}
 
-	private void validarJornalRevista
+	private void validarPeriodico
             (
                 String titulo, int anoPublicacao,
                 String editora, int numeroEdicao,
@@ -98,13 +99,14 @@ public class CatalogoService extends Service {
         return novoLivro;
     }
 
-    public Jornal cadastrarPeriodico
+    public Periodico cadastrarPeriodico
             (
                 String titulo,
                 int anoPublicacao,
                 String editora,
                 int numeroEdicao,
                 String dataPublicacao,
+                TipoPeriodico tipoPeriodico,
                 Path capa
             )
             throws OperacaoNaoPermitidaException, ItemDuplicadoException, UsuarioNaoAutenticadoException, CredenciaisInvalidasException {
@@ -112,10 +114,10 @@ public class CatalogoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
 
-        this.validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, capa);
-        Jornal novoJornal = new Jornal(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, capa);
-        repositorio.adicionar(novoJornal);
-        return novoJornal;
+        this.validarPeriodico(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, capa);
+        Periodico novoPeriodico = new Periodico(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, tipoPeriodico, capa);
+        repositorio.adicionar(novoPeriodico);
+        return novoPeriodico;
     }
 
     public MaterialBibliografico buscarMaterial(int materialId)
@@ -182,7 +184,7 @@ public class CatalogoService extends Service {
                     String editora,
                     int numeroEdicao,
                     String dataPublicacao,
-                    int jornalRevistaId,
+                    int periodicoId,
                     Path capa
             )
             throws OperacaoNaoPermitidaException,
@@ -194,17 +196,18 @@ public class CatalogoService extends Service {
         this.verificarAutenticacao();
         autorizacaoService.exigirPermissao(sessao.getUsuarioLogado(), Permissao.GERENCIAR_CATALOGO);
 
-        MaterialBibliografico material = repositorio.buscarPorId(jornalRevistaId);
+        MaterialBibliografico material = repositorio.buscarPorId(periodicoId);
 
-        if (!(material instanceof Jornal)) {
+        if (!(material instanceof Periodico)) {
             throw new TipoMaterialInvalidoException(material);
         }
 
-        this.validarJornalRevista(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, capa);
-        Jornal jornalRevistaAtualizado = new Jornal(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, jornalRevistaId, capa);
+        this.validarPeriodico(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, capa);
+        TipoPeriodico tipoPeriodico = ((Periodico) material).getTipoPeriodico();
+        Periodico jornalRevistaAtualizado = new Periodico(titulo, anoPublicacao, editora, numeroEdicao, dataPublicacao, tipoPeriodico, periodicoId, capa);
         repositorio.atualizar(jornalRevistaAtualizado);
-
     }
+    
     public void removerMaterial(int materialId) throws
             OperacaoNaoPermitidaException,
             RegistroNaoEncontradoException,

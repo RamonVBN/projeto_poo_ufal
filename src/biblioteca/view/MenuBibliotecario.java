@@ -33,10 +33,10 @@ import biblioteca.exception.MaterialIndisponivelException;
 import biblioteca.exception.OperacaoNaoPermitidaException;
 import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.exception.UsuarioNaoAutenticadoException;
-import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
-import biblioteca.model.material.Revista;
+import biblioteca.model.material.Periodico;
+import biblioteca.model.material.TipoPeriodico;
 import biblioteca.service.CatalogoService;
 
 public class MenuBibliotecario extends JPanel{
@@ -283,12 +283,19 @@ public class MenuBibliotecario extends JPanel{
 	        		break;
 	        	} case "Revista", "Jornal": {
 	        		try {
+	        			TipoPeriodico tipoP;
+	        			if (tipo == "Revista") {
+	        				tipoP = TipoPeriodico.REVISTA;
+	        			} else {
+	        				tipoP = TipoPeriodico.JORNAL;
+	        			}
 						this.catalogo.cadastrarPeriodico(
 							campoTitulo.getText(),
 							Integer.parseInt(campoAno.getText()),
 							campoEditora.getText(),
 							Integer.parseInt(campoNumeroEdicao.getText()),
 							campoDataPublicacao.getText(),
+							tipoP,
 							this.caminhoCapa
 							);
 						limparCampos(formulario);
@@ -372,12 +379,8 @@ public class MenuBibliotecario extends JPanel{
             }
             informacoes.add(new JLabel(material.getEditora()));
             informacoes.add(new JLabel(String.valueOf(material.getAnoPublicacao())));
-            if (material instanceof Revista) {
-            	Revista material_temp = (Revista) material;
-            	informacoes.add(new JLabel(String.valueOf(material_temp.getNumeroEdicao())));
-            }
-            if (material instanceof Jornal) {
-            	Jornal material_temp = (Jornal) material;
+            if (material instanceof Periodico) {
+            	Periodico material_temp = (Periodico) material;
             	informacoes.add(new JLabel(String.valueOf(material_temp.getNumeroEdicao())));
             }
 

@@ -32,10 +32,9 @@ import biblioteca.exception.MaterialIndisponivelException;
 import biblioteca.exception.OperacaoNaoPermitidaException;
 import biblioteca.exception.RegistroNaoEncontradoException;
 import biblioteca.exception.UsuarioNaoAutenticadoException;
-import biblioteca.model.material.Jornal;
 import biblioteca.model.material.Livro;
 import biblioteca.model.material.MaterialBibliografico;
-import biblioteca.model.material.Revista;
+import biblioteca.model.material.Periodico;
 import biblioteca.model.usuario.Cargo;
 import biblioteca.service.CatalogoService;
 import biblioteca.service.EmprestimoService;
@@ -285,10 +284,8 @@ public class MenuPrincipal extends JFrame{
 
         if (material instanceof Livro) {
         	this.criarInformacoes(informacoes, (Livro) material);
-        } else if (material instanceof Jornal) {
-        	this.criarInformacoes(informacoes, (Jornal) material);
         } else {
-        	this.criarInformacoes(informacoes, (Revista) material);
+        	this.criarInformacoes(informacoes, (Periodico) material);
         }
         
         informacoes.add(Box.createVerticalStrut(5));
@@ -376,13 +373,7 @@ public class MenuPrincipal extends JFrame{
         informacoes.add(new JLabel("ISBN / Edição: " + material.getIsbn()));
     }
     
-    private void criarInformacoes(JPanel informacoes, Jornal material) {
-        informacoes.add(new JLabel("Ano de publicação: " + material.getAnoPublicacao()));
-        informacoes.add(Box.createVerticalStrut(5));
-        informacoes.add(new JLabel("ISBN / Edição: " + material.getNumeroEdicao()));
-    }
-    
-    private void criarInformacoes(JPanel informacoes, Revista material) {
+    private void criarInformacoes(JPanel informacoes, Periodico material) {
         informacoes.add(new JLabel("Ano de publicação: " + material.getAnoPublicacao()));
         informacoes.add(Box.createVerticalStrut(5));
         informacoes.add(new JLabel("ISBN / Edição: " + material.getNumeroEdicao()));
