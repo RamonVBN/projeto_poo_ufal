@@ -24,7 +24,14 @@ public class AutorizacaoService {
                      CONSULTAR_CATALOGO,
                      CONSULTAR_TODOS_EMPRESTIMOS,
                      CONSULTAR_USUARIOS,
-                     ATUALIZAR_PROPRIOS_DADOS -> true;
+                     ATUALIZAR_PROPRIOS_DADOS,
+                     CONSULTAR_TODAS_SOLICITACOES,
+                     GERENCIAR_SOLICITACOES,
+                     CONSULTAR_TODAS_MULTAS,
+                     GERENCIAR_MULTAS,
+                     CONSULTAR_PROPRIOS_EMPRESTIMOS,
+                     CONSULTAR_PROPRIAS_MULTAS
+                     -> true;
 
                 default -> false;
             };
@@ -34,7 +41,8 @@ public class AutorizacaoService {
                      CONSULTAR_PROPRIOS_EMPRESTIMOS,
                      CONSULTAR_PROPRIAS_SOLICITACOES,
                      SOLICITAR_EMPRESTIMO,
-                     ATUALIZAR_PROPRIOS_DADOS -> true;
+                     ATUALIZAR_PROPRIOS_DADOS,
+                     CONSULTAR_PROPRIAS_MULTAS -> true;
 
                 default -> false;
             };
