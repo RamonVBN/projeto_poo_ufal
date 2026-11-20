@@ -8,12 +8,14 @@ import biblioteca.model.StatusMulta;
 import biblioteca.model.material.Livro;
 import biblioteca.model.usuario.Cargo;
 import biblioteca.model.usuario.Usuario;
+import biblioteca.repository.MaterialRepositorio;
 import biblioteca.repository.MultaRepositorio;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -60,7 +62,8 @@ class MultaServiceTest {
                 2008,
                 "Robert C. Martin",
                 "9780132350884",
-                "Prentice Hall"
+                "Prentice Hall",
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         emprestimo = new Emprestimo(

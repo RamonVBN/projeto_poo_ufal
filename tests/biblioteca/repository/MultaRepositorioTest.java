@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -51,7 +52,8 @@ class MultaRepositorioTest {
                 2008,
                 "Robert C. Martin",
                 "9780132350884",
-                "Prentice Hall"
+                "Prentice Hall",
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         Livro outroLivro = new Livro(
@@ -59,7 +61,8 @@ class MultaRepositorioTest {
                 2018,
                 "Joshua Bloch",
                 "9780134685991",
-                "Alta Books"
+                "Alta Books",
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         emprestimo = new Emprestimo(

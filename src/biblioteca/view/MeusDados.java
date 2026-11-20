@@ -39,13 +39,11 @@ public class MeusDados extends JPanel {
 	
 	// atributos
 	
-    private Sessao sessao;
-    private EmprestimoService emprestimos;
-    private UsuarioService usuarioService;
-    
-    private JPanel painelEmprestimos;
-    
-    private Runnable voltarLogin;
+    private final Sessao sessao;
+    private final EmprestimoService emprestimos;
+    private final UsuarioService usuarioService;
+
+    private final Runnable voltarLogin;
     
     // construtor
     
@@ -173,7 +171,7 @@ public class MeusDados extends JPanel {
 
 
 	private void criarPainelEmprestimos() {
-	    this.painelEmprestimos = new JPanel(new GridLayout(1, 2, 20, 20));
+        JPanel painelEmprestimos = new JPanel(new GridLayout(1, 2, 20, 20));
 	    painelEmprestimos.setBackground(new Color(220, 220, 220));
 	
 	    // =================================
@@ -311,8 +309,10 @@ public class MeusDados extends JPanel {
 				} catch (UsuarioNaoAutenticadoException une) {
 					JOptionPane.showMessageDialog(this, "Você não está autenticado", une.getMessage(), JOptionPane.ERROR_MESSAGE);
 					voltarLogin.run();
-				}
-	    	}
+				} catch (ItemDuplicadoException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
 	    });
 	
 	    itemEmprestimo.add(informacao, BorderLayout.CENTER);

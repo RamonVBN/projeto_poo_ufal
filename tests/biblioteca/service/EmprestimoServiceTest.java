@@ -14,6 +14,7 @@ import biblioteca.repository.EmprestimoRepositorio;
 import biblioteca.repository.MaterialRepositorio;
 import biblioteca.repository.MultaRepositorio;
 import biblioteca.repository.UsuarioRepositorio;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -165,7 +166,7 @@ class EmprestimoServiceTest {
                 "Robert C. Martin",
                 "9780134494166",
                 "Prentice Hall",
-                Path.of(MaterialRepositorio.uploadsDirectory, "")
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         MaterialBibliografico livro3 = new Livro(
@@ -174,7 +175,7 @@ class EmprestimoServiceTest {
                 "Eric Evans",
                 "9780321125217",
                 "Addison-Wesley",
-                Path.of(MaterialRepositorio.uploadsDirectory, "")
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         MaterialBibliografico livro4 = new Livro(
@@ -183,7 +184,7 @@ class EmprestimoServiceTest {
                 "Martin Fowler",
                 "9780201485677",
                 "Addison-Wesley",
-                Path.of(MaterialRepositorio.uploadsDirectory, "")
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         materialRepositorio.adicionar(livro2);
@@ -393,7 +394,8 @@ class EmprestimoServiceTest {
                 2018,
                 "Joshua Bloch",
                 "9780134685991",
-                "Addison-Wesley"
+                "Addison-Wesley",
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         materialRepositorio.adicionar(outroLivro);
@@ -434,7 +436,8 @@ class EmprestimoServiceTest {
                 2018,
                 "Joshua Bloch",
                 "9780134685991",
-                "Addison-Wesley"
+                "Addison-Wesley",
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         materialRepositorio.adicionar(outroLivro);
