@@ -1,11 +1,14 @@
 package biblioteca.repository;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 
+import biblioteca.auth.SenhaHashUtil;
 import biblioteca.exception.ItemDuplicadoException;
 import biblioteca.exception.RegistroNaoEncontradoException;
-import biblioteca.model.Emprestimo;
+import biblioteca.model.usuario.Cargo;
 import biblioteca.model.usuario.Usuario;
 
 public class UsuarioRepositorio implements Repositorio<Usuario>, RepositorioRemovivel<Usuario> {
@@ -93,7 +96,6 @@ public class UsuarioRepositorio implements Repositorio<Usuario>, RepositorioRemo
 	
 	@Override
 	public void atualizar(Usuario usuario) throws RegistroNaoEncontradoException {
-
 	    for (int i = 0; i < usuarios.size(); i++) {
 
 	        if (usuarios.get(i).getID() == usuario.getID()) {
@@ -107,9 +109,36 @@ public class UsuarioRepositorio implements Repositorio<Usuario>, RepositorioRemo
 	
 	@Override
 	public void remover(int usuarioId) throws RegistroNaoEncontradoException {
-
 	    Usuario usuario = buscarPorId(usuarioId);
 	    usuarios.remove(usuario);
+	}
+	
+	private String hashearSenha(String senha) {
+		try {
+			return SenhaHashUtil.hash(senha);
+		} catch (NoSuchAlgorithmException e) {
+			return "";
+		} catch (InvalidKeySpecException e) {
+			return "";
+		}
+	}
+	
+	public void cadastrarUsuariosIniciais() {
+		Usuario leitor = new Usuario("Jorge", "jorge", hashearSenha("senha123"), Cargo.LEITOR);
+		Usuario bibliotecario = new Usuario("Josefina", "josefina123", hashearSenha("jose123"), Cargo.BIBLIOTECARIO);
+		Usuario adm = new Usuario("Administrador", "admin123", hashearSenha("admin123") , Cargo.ADMINISTRADOR);
+		try {
+			this.adicionar(leitor);
+		} catch (ItemDuplicadoException e) {
+		}
+		try {
+			this.adicionar(bibliotecario);
+		} catch (ItemDuplicadoException e) {
+		}
+		try {
+			this.adicionar(adm);
+		} catch (ItemDuplicadoException e) {
+		}
 	}
 	
 }

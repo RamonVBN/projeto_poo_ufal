@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -73,7 +74,8 @@ class EmprestimoServiceTest {
                 2008,
                 "Robert C. Martin",
                 "9780132350884",
-                "Prentice Hall"
+                "Prentice Hall",
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         usuarioRepositorio.adicionar(usuarioPermitido);
@@ -162,7 +164,8 @@ class EmprestimoServiceTest {
                 2017,
                 "Robert C. Martin",
                 "9780134494166",
-                "Prentice Hall"
+                "Prentice Hall",
+                Path.of(MaterialRepositorio.uploadsDirectory, "")
         );
 
         MaterialBibliografico livro3 = new Livro(
@@ -170,7 +173,8 @@ class EmprestimoServiceTest {
                 2003,
                 "Eric Evans",
                 "9780321125217",
-                "Addison-Wesley"
+                "Addison-Wesley",
+                Path.of(MaterialRepositorio.uploadsDirectory, "")
         );
 
         MaterialBibliografico livro4 = new Livro(
@@ -178,7 +182,8 @@ class EmprestimoServiceTest {
                 1999,
                 "Martin Fowler",
                 "9780201485677",
-                "Addison-Wesley"
+                "Addison-Wesley",
+                Path.of(MaterialRepositorio.uploadsDirectory, "")
         );
 
         materialRepositorio.adicionar(livro2);

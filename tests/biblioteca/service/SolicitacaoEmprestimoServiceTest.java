@@ -13,6 +13,8 @@ import biblioteca.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SolicitacaoEmprestimoServiceTest {
@@ -63,7 +65,8 @@ class SolicitacaoEmprestimoServiceTest {
                 2008,
                 "Robert C. Martin",
                 "111",
-                "Prentice Hall"
+                "Prentice Hall",
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         livro2 = new Livro(
@@ -71,7 +74,8 @@ class SolicitacaoEmprestimoServiceTest {
                 2017,
                 "Robert C. Martin",
                 "222",
-                "Prentice Hall"
+                "Prentice Hall",
+                Path.of(MaterialRepositorio.uploadsDirectory, "clean_code.jpg")
         );
 
         usuarioRepositorio.adicionar(leitor);
